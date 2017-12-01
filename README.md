@@ -1,4 +1,4 @@
-# Arena
+# Magna
 Aimed at a Distributed Computing Platform for Human.
 
 Design Objectives:
