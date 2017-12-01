@@ -1,0 +1,29 @@
+
+syntax = "proto3";
+
+package magna;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "phxrpc/rpc/phxrpc.proto";
+
+
+message DownloadRequest
+{
+
+}
+
+message DownloadResponse
+{
+
+}
+
+service Node
+{
+	rpc DownloadFile( DownloadRequest ) returns( DownloadResponse );
+	rpc StartComponent();
+	rpc StopComponent();
+	rpc TestComponent(); // 测试组件中各接口的负载。
+}
+
+

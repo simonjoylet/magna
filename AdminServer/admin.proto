@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package magna;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "phxrpc/rpc/phxrpc.proto";
+
+message InetAddress
+{
+	string ip = 1;
+	int32 port = 2;
+}
+
+message RegisterRequest
+{
+	InetAddress addr = 1;
+}
+
+message RegisterResponse
+{
+	bool success = 1;
+	string msg = 2;
+}
+
+Message TransFile
+{
+	string path;
+	
+	bytes content;
+
+
+}
+
+message SubmitRequest
+{
+	int32 programId;
+	
+	bool complete;
+}
+
+// 提供部署分布式软件的功能。
+service Admin
+{
+	// 对运维人员提供的服务
+	rpc SubmitProgram();
+	rpc DeployProgram();
+	rpc TerminateProgram();
+
+	// 对节点代理提供的服务
+	rpc RegisterNode( RegisterRequest ) returns( RegisterResponse );
+	rpc UnregisterNode();
+	rpc HeatbeatStatus();
+
+	// 对终端用户提供的服务
+	rpc QueryComponent();
+}
+
+
