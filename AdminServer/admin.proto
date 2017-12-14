@@ -12,48 +12,74 @@ message InetAddress
 	int32 port = 2;
 }
 
-message RegisterRequest
+message RegisterNodeRequest
 {
 	InetAddress addr = 1;
 }
 
-message RegisterResponse
+message RegisterNodeResponse
 {
-	bool success = 1;
+	bool ack = 1;
 	string msg = 2;
 }
 
-Message TransFile
+message NodeStatus
 {
-	string path;
-	
-	bytes content;
-
-
+	float cpu = 1; // cpu负载
+	map<string, int32> rtt; // 到各个节点的往返时间
 }
 
-message SubmitRequest
+message NodeHeartbeatRequest
 {
-	int32 programId;
-	
-	bool complete;
+	InetAddress addr = 1;
+	NodeStatus load = 2;
+}
+
+message NodeHeartbeatResponse
+{
+	bool ack = 1;
+	string msg = 2;
+	repeated string allNodes = 3; // 所有节点ip，用于通过echo服务测rtt
+}
+
+message RegisterServiceRequest
+{
+	InetAddress addr = 1;
+	string serviceName = 2;
+}
+
+message RegisterServiceResponse
+{
+	bool ack = 1;
+	string msg = 2;
+	int32 serviceId = 3; // 对每个服务分配唯一id
+}
+
+message ServiceStatus
+{
+	map<string, int32> interfaceTime; // 每个接口的处理时间 
+}
+
+message ServiceHeartbeatRequest
+{
+	map<int32, ServiceStatus> services = 3; // 每个id所对应的服务状态
+}
+
+message ServiceHeartbeatResponse
+{
+	bool ack = 1;
+	string msg = 2;
 }
 
 // 提供部署分布式软件的功能。
 service Admin
 {
-	// 对运维人员提供的服务
-	rpc SubmitProgram();
-	rpc DeployProgram();
-	rpc TerminateProgram();
-
 	// 对节点代理提供的服务
-	rpc RegisterNode( RegisterRequest ) returns( RegisterResponse );
-	rpc UnregisterNode();
-	rpc HeatbeatStatus();
+	rpc RegisterNode (RegisterNodeRequest) returns (RegisterNodeResponse);
+	rpc NodeHeatbeat (NodeHeartbeatRequest) returns (NodeHeartbeatResponse);
 
-	// 对终端用户提供的服务
-	rpc QueryComponent();
+	rpc RegisterService (RegisterServiceRequest) returns (RegisterServiceResponse);
+	rpc ServiceHeatbeat (ServiceHeartbeatRequest) returns (ServiceHeartbeatResponse);
 }
 
 

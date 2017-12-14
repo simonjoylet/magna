@@ -8,21 +8,35 @@ import "google/protobuf/empty.proto";
 import "phxrpc/rpc/phxrpc.proto";
 
 
-message DownloadRequest
+message StartComponentRequest
 {
-
+	string path = 1;
+	string param = 2;
 }
 
-message DownloadResponse
+message StartComponentResponse
 {
-
+	bool success = 1;
+	string ip = 2;
+	int32 pid = 3;
 }
+
+message StopComponentRequest
+{
+	string ip = 1;
+	int32 pid = 2;
+}
+
+message StopComponentResponse
+{
+	bool success = 1;
+}
+
 
 service Node
 {
-	rpc DownloadFile( DownloadRequest ) returns( DownloadResponse );
-	rpc StartComponent();
-	rpc StopComponent();
+	rpc StartComponent (StartComponentRequest) returns (StartComponentResponse);
+	rpc StopComponent (StopComponentRequest) returns (StopComponentResponse);
 	rpc TestComponent(); // 测试组件中各接口的负载。
 }
 
