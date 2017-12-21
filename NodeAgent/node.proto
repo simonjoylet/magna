@@ -37,7 +37,6 @@ service Node
 {
 	rpc StartComponent (StartComponentRequest) returns (StartComponentResponse);
 	rpc StopComponent (StopComponentRequest) returns (StopComponentResponse);
-	rpc TestComponent(); // 测试组件中各接口的负载。
 }
 
 
