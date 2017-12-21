@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{9159b24c-df99-4e9c-8a90-0b431f7357c0}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource files">
+      <UniqueIdentifier>{93a461bd-aaa8-405f-bb90-040746c4dad4}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="VisualGDB settings">
+      <UniqueIdentifier>{80b98f04-14ef-4c1c-9608-b9cc9b8c71c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto files">
+      <UniqueIdentifier>{6379ea14-ca77-4e1f-b0e5-399a719f7641}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="admin_client.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin_main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin_server_config.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin_service_impl.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin_tool_impl.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin_tool_main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <None Include="AdminServer-Debug.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="AdminServer-Release.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <ClCompile Include="phxrpc_admin_dispatcher.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_admin_service.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_admin_stub.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_admin_tool.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin.pb.cc">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="admin_client.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="admin_server_config.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="admin_service_impl.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="admin_tool_impl.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_admin_dispatcher.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_admin_service.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_admin_stub.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_admin_tool.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="admin.pb.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="admin.proto">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="admin_server.conf">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="Makefile">
+      <Filter>Source files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

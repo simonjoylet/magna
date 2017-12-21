@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{069f2074-6acd-45be-ae3e-9f3b647b3eca}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource files">
+      <UniqueIdentifier>{26307215-1609-4aaf-a30f-ca338ecbd5da}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="VisualGDB settings">
+      <UniqueIdentifier>{58631238-b3f7-4cbc-98f7-0d6aa4d12427}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto files">
+      <UniqueIdentifier>{054f651d-31f2-4441-8efd-410b7a8f04f5}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="node_client.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="node_main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="node_server_config.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="node_service_impl.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="node_tool_impl.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="node_tool_main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <None Include="NodeAgent-Debug.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="NodeAgent-Release.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <ClCompile Include="node.pb.cc">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_node_dispatcher.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_node_service.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_node_stub.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_node_tool.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="node_client.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="node_server_config.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="node_service_impl.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="node_tool_impl.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="node.pb.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_node_dispatcher.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_node_service.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_node_stub.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_node_tool.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="node.proto">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="Makefile">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="node_server.conf">
+      <Filter>Source files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
