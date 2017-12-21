@@ -26,7 +26,7 @@ message RegisterNodeResponse
 message NodeStatus
 {
 	float cpu = 1; // cpu负载
-	map<string, int32> rtt; // 到各个节点的往返时间
+	map<string, int32> rtt = 2; // 到各个节点的往返时间
 }
 
 message NodeHeartbeatRequest
@@ -57,7 +57,7 @@ message RegisterServiceResponse
 
 message ServiceStatus
 {
-	map<string, int32> interfaceTime; // 每个接口的处理时间 
+	map<string, int32> interfaceTime = 1; // 每个接口的处理时间 
 }
 
 message ServiceHeartbeatRequest
