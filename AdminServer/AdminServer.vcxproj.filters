@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="admin_client.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="admin_main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -28,12 +25,6 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="admin_service_impl.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="admin_tool_impl.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="admin_tool_main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <None Include="AdminServer-Debug.vgdbsettings">
@@ -59,16 +50,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="admin_client.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="admin_server_config.h">
       <Filter>Source files</Filter>
     </ClInclude>
     <ClInclude Include="admin_service_impl.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="admin_tool_impl.h">
       <Filter>Source files</Filter>
     </ClInclude>
     <ClInclude Include="phxrpc_admin_dispatcher.h">

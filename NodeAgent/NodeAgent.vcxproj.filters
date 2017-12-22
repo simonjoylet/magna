@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="node_client.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="node_main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -28,12 +25,6 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="node_service_impl.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="node_tool_impl.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="node_tool_main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
     <None Include="NodeAgent-Debug.vgdbsettings">
@@ -59,16 +50,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="node_client.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="node_server_config.h">
       <Filter>Source files</Filter>
     </ClInclude>
     <ClInclude Include="node_service_impl.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
-    <ClInclude Include="node_tool_impl.h">
       <Filter>Source files</Filter>
     </ClInclude>
     <ClInclude Include="node.pb.h">

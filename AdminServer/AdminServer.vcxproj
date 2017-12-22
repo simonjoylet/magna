@@ -73,21 +73,16 @@
   </ImportGroup>
   <ItemGroup>
     <ClCompile Include="admin.pb.cc" />
-    <ClCompile Include="admin_client.cpp" />
     <ClCompile Include="admin_main.cpp" />
     <ClCompile Include="admin_server_config.cpp" />
     <ClCompile Include="admin_service_impl.cpp" />
-    <ClCompile Include="admin_tool_impl.cpp" />
-    <ClCompile Include="admin_tool_main.cpp" />
     <ClCompile Include="phxrpc_admin_dispatcher.cpp" />
     <ClCompile Include="phxrpc_admin_service.cpp" />
     <ClCompile Include="phxrpc_admin_stub.cpp" />
     <ClCompile Include="phxrpc_admin_tool.cpp" />
     <ClInclude Include="admin.pb.h" />
-    <ClInclude Include="admin_client.h" />
     <ClInclude Include="admin_server_config.h" />
     <ClInclude Include="admin_service_impl.h" />
-    <ClInclude Include="admin_tool_impl.h" />
     <ClInclude Include="phxrpc_admin_dispatcher.h" />
     <ClInclude Include="phxrpc_admin_service.h" />
     <ClInclude Include="phxrpc_admin_stub.h" />
