@@ -81,6 +81,7 @@
     <ClCompile Include="phxrpc_admin_stub.cpp" />
     <ClCompile Include="phxrpc_admin_tool.cpp" />
     <ClInclude Include="admin.pb.h" />
+    <ClInclude Include="AdminData.h" />
     <ClInclude Include="admin_server_config.h" />
     <ClInclude Include="admin_service_impl.h" />
     <ClInclude Include="phxrpc_admin_dispatcher.h" />

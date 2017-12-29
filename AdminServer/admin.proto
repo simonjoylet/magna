@@ -15,6 +15,7 @@ message InetAddress
 message RegisterNodeRequest
 {
 	InetAddress addr = 1;
+	int32 mips = 2;	// cpu处理能力，百万指令每秒
 }
 
 message RegisterNodeResponse
@@ -39,7 +40,7 @@ message NodeHeartbeatResponse
 {
 	bool ack = 1;
 	string msg = 2;
-	repeated string allNodes = 3; // 所有节点ip，用于通过echo服务测rtt
+	repeated InetAddress allNodes = 3; // 所有节点，用于通过echo服务测rtt
 }
 
 message RegisterServiceRequest

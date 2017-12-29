@@ -71,6 +71,9 @@
     <ClInclude Include="admin.pb.h">
       <Filter>Auto files</Filter>
     </ClInclude>
+    <ClInclude Include="AdminData.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="admin.proto">
