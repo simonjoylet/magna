@@ -73,6 +73,7 @@
   </ImportGroup>
   <ItemGroup>
     <ClCompile Include="admin.pb.cc" />
+    <ClCompile Include="AdminData.cpp" />
     <ClCompile Include="admin_main.cpp" />
     <ClCompile Include="admin_server_config.cpp" />
     <ClCompile Include="admin_service_impl.cpp" />

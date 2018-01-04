@@ -48,6 +48,9 @@
     <ClCompile Include="admin.pb.cc">
       <Filter>Auto files</Filter>
     </ClCompile>
+    <ClCompile Include="AdminData.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="admin_server_config.h">

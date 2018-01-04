@@ -48,6 +48,9 @@
     <ClCompile Include="phxrpc_node_tool.cpp">
       <Filter>Auto files</Filter>
     </ClCompile>
+    <ClCompile Include="HeatbeatThread.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="node_server_config.h">
@@ -70,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="phxrpc_node_tool.h">
       <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="HeatbeatThread.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="AdminProxy.h">
+      <Filter>Source files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
