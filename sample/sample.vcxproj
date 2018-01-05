@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E28268DA-C46C-4A9A-A4A6-212F18C1BC90}</ProjectGuid>
+    <ProjectGuid>{7DBC50FC-6ABD-49D0-833C-45714FF86938}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -41,16 +41,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0005\phxrpc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
-    <NMakeOutput>$(ProjectDir)NodeAgent-Debug.vgdbsettings</NMakeOutput>
+    <NMakeOutput>$(ProjectDir)sample-Debug.vgdbsettings</NMakeOutput>
     <IncludePath />
     <ReferencePath />
     <LibraryPath />
-    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
@@ -59,7 +59,7 @@
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
-    <NMakeOutput>$(ProjectDir)NodeAgent-Release.vgdbsettings</NMakeOutput>
+    <NMakeOutput>$(ProjectDir)sample-Release.vgdbsettings</NMakeOutput>
     <IncludePath />
     <ReferencePath />
     <LibraryPath />
@@ -72,29 +72,27 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <ClCompile Include="HeatbeatThread.cpp" />
-    <ClCompile Include="node.pb.cc" />
-    <ClCompile Include="NodeData.cpp" />
-    <ClCompile Include="node_main.cpp" />
-    <ClCompile Include="node_server_config.cpp" />
-    <ClCompile Include="node_service_impl.cpp" />
-    <ClCompile Include="phxrpc_node_dispatcher.cpp" />
-    <ClCompile Include="phxrpc_node_service.cpp" />
-    <ClCompile Include="phxrpc_node_stub.cpp" />
-    <ClCompile Include="phxrpc_node_tool.cpp" />
-    <ClInclude Include="HeatbeatThread.h" />
-    <ClInclude Include="node.pb.h" />
-    <ClInclude Include="NodeData.h" />
-    <ClInclude Include="node_server_config.h" />
-    <ClInclude Include="node_service_impl.h" />
-    <ClInclude Include="phxrpc_node_dispatcher.h" />
-    <ClInclude Include="phxrpc_node_service.h" />
-    <ClInclude Include="phxrpc_node_stub.h" />
-    <ClInclude Include="phxrpc_node_tool.h" />
-    <None Include="Makefile" />
-    <None Include="node.proto" />
-    <None Include="NodeAgent-Debug.vgdbsettings" />
-    <None Include="NodeAgent-Release.vgdbsettings" />
-    <None Include="node_server.conf" />
+    <ClCompile Include="phxrpc_search_dispatcher.cpp" />
+    <ClCompile Include="phxrpc_search_service.cpp" />
+    <ClCompile Include="phxrpc_search_stub.cpp" />
+    <ClCompile Include="phxrpc_search_tool.cpp" />
+    <ClCompile Include="search.pb.cc" />
+    <ClCompile Include="search_client.cpp" />
+    <ClCompile Include="search_main.cpp" />
+    <ClCompile Include="search_server_config.cpp" />
+    <ClCompile Include="search_service_impl.cpp" />
+    <ClCompile Include="search_tool_impl.cpp" />
+    <ClCompile Include="search_tool_main.cpp" />
+    <ClInclude Include="phxrpc_search_dispatcher.h" />
+    <ClInclude Include="phxrpc_search_service.h" />
+    <ClInclude Include="phxrpc_search_stub.h" />
+    <ClInclude Include="phxrpc_search_tool.h" />
+    <ClInclude Include="search.pb.h" />
+    <ClInclude Include="search_client.h" />
+    <ClInclude Include="search_server_config.h" />
+    <ClInclude Include="search_service_impl.h" />
+    <ClInclude Include="search_tool_impl.h" />
+    <None Include="sample-Debug.vgdbsettings" />
+    <None Include="sample-Release.vgdbsettings" />
   </ItemGroup>
 </Project>
