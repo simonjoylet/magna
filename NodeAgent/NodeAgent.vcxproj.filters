@@ -2,18 +2,18 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source files">
-      <UniqueIdentifier>{069f2074-6acd-45be-ae3e-9f3b647b3eca}</UniqueIdentifier>
+      <UniqueIdentifier>{6a3f7d14-bfa1-4898-aeb6-c269a9777cb1}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Resource files">
-      <UniqueIdentifier>{26307215-1609-4aaf-a30f-ca338ecbd5da}</UniqueIdentifier>
+      <UniqueIdentifier>{26f2bc4b-3611-4518-bb85-306ef8dd3711}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="VisualGDB settings">
-      <UniqueIdentifier>{58631238-b3f7-4cbc-98f7-0d6aa4d12427}</UniqueIdentifier>
+      <UniqueIdentifier>{7d6fc7fe-8402-451c-8cff-82f7f26a2108}</UniqueIdentifier>
     </Filter>
     <Filter Include="Auto files">
-      <UniqueIdentifier>{054f651d-31f2-4441-8efd-410b7a8f04f5}</UniqueIdentifier>
+      <UniqueIdentifier>{d08ccd1d-2df5-45d6-9a48-5a344c13b327}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
   </ItemGroup>
@@ -85,10 +85,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Makefile">
+      <Filter>Source files</Filter>
+    </None>
     <None Include="node.proto">
       <Filter>Source files</Filter>
     </None>
-    <None Include="Makefile">
+    <None Include="node_client.conf">
       <Filter>Source files</Filter>
     </None>
     <None Include="node_server.conf">

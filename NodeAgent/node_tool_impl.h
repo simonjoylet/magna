@@ -6,24 +6,30 @@
 
 #pragma once
 
-#include <stdio.h>
-
 #include "phxrpc_node_tool.h"
+
+#include <cstdio>
+
+
 namespace phxrpc {
-    class OptMap;
+
+
+class OptMap;
+
+
 }
 
-class NodeToolImpl : public NodeTool
-{
-public:
+
+class NodeToolImpl : public NodeTool {
+  public:
     NodeToolImpl();
     virtual ~NodeToolImpl();
 
-    virtual int PHXEcho( phxrpc::OptMap & opt_map );
-
-    virtual int StartComponent( phxrpc::OptMap & opt_map );
-
-    virtual int StopComponent( phxrpc::OptMap & opt_map );
-
+    virtual int PhxMqttConnect(phxrpc::OptMap &opt_map) override;
+    virtual int PhxMqttPublish(phxrpc::OptMap &opt_map) override;
+    virtual int PhxMqttDisconnect(phxrpc::OptMap &opt_map) override;
+    virtual int PhxEcho(phxrpc::OptMap &opt_map) override;
+    virtual int StartComponent(phxrpc::OptMap &opt_map) override;
+    virtual int StopComponent(phxrpc::OptMap &opt_map) override;
 };
 

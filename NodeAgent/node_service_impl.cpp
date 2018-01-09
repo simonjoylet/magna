@@ -5,36 +5,44 @@
 */
 
 #include "node_service_impl.h"
+
 #include "node_server_config.h"
 #include "node.pb.h"
 #include "phxrpc/file.h"
 
-NodeServiceImpl :: NodeServiceImpl(ServiceArgs_t & app_args)
-    : args_(app_args)
-{
+
+NodeServiceImpl::NodeServiceImpl(ServiceArgs_t &app_args)
+    : args_(app_args) {
 }
 
-NodeServiceImpl :: ~NodeServiceImpl()
-{
+NodeServiceImpl::~NodeServiceImpl() {
 }
 
-int NodeServiceImpl :: PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp )
-{
-    resp->set_value( req.value() );
+int NodeServiceImpl::PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp) {
     return 0;
 }
 
-int NodeServiceImpl :: StartComponent( const magna::StartComponentRequest & req,
-        magna::StartComponentResponse * resp )
-{
+int NodeServiceImpl::PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp) {
+    // TODO: process req.content()
+
     return -1;
 }
 
-int NodeServiceImpl :: StopComponent( const magna::StopComponentRequest & req,
-        magna::StopComponentResponse * resp )
-{
+int NodeServiceImpl::PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req) {
+    return 0;
+}
+
+int NodeServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp) {
+    resp->set_value(req.value());
+
+    return 0;
+}
+
+int NodeServiceImpl::StartComponent(const magna::StartComponentRequest &req, magna::StartComponentResponse *resp) {
     return -1;
 }
 
+int NodeServiceImpl::StopComponent(const magna::StopComponentRequest &req, magna::StopComponentResponse *resp) {
+    return -1;
+}
 

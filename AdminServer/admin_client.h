@@ -9,34 +9,25 @@
 #include "admin.pb.h"
 #include "phxrpc/rpc.h"
 
-class AdminClient
-{
-public:
-    static bool Init( const char * config_file );
 
-    static const char * GetPackageName();
+class AdminClient {
+  public:
+    static bool Init(const char *config_file);
 
-public:
+    static const char *GetPackageName();
+
     AdminClient();
-    ~AdminClient();
+    virtual ~AdminClient();
 
-    int PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp );
-
-    int PhxBatchEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp );
-
-    int RegisterNode( const magna::RegisterNodeRequest & req,
-        magna::RegisterNodeResponse * resp );
-
-    int NodeHeatbeat( const magna::NodeHeartbeatRequest & req,
-        magna::NodeHeartbeatResponse * resp );
-
-    int RegisterService( const magna::RegisterServiceRequest & req,
-        magna::RegisterServiceResponse * resp );
-
-    int ServiceHeatbeat( const magna::ServiceHeartbeatRequest & req,
-        magna::ServiceHeartbeatResponse * resp );
-
+    int PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp);
+    int PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp);
+    int PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req);
+    int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
+    int PhxBatchEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
+    int RegisterNode(const magna::RegisterNodeRequest &req, magna::RegisterNodeResponse *resp);
+    int NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp);
+    int RegisterService(const magna::RegisterServiceRequest &req, magna::RegisterServiceResponse *resp);
+    int ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req, magna::ServiceHeartbeatResponse *resp);
 
 };
+

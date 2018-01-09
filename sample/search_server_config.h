@@ -8,17 +8,18 @@
 
 #include "phxrpc/rpc.h"
 
-class SearchServerConfig
-{
-public:
+
+class SearchServerConfig {
+  public:
     SearchServerConfig();
 
-    ~SearchServerConfig();
+    virtual ~SearchServerConfig();
 
-    bool Read( const char * config_file );
+    bool Read(const char *config_file);
 
-    phxrpc::HshaServerConfig & GetHshaServerConfig();
+    phxrpc::HshaServerConfig &GetHshaServerConfig();
 
-private:
+  private:
     phxrpc::HshaServerConfig ep_server_config_;
 };
+

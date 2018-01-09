@@ -4,30 +4,29 @@
 
 */
 
-#include "admin.pb.h"
 #include "admin_server_config.h"
 
-AdminServerConfig :: AdminServerConfig()
-{
+#include "admin.pb.h"
+
+
+AdminServerConfig::AdminServerConfig() {
 }
 
-AdminServerConfig :: ~AdminServerConfig()
-{
+AdminServerConfig::~AdminServerConfig() {
 }
 
-bool AdminServerConfig :: Read( const char * config_file )
-{
-    bool ret = ep_server_config_.Read( config_file );
+bool AdminServerConfig::Read(const char *config_file) {
+    bool ret{ep_server_config_.Read(config_file)};
 
-    if ( strlen( ep_server_config_.GetPackageName() ) == 0 ) {
-        ep_server_config_.SetPackageName( 
-magna::RegisterNodeRequest::default_instance().GetDescriptor()->file()->package().c_str() );
+    if (0 == strlen(ep_server_config_.GetPackageName())) {
+        ep_server_config_.SetPackageName(
+magna::RegisterNodeRequest::default_instance().GetDescriptor()->file()->package().c_str());
     }
 
     return ret;
 }
 
-phxrpc::HshaServerConfig & AdminServerConfig :: GetHshaServerConfig()
-{
+phxrpc::HshaServerConfig &AdminServerConfig::GetHshaServerConfig() {
     return ep_server_config_;
 }
+

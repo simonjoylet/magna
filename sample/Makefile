@@ -8,19 +8,19 @@ include /usr/local/etc/phxrpc/phxrpc.mk
 
 LDFLAGS := -L$(PHXRPC_ROOT)/lib -lphxrpc $(LDFLAGS)
 
-#choose to use boost for network
+# choose to use boost for network
 #LDFLAGS := $(PLUGIN_BOOST_LDFLAGS) $(LDFLAGS)
 
 SVR_OBJS = search.pb.o \
-		   search_service_impl.o \
-		   phxrpc_search_service.o \
-		   phxrpc_search_dispatcher.o \
-		   search_server_config.o \
-		   search_main.o
+		search_service_impl.o \
+		phxrpc_search_service.o \
+		phxrpc_search_dispatcher.o \
+		search_server_config.o \
+		search_main.o
 
 CLI_OBJS = search.pb.o \
-		   search_client.o \
-		   phxrpc_search_stub.o
+		search_client.o \
+		phxrpc_search_stub.o
 
 TARGETS = libsearch_client.a search_main search_tool_main
 
@@ -50,7 +50,7 @@ search_client.cpp: phxrpc_search_stub.h
 search_client.o: phxrpc_search_stub.h
 
 phxrpc_search_stub.h: search.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2client $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2client $(PBFLAGS) -f $^ -d . -p mqtt
 
 ########## service ##########
 
@@ -62,7 +62,7 @@ phxrpc_search_dispatcher.cpp: phxrpc_search_service.h
 phxrpc_search_dispatcher.o: phxrpc_search_service.h
 
 phxrpc_search_service.h: search.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -p mqtt
 
 ########## tool ##########
 
@@ -74,7 +74,7 @@ search_tool_main.cpp: phxrpc_search_tool.h
 search_tool_main.o: phxrpc_search_tool.h
 
 phxrpc_search_tool.h: search.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2tool $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2tool $(PBFLAGS) -f $^ -d . -p mqtt
 
 clean:
 	@($(RM) $(TARGETS))

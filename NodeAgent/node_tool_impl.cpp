@@ -5,65 +5,102 @@
 */
 
 #include "node_tool_impl.h"
+
 #include "node_client.h"
 
 #include "phxrpc/file.h"
 
+
 using namespace phxrpc;
 
-NodeToolImpl:: NodeToolImpl()
-{
+
+NodeToolImpl::NodeToolImpl() {
 }
 
-NodeToolImpl:: ~NodeToolImpl()
-{
+NodeToolImpl::~NodeToolImpl() {
 }
 
-int NodeToolImpl :: PHXEcho( phxrpc::OptMap & opt_map )
-{
+int NodeToolImpl::PhxMqttConnect(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttConnectPb req;
+    phxrpc::MqttConnackPb resp;
+
+
+    NodeClient client;
+    int ret{client.PhxMqttConnect(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+
+int NodeToolImpl::PhxMqttPublish(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttPublishPb req;
+    phxrpc::MqttPubackPb resp;
+
+    if (nullptr == opt_map.Get('s')) return -1;
+
+    req.set_content(opt_map.Get('s'));
+
+    NodeClient client;
+    int ret{client.PhxMqttPublish(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+
+int NodeToolImpl::PhxMqttDisconnect(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttDisconnectPb req;
+
+
+    NodeClient client;
+    int ret{client.PhxMqttDisconnect(req)};
+    printf("%s return %d\n", __func__, ret);
+
+    return ret;
+}
+
+
+int NodeToolImpl::PhxEcho(phxrpc::OptMap &opt_map) {
     google::protobuf::StringValue req;
     google::protobuf::StringValue resp;
 
-    if( NULL == opt_map.Get( 's' ) ) return -1;
+    if (nullptr == opt_map.Get('s')) return -1;
 
-    req.set_value( opt_map.Get( 's' ) );
+    req.set_value(opt_map.Get('s'));
 
     NodeClient client;
-    int ret = client.PHXEcho( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.PhxEcho(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int NodeToolImpl :: StartComponent( phxrpc::OptMap & opt_map )
-{
+int NodeToolImpl::StartComponent(phxrpc::OptMap &opt_map) {
     magna::StartComponentRequest req;
     magna::StartComponentResponse resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     NodeClient client;
-    int ret = client.StartComponent( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.StartComponent(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int NodeToolImpl :: StopComponent( phxrpc::OptMap & opt_map )
-{
+int NodeToolImpl::StopComponent(phxrpc::OptMap &opt_map) {
     magna::StopComponentRequest req;
     magna::StopComponentResponse resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     NodeClient client;
-    int ret = client.StopComponent( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.StopComponent(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }

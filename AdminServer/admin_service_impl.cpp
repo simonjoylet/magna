@@ -5,48 +5,52 @@
 */
 
 #include "admin_service_impl.h"
+
 #include "admin_server_config.h"
 #include "admin.pb.h"
 #include "phxrpc/file.h"
 
-AdminServiceImpl :: AdminServiceImpl(ServiceArgs_t & app_args)
-    : args_(app_args)
-{
+
+AdminServiceImpl::AdminServiceImpl(ServiceArgs_t &app_args)
+    : args_(app_args) {
 }
 
-AdminServiceImpl :: ~AdminServiceImpl()
-{
+AdminServiceImpl::~AdminServiceImpl() {
 }
 
-int AdminServiceImpl :: PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp )
-{
-    resp->set_value( req.value() );
+int AdminServiceImpl::PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp) {
     return 0;
 }
 
-int AdminServiceImpl :: RegisterNode( const magna::RegisterNodeRequest & req,
-        magna::RegisterNodeResponse * resp )
-{
+int AdminServiceImpl::PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp) {
+    // TODO: process req.content()
+
     return -1;
 }
 
-int AdminServiceImpl :: NodeHeatbeat( const magna::NodeHeartbeatRequest & req,
-        magna::NodeHeartbeatResponse * resp )
-{
+int AdminServiceImpl::PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req) {
+    return 0;
+}
+
+int AdminServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp) {
+    resp->set_value(req.value());
+
+    return 0;
+}
+
+int AdminServiceImpl::RegisterNode(const magna::RegisterNodeRequest &req, magna::RegisterNodeResponse *resp) {
     return -1;
 }
 
-int AdminServiceImpl :: RegisterService( const magna::RegisterServiceRequest & req,
-        magna::RegisterServiceResponse * resp )
-{
+int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp) {
     return -1;
 }
 
-int AdminServiceImpl :: ServiceHeatbeat( const magna::ServiceHeartbeatRequest & req,
-        magna::ServiceHeartbeatResponse * resp )
-{
+int AdminServiceImpl::RegisterService(const magna::RegisterServiceRequest &req, magna::RegisterServiceResponse *resp) {
     return -1;
 }
 
+int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req, magna::ServiceHeartbeatResponse *resp) {
+    return -1;
+}
 

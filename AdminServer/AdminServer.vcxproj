@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{64F9ECB9-A27B-44B1-AF2E-FA80A010052A}</ProjectGuid>
+    <ProjectGuid>{958F0B92-50CA-4348-A0D2-18CD8C9A9B79}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -41,7 +41,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0005\phxrpc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0004\phxrpc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -53,7 +53,7 @@
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.68.58\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Release.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Release;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
@@ -92,6 +92,7 @@
     <None Include="admin.proto" />
     <None Include="AdminServer-Debug.vgdbsettings" />
     <None Include="AdminServer-Release.vgdbsettings" />
+    <None Include="admin_client.conf" />
     <None Include="admin_server.conf" />
     <None Include="Makefile" />
   </ItemGroup>

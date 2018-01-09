@@ -8,7 +8,7 @@ include /usr/local/etc/phxrpc/phxrpc.mk
 
 LDFLAGS := -L$(PHXRPC_ROOT)/lib -lphxrpc $(LDFLAGS)
 
-#choose to use boost for network
+# choose to use boost for network
 #LDFLAGS := $(PLUGIN_BOOST_LDFLAGS) $(LDFLAGS)
 
 SVR_OBJS = admin.pb.o \
@@ -20,8 +20,8 @@ SVR_OBJS = admin.pb.o \
 		   AdminData.o
 
 CLI_OBJS = admin.pb.o \
-		   admin_client.o \
-		   phxrpc_admin_stub.o
+		admin_client.o \
+		phxrpc_admin_stub.o
 
 TARGETS = libadmin_client.a admin_main admin_tool_main
 
@@ -51,7 +51,7 @@ admin_client.cpp: phxrpc_admin_stub.h
 admin_client.o: phxrpc_admin_stub.h
 
 phxrpc_admin_stub.h: admin.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2client $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2client $(PBFLAGS) -f $^ -d . -p mqtt
 
 ########## service ##########
 
@@ -65,7 +65,7 @@ AdminData.cpp: AdminData.h
 AdminData.o: AdminData.h
 
 phxrpc_admin_service.h: admin.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -p mqtt
 
 ########## tool ##########
 
@@ -77,7 +77,7 @@ admin_tool_main.cpp: phxrpc_admin_tool.h
 admin_tool_main.o: phxrpc_admin_tool.h
 
 phxrpc_admin_tool.h: admin.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2tool $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2tool $(PBFLAGS) -f $^ -d . -p mqtt
 
 clean:
 	@($(RM) $(TARGETS))

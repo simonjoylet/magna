@@ -8,17 +8,18 @@
 
 #include "phxrpc/rpc.h"
 
-class AdminServerConfig
-{
-public:
+
+class AdminServerConfig {
+  public:
     AdminServerConfig();
 
-    ~AdminServerConfig();
+    virtual ~AdminServerConfig();
 
-    bool Read( const char * config_file );
+    bool Read(const char *config_file);
 
-    phxrpc::HshaServerConfig & GetHshaServerConfig();
+    phxrpc::HshaServerConfig &GetHshaServerConfig();
 
-private:
+  private:
     phxrpc::HshaServerConfig ep_server_config_;
 };
+

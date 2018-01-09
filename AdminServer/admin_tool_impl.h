@@ -6,28 +6,32 @@
 
 #pragma once
 
-#include <stdio.h>
-
 #include "phxrpc_admin_tool.h"
+
+#include <cstdio>
+
+
 namespace phxrpc {
-    class OptMap;
+
+
+class OptMap;
+
+
 }
 
-class AdminToolImpl : public AdminTool
-{
-public:
+
+class AdminToolImpl : public AdminTool {
+  public:
     AdminToolImpl();
     virtual ~AdminToolImpl();
 
-    virtual int PHXEcho( phxrpc::OptMap & opt_map );
-
-    virtual int RegisterNode( phxrpc::OptMap & opt_map );
-
-    virtual int NodeHeatbeat( phxrpc::OptMap & opt_map );
-
-    virtual int RegisterService( phxrpc::OptMap & opt_map );
-
-    virtual int ServiceHeatbeat( phxrpc::OptMap & opt_map );
-
+    virtual int PhxMqttConnect(phxrpc::OptMap &opt_map) override;
+    virtual int PhxMqttPublish(phxrpc::OptMap &opt_map) override;
+    virtual int PhxMqttDisconnect(phxrpc::OptMap &opt_map) override;
+    virtual int PhxEcho(phxrpc::OptMap &opt_map) override;
+    virtual int RegisterNode(phxrpc::OptMap &opt_map) override;
+    virtual int NodeHeatbeat(phxrpc::OptMap &opt_map) override;
+    virtual int RegisterService(phxrpc::OptMap &opt_map) override;
+    virtual int ServiceHeatbeat(phxrpc::OptMap &opt_map) override;
 };
 

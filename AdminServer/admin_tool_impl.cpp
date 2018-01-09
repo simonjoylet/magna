@@ -5,97 +5,130 @@
 */
 
 #include "admin_tool_impl.h"
+
 #include "admin_client.h"
 
 #include "phxrpc/file.h"
 
+
 using namespace phxrpc;
 
-AdminToolImpl:: AdminToolImpl()
-{
+
+AdminToolImpl::AdminToolImpl() {
 }
 
-AdminToolImpl:: ~AdminToolImpl()
-{
+AdminToolImpl::~AdminToolImpl() {
 }
 
-int AdminToolImpl :: PHXEcho( phxrpc::OptMap & opt_map )
-{
+int AdminToolImpl::PhxMqttConnect(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttConnectPb req;
+    phxrpc::MqttConnackPb resp;
+
+
+    AdminClient client;
+    int ret{client.PhxMqttConnect(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+
+int AdminToolImpl::PhxMqttPublish(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttPublishPb req;
+    phxrpc::MqttPubackPb resp;
+
+    if (nullptr == opt_map.Get('s')) return -1;
+
+    req.set_content(opt_map.Get('s'));
+
+    AdminClient client;
+    int ret{client.PhxMqttPublish(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+
+int AdminToolImpl::PhxMqttDisconnect(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttDisconnectPb req;
+
+
+    AdminClient client;
+    int ret{client.PhxMqttDisconnect(req)};
+    printf("%s return %d\n", __func__, ret);
+
+    return ret;
+}
+
+
+int AdminToolImpl::PhxEcho(phxrpc::OptMap &opt_map) {
     google::protobuf::StringValue req;
     google::protobuf::StringValue resp;
 
-    if( NULL == opt_map.Get( 's' ) ) return -1;
+    if (nullptr == opt_map.Get('s')) return -1;
 
-    req.set_value( opt_map.Get( 's' ) );
+    req.set_value(opt_map.Get('s'));
 
     AdminClient client;
-    int ret = client.PHXEcho( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.PhxEcho(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int AdminToolImpl :: RegisterNode( phxrpc::OptMap & opt_map )
-{
+int AdminToolImpl::RegisterNode(phxrpc::OptMap &opt_map) {
     magna::RegisterNodeRequest req;
     magna::RegisterNodeResponse resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     AdminClient client;
-    int ret = client.RegisterNode( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.RegisterNode(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int AdminToolImpl :: NodeHeatbeat( phxrpc::OptMap & opt_map )
-{
+int AdminToolImpl::NodeHeatbeat(phxrpc::OptMap &opt_map) {
     magna::NodeHeartbeatRequest req;
     magna::NodeHeartbeatResponse resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     AdminClient client;
-    int ret = client.NodeHeatbeat( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.NodeHeatbeat(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int AdminToolImpl :: RegisterService( phxrpc::OptMap & opt_map )
-{
+int AdminToolImpl::RegisterService(phxrpc::OptMap &opt_map) {
     magna::RegisterServiceRequest req;
     magna::RegisterServiceResponse resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     AdminClient client;
-    int ret = client.RegisterService( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.RegisterService(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int AdminToolImpl :: ServiceHeatbeat( phxrpc::OptMap & opt_map )
-{
+int AdminToolImpl::ServiceHeatbeat(phxrpc::OptMap &opt_map) {
     magna::ServiceHeartbeatRequest req;
     magna::ServiceHeartbeatResponse resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     AdminClient client;
-    int ret = client.ServiceHeatbeat( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.ServiceHeatbeat(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }

@@ -2,18 +2,18 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source files">
-      <UniqueIdentifier>{9159b24c-df99-4e9c-8a90-0b431f7357c0}</UniqueIdentifier>
+      <UniqueIdentifier>{0789823f-8587-4d2e-9608-d4587b1baa0f}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Resource files">
-      <UniqueIdentifier>{93a461bd-aaa8-405f-bb90-040746c4dad4}</UniqueIdentifier>
+      <UniqueIdentifier>{2b016b93-4ae0-4c8c-8fb5-fff9fc7f4813}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="VisualGDB settings">
-      <UniqueIdentifier>{80b98f04-14ef-4c1c-9608-b9cc9b8c71c3}</UniqueIdentifier>
+      <UniqueIdentifier>{4c3dc897-52f5-4d3e-a347-52542d509345}</UniqueIdentifier>
     </Filter>
     <Filter Include="Auto files">
-      <UniqueIdentifier>{6379ea14-ca77-4e1f-b0e5-399a719f7641}</UniqueIdentifier>
+      <UniqueIdentifier>{e48677e6-1fb5-4aac-8f0c-d7e6c77e13aa}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
   </ItemGroup>
@@ -33,6 +33,9 @@
     <None Include="AdminServer-Release.vgdbsettings">
       <Filter>VisualGDB settings</Filter>
     </None>
+    <ClCompile Include="admin.pb.cc">
+      <Filter>Auto files</Filter>
+    </ClCompile>
     <ClCompile Include="phxrpc_admin_dispatcher.cpp">
       <Filter>Auto files</Filter>
     </ClCompile>
@@ -43,9 +46,6 @@
       <Filter>Auto files</Filter>
     </ClCompile>
     <ClCompile Include="phxrpc_admin_tool.cpp">
-      <Filter>Auto files</Filter>
-    </ClCompile>
-    <ClCompile Include="admin.pb.cc">
       <Filter>Auto files</Filter>
     </ClCompile>
     <ClCompile Include="AdminData.cpp">
@@ -59,6 +59,9 @@
     <ClInclude Include="admin_service_impl.h">
       <Filter>Source files</Filter>
     </ClInclude>
+    <ClInclude Include="admin.pb.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
     <ClInclude Include="phxrpc_admin_dispatcher.h">
       <Filter>Auto files</Filter>
     </ClInclude>
@@ -71,9 +74,6 @@
     <ClInclude Include="phxrpc_admin_tool.h">
       <Filter>Auto files</Filter>
     </ClInclude>
-    <ClInclude Include="admin.pb.h">
-      <Filter>Auto files</Filter>
-    </ClInclude>
     <ClInclude Include="AdminData.h">
       <Filter>Source files</Filter>
     </ClInclude>
@@ -82,10 +82,13 @@
     <None Include="admin.proto">
       <Filter>Source files</Filter>
     </None>
-    <None Include="admin_server.conf">
+    <None Include="Makefile">
       <Filter>Source files</Filter>
     </None>
-    <None Include="Makefile">
+    <None Include="admin_client.conf">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="admin_server.conf">
       <Filter>Source files</Filter>
     </None>
   </ItemGroup>

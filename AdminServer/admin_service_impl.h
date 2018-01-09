@@ -9,35 +9,32 @@
 #include "admin.pb.h"
 #include "phxrpc_admin_service.h"
 
+
 class AdminServerConfig;
 
-typedef struct tagServiceArgs {
-    AdminServerConfig * config;
-    //You can add other arguments here and initiate in main().
-}ServiceArgs_t;
 
-class AdminServiceImpl : public AdminService
-{
-public:
-    AdminServiceImpl( ServiceArgs_t & app_args );
+typedef struct tagServiceArgs {
+    AdminServerConfig *config;
+    //You can add other arguments here and initiate in main().
+} ServiceArgs_t;
+
+
+class AdminServiceImpl : public AdminService {
+  public:
+    AdminServiceImpl(ServiceArgs_t &app_args);
     virtual ~AdminServiceImpl();
 
-    virtual int PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp );
+    virtual int PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp) override;
+    virtual int PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp) override;
+    virtual int PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req) override;
 
-    virtual int RegisterNode( const magna::RegisterNodeRequest & req,
-        magna::RegisterNodeResponse * resp );
+    virtual int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp) override;
+    virtual int RegisterNode(const magna::RegisterNodeRequest &req, magna::RegisterNodeResponse *resp) override;
+    virtual int NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp) override;
+    virtual int RegisterService(const magna::RegisterServiceRequest &req, magna::RegisterServiceResponse *resp) override;
+    virtual int ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req, magna::ServiceHeartbeatResponse *resp) override;
 
-    virtual int NodeHeatbeat( const magna::NodeHeartbeatRequest & req,
-        magna::NodeHeartbeatResponse * resp );
-
-    virtual int RegisterService( const magna::RegisterServiceRequest & req,
-        magna::RegisterServiceResponse * resp );
-
-    virtual int ServiceHeatbeat( const magna::ServiceHeartbeatRequest & req,
-        magna::ServiceHeartbeatResponse * resp );
-
-private:
-    ServiceArgs_t & args_;
+  private:
+    ServiceArgs_t &args_;
 };
 

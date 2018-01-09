@@ -5,65 +5,102 @@
 */
 
 #include "search_tool_impl.h"
+
 #include "search_client.h"
 
 #include "phxrpc/file.h"
 
+
 using namespace phxrpc;
 
-SearchToolImpl:: SearchToolImpl()
-{
+
+SearchToolImpl::SearchToolImpl() {
 }
 
-SearchToolImpl:: ~SearchToolImpl()
-{
+SearchToolImpl::~SearchToolImpl() {
 }
 
-int SearchToolImpl :: PHXEcho( phxrpc::OptMap & opt_map )
-{
+int SearchToolImpl::PhxMqttConnect(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttConnectPb req;
+    phxrpc::MqttConnackPb resp;
+
+
+    SearchClient client;
+    int ret{client.PhxMqttConnect(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+
+int SearchToolImpl::PhxMqttPublish(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttPublishPb req;
+    phxrpc::MqttPubackPb resp;
+
+    if (nullptr == opt_map.Get('s')) return -1;
+
+    req.set_content(opt_map.Get('s'));
+
+    SearchClient client;
+    int ret{client.PhxMqttPublish(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+
+int SearchToolImpl::PhxMqttDisconnect(phxrpc::OptMap &opt_map) {
+    phxrpc::MqttDisconnectPb req;
+
+
+    SearchClient client;
+    int ret{client.PhxMqttDisconnect(req)};
+    printf("%s return %d\n", __func__, ret);
+
+    return ret;
+}
+
+
+int SearchToolImpl::PhxEcho(phxrpc::OptMap &opt_map) {
     google::protobuf::StringValue req;
     google::protobuf::StringValue resp;
 
-    if( NULL == opt_map.Get( 's' ) ) return -1;
+    if (nullptr == opt_map.Get('s')) return -1;
 
-    req.set_value( opt_map.Get( 's' ) );
+    req.set_value(opt_map.Get('s'));
 
     SearchClient client;
-    int ret = client.PHXEcho( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.PhxEcho(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int SearchToolImpl :: Search( phxrpc::OptMap & opt_map )
-{
+int SearchToolImpl::Search(phxrpc::OptMap &opt_map) {
     search::SearchRequest req;
     search::SearchResult resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     SearchClient client;
-    int ret = client.Search( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.Search(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }
 
-int SearchToolImpl :: Notify( phxrpc::OptMap & opt_map )
-{
+int SearchToolImpl::Notify(phxrpc::OptMap &opt_map) {
     google::protobuf::StringValue req;
     google::protobuf::Empty resp;
 
-    //TODO: fill req from opt_map
-
+    // TODO: fill req from opt_map
 
     SearchClient client;
-    int ret = client.Notify( req, &resp );
-    printf( "%s return %d\n", __func__, ret );
-    printf( "resp: {\n%s}\n", resp.DebugString().c_str() );
+    int ret{client.Notify(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
 
     return ret;
 }

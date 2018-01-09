@@ -4,30 +4,29 @@
 
 */
 
-#include "node.pb.h"
 #include "node_server_config.h"
 
-NodeServerConfig :: NodeServerConfig()
-{
+#include "node.pb.h"
+
+
+NodeServerConfig::NodeServerConfig() {
 }
 
-NodeServerConfig :: ~NodeServerConfig()
-{
+NodeServerConfig::~NodeServerConfig() {
 }
 
-bool NodeServerConfig :: Read( const char * config_file )
-{
-    bool ret = ep_server_config_.Read( config_file );
+bool NodeServerConfig::Read(const char *config_file) {
+    bool ret{ep_server_config_.Read(config_file)};
 
-    if ( strlen( ep_server_config_.GetPackageName() ) == 0 ) {
-        ep_server_config_.SetPackageName( 
-magna::StartComponentRequest::default_instance().GetDescriptor()->file()->package().c_str() );
+    if (0 == strlen(ep_server_config_.GetPackageName())) {
+        ep_server_config_.SetPackageName(
+magna::StartComponentRequest::default_instance().GetDescriptor()->file()->package().c_str());
     }
 
     return ret;
 }
 
-phxrpc::HshaServerConfig & NodeServerConfig :: GetHshaServerConfig()
-{
+phxrpc::HshaServerConfig &NodeServerConfig::GetHshaServerConfig() {
     return ep_server_config_;
 }
+

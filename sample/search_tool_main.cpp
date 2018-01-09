@@ -4,10 +4,10 @@
 
 */
 
-#include <time.h>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "phxrpc_search_tool.h"
 #include "search_tool_impl.h"
@@ -16,72 +16,73 @@
 
 #include "phxrpc/file.h"
 
+
 using namespace phxrpc;
 
-void showUsage( const char * program )
-{
-    printf( "\nUsage: %s [-c <config>] [-f <func>] [-v]\n", program );
 
-    SearchTool::Name2Func_t * name2func = SearchTool::GetName2Func();
+void ShowUsage(const char *program) {
+    printf("\nUsage: %s [-c <config>] [-f <func>] [-v]\n", program);
 
-    for( int i = 0; ; i++ ) {
-        SearchTool::Name2Func_t * iter = &( name2func[i] );
+    SearchTool::Name2Func_t *name2func = SearchTool::GetName2Func();
 
-        if( NULL == iter->name ) break;
+    for (int i{0}; ; ++i) {
+        SearchTool::Name2Func_t *iter = &(name2func[i]);
 
-        printf( "    -f %s %s\n", iter->name, iter->usage );
+        if (nullptr == iter->name) break;
+
+        printf("    -f %s %s\n", iter->name, iter->usage);
     }
-    printf( "\n" );
-    exit( 0 );
+    printf("\n");
+    exit(0);
 }
 
-int main( int argc, char * argv[] )
-{
-    const char * func = NULL;
-    const char * config = NULL;
+int main(int argc, char **argv) {
+    const char *func{nullptr};
+    const char *config{nullptr};
 
-    for( int i = 1; i < argc - 1; i++ ) {
-        if( 0 == strcmp( argv[i], "-c" ) ) {
-            config = argv[ ++i ];
+    for (int i{1}; argc - 1 > i; ++i) {
+        if (0 == strcmp(argv[i], "-c")) {
+            config = argv[++i];
         }
-        if( 0 == strcmp( argv[i], "-f" ) ) {
-            func = argv[ ++i ];
+        if (0 == strcmp(argv[i], "-f")) {
+            func = argv[++i];
         }
-        if( 0 == strcmp( argv[i], "-v" ) ) {
-            showUsage( argv[0] );
+        if (0 == strcmp(argv[i], "-v")) {
+            ShowUsage(argv[0]);
         }
     }
 
-    if( NULL == func ) showUsage( argv[0] );
+    if (nullptr == func) ShowUsage(argv[0]);
 
-    if( NULL != config ) SearchClient::Init( config );
+    if (nullptr != config) SearchClient::Init(config);
 
-    SearchTool::Name2Func_t * target = NULL;
+    SearchTool::Name2Func_t *target{nullptr};
 
-    SearchTool::Name2Func_t * name2func = SearchTool::GetName2Func();
+    SearchTool::Name2Func_t *name2func{SearchTool::GetName2Func()};
 
-    for( int i = 0; i < 100; i++ ) {
-        SearchTool::Name2Func_t * iter = &( name2func[i] );
+    for (int i{0}; 100 > i; ++i) {
+        SearchTool::Name2Func_t *iter = &(name2func[i]);
 
-        if( NULL == iter->name ) break;
+        if (nullptr == iter->name) break;
 
-        if( 0 == strcasecmp( func, iter->name ) ) {
+        if (0 == strcasecmp(func, iter->name)) {
             target = iter;
             break;
         }
     }
 
-    if( NULL == target ) showUsage( argv[0] );
+    if (nullptr == target) ShowUsage(argv[0]);
 
-    OptMap opt_map( target->opt_string );
+    OptMap opt_map(target->opt_string);
 
-    if( ! opt_map.Parse( argc, argv ) ) showUsage( argv[0] );
+    if (!opt_map.Parse(argc, argv)) ShowUsage(argv[0]);
 
     SearchTool::ToolFunc_t targefunc = target->func;
 
     SearchToolImpl tool;
 
-    if( 0 != ( tool.*targefunc ) ( opt_map ) ) showUsage( argv[0] );
+    if (0 != (tool.*targefunc)(opt_map)) ShowUsage(argv[0]);
 
     return 0;
 }
+

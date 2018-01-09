@@ -2,37 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source files">
-      <UniqueIdentifier>{b9b75192-15f3-44f1-b78e-e1593d05b731}</UniqueIdentifier>
+      <UniqueIdentifier>{f1844137-4d50-4fdf-895c-2e1c2451d1d9}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Header files">
-      <UniqueIdentifier>{2f9a0b4c-6b0c-4547-9087-276080ddb22b}</UniqueIdentifier>
+      <UniqueIdentifier>{bcb3604c-bbe3-43bc-a542-7251d537c427}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
     <Filter Include="Resource files">
-      <UniqueIdentifier>{fd0769de-b1fe-4a0a-80da-012b7f92e7a3}</UniqueIdentifier>
+      <UniqueIdentifier>{b62a35c7-126f-4bf7-b69c-f9cda8077477}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="VisualGDB settings">
-      <UniqueIdentifier>{55e48e58-7562-453a-ac32-962fc0dfb040}</UniqueIdentifier>
+      <UniqueIdentifier>{0244002a-40b7-4cbf-a401-2fe0f13f4385}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="phxrpc_search_dispatcher.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="phxrpc_search_service.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="phxrpc_search_stub.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="phxrpc_search_tool.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
-    <ClCompile Include="search.pb.cc">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="search_client.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -51,6 +36,41 @@
     <ClCompile Include="search_tool_main.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <None Include="sample-Debug.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="sample-Release.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <ClCompile Include="phxrpc_search_dispatcher.cpp">
+      <Filter>Header files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_search_service.cpp">
+      <Filter>Header files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_search_stub.cpp">
+      <Filter>Header files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_search_tool.cpp">
+      <Filter>Header files</Filter>
+    </ClCompile>
+    <ClCompile Include="search.pb.cc">
+      <Filter>Header files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="search_client.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="search_server_config.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="search_service_impl.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="search_tool_impl.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
     <ClInclude Include="phxrpc_search_dispatcher.h">
       <Filter>Header files</Filter>
     </ClInclude>
@@ -66,23 +86,19 @@
     <ClInclude Include="search.pb.h">
       <Filter>Header files</Filter>
     </ClInclude>
-    <ClInclude Include="search_client.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="search_server_config.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="search_service_impl.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="search_tool_impl.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <None Include="sample-Debug.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile">
+      <Filter>Source files</Filter>
     </None>
-    <None Include="sample-Release.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
+    <None Include="search.proto">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="search_client.conf">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="search_server.conf">
+      <Filter>Source files</Filter>
     </None>
   </ItemGroup>
 </Project>

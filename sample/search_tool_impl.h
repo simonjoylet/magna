@@ -6,24 +6,30 @@
 
 #pragma once
 
-#include <stdio.h>
-
 #include "phxrpc_search_tool.h"
+
+#include <cstdio>
+
+
 namespace phxrpc {
-    class OptMap;
+
+
+class OptMap;
+
+
 }
 
-class SearchToolImpl : public SearchTool
-{
-public:
+
+class SearchToolImpl : public SearchTool {
+  public:
     SearchToolImpl();
     virtual ~SearchToolImpl();
 
-    virtual int PHXEcho( phxrpc::OptMap & opt_map );
-
-    virtual int Search( phxrpc::OptMap & opt_map );
-
-    virtual int Notify( phxrpc::OptMap & opt_map );
-
+    virtual int PhxMqttConnect(phxrpc::OptMap &opt_map) override;
+    virtual int PhxMqttPublish(phxrpc::OptMap &opt_map) override;
+    virtual int PhxMqttDisconnect(phxrpc::OptMap &opt_map) override;
+    virtual int PhxEcho(phxrpc::OptMap &opt_map) override;
+    virtual int Search(phxrpc::OptMap &opt_map) override;
+    virtual int Notify(phxrpc::OptMap &opt_map) override;
 };
 

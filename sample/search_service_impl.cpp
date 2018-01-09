@@ -5,36 +5,44 @@
 */
 
 #include "search_service_impl.h"
+
 #include "search_server_config.h"
 #include "search.pb.h"
 #include "phxrpc/file.h"
 
-SearchServiceImpl :: SearchServiceImpl(ServiceArgs_t & app_args)
-    : args_(app_args)
-{
+
+SearchServiceImpl::SearchServiceImpl(ServiceArgs_t &app_args)
+    : args_(app_args) {
 }
 
-SearchServiceImpl :: ~SearchServiceImpl()
-{
+SearchServiceImpl::~SearchServiceImpl() {
 }
 
-int SearchServiceImpl :: PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp )
-{
-    resp->set_value( req.value() );
+int SearchServiceImpl::PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp) {
     return 0;
 }
 
-int SearchServiceImpl :: Search( const search::SearchRequest & req,
-        search::SearchResult * resp )
-{
+int SearchServiceImpl::PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp) {
+    // TODO: process req.content()
+
     return -1;
 }
 
-int SearchServiceImpl :: Notify( const google::protobuf::StringValue & req,
-        google::protobuf::Empty * resp )
-{
+int SearchServiceImpl::PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req) {
+    return 0;
+}
+
+int SearchServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp) {
+    resp->set_value(req.value());
+
+    return 0;
+}
+
+int SearchServiceImpl::Search(const search::SearchRequest &req, search::SearchResult *resp) {
     return -1;
 }
 
+int SearchServiceImpl::Notify(const google::protobuf::StringValue &req, google::protobuf::Empty *resp) {
+    return -1;
+}
 

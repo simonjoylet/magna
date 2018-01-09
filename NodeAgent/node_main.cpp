@@ -8,81 +8,86 @@
 #include <memory>
 #include <unistd.h>
 #include <signal.h>
+
 #include "phxrpc_node_dispatcher.h"
 #include "node_service_impl.h"
 #include "node_server_config.h"
 
 #include "phxrpc/rpc.h"
-#include "phxrpc/http.h"
+#include "phxrpc/msg.h"
 #include "phxrpc/file.h"
+
 
 using namespace std;
 
-void HttpDispatch( const phxrpc::HttpRequest & request, phxrpc::HttpResponse * response, phxrpc::DispatcherArgs_t * args ) {
 
-    ServiceArgs_t * service_args = (ServiceArgs_t *)(args->service_args);
+void Dispatch(const phxrpc::BaseRequest *request,
+              phxrpc::BaseResponse *response,
+              phxrpc::DispatcherArgs_t *args) {
+    ServiceArgs_t *service_args = (ServiceArgs_t *)(args->service_args);
 
-    NodeServiceImpl service( * service_args );
-    NodeDispatcher dispatcher( service, args );
+    NodeServiceImpl service(*service_args);
+    NodeDispatcher dispatcher(service, args);
 
-    phxrpc::HttpDispatcher<NodeDispatcher> http_dispatcher(
-            dispatcher, NodeDispatcher::GetURIFuncMap() );
-    if( ! http_dispatcher.Dispatch( request, response ) ) {
-        response->SetStatusCode( 404 );
-        response->SetReasonPhrase( "Not Found" );
+    phxrpc::BaseDispatcher<NodeDispatcher> base_dispatcher(
+            dispatcher, NodeDispatcher::GetMqttFuncMap(),
+            NodeDispatcher::GetURIFuncMap());
+    if (!base_dispatcher.Dispatch(request, response)) {
+        response->DispatchErr();
     }
 }
 
-void showUsage( const char * program ) {
-    printf( "\n" );
-    printf( "Usage: %s [-c <config>] [-d] [-l <log level>] [-v]\n", program );
-    printf( "\n" );
+void ShowUsage(const char *program) {
+    printf("\n");
+    printf("Usage: %s [-c <config>] [-d] [-l <log level>] [-v]\n", program);
+    printf("\n");
 
-    exit( 0 );
+    exit(0);
 }
 
-int main( int argc, char * argv[] ) {
-    const char * config_file = NULL;
-    bool daemonize = false;;
-    int log_level = -1;
-    extern char *optarg ;
-    int c ;
-    while( ( c = getopt( argc, argv, "c:vl:d" ) ) != EOF ) {
-        switch ( c ) {
+int main(int argc, char **argv) {
+    const char *config_file{nullptr};
+    bool daemonize{false};
+    int log_level{-1};
+    extern char *optarg;
+    int c;
+    while (EOF != (c = getopt(argc, argv, "c:vl:d"))) {
+        switch (c) {
             case 'c' : config_file = optarg; break;
             case 'd' : daemonize = true; break;
-            case 'l' : log_level = atoi( optarg ); break;
+            case 'l' : log_level = atoi(optarg); break;
 
             case 'v' :
-            default: showUsage( argv[ 0 ] ); break;
+            default: ShowUsage(argv[0]); break;
         }
     }
 
-    if( daemonize ) phxrpc::ServerUtils::Daemonize();
+    if (daemonize) phxrpc::ServerUtils::Daemonize();
 
     assert(signal(SIGPIPE, SIG_IGN) != SIG_ERR);
 
     //set customize log/monitor
     //phxrpc::setlog(openlog, closelog, vlog);
-    //phxrpc::MonitorFactory::SetFactory( new YourSelfsMonitorFactory() );
+    //phxrpc::MonitorFactory::SetFactory(new YourSelfsMonitorFactory());
 
-    if( NULL == config_file ) showUsage( argv[0] );
+    if (nullptr == config_file) ShowUsage(argv[0]);
 
     NodeServerConfig config;
-    if( ! config.Read( config_file ) ) showUsage( argv[0] );
+    if (!config.Read(config_file)) ShowUsage(argv[0]);
 
-    if( log_level > 0 ) config.GetHshaServerConfig().SetLogLevel( log_level );
+    if (log_level > 0) config.GetHshaServerConfig().SetLogLevel(log_level);
 
-    phxrpc::openlog( argv[0], config.GetHshaServerConfig().GetLogDir(),
-            config.GetHshaServerConfig().GetLogLevel() );
+    phxrpc::openlog(argv[0], config.GetHshaServerConfig().GetLogDir(),
+            config.GetHshaServerConfig().GetLogLevel());
 
     ServiceArgs_t service_args;
     service_args.config = &config;
 
-    phxrpc::HshaServer server( config.GetHshaServerConfig(), HttpDispatch, &service_args );
+    phxrpc::HshaServer server(config.GetHshaServerConfig(), Dispatch, &service_args);
     server.RunForever();
 
     phxrpc::closelog();
 
     return 0;
 }
+

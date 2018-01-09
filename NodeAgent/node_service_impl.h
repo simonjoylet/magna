@@ -9,29 +9,30 @@
 #include "node.pb.h"
 #include "phxrpc_node_service.h"
 
+
 class NodeServerConfig;
 
-typedef struct tagServiceArgs {
-    NodeServerConfig * config;
-    //You can add other arguments here and initiate in main().
-}ServiceArgs_t;
 
-class NodeServiceImpl : public NodeService
-{
-public:
-    NodeServiceImpl( ServiceArgs_t & app_args );
+typedef struct tagServiceArgs {
+    NodeServerConfig *config;
+    //You can add other arguments here and initiate in main().
+} ServiceArgs_t;
+
+
+class NodeServiceImpl : public NodeService {
+  public:
+    NodeServiceImpl(ServiceArgs_t &app_args);
     virtual ~NodeServiceImpl();
 
-    virtual int PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp );
+    virtual int PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp) override;
+    virtual int PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp) override;
+    virtual int PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req) override;
 
-    virtual int StartComponent( const magna::StartComponentRequest & req,
-        magna::StartComponentResponse * resp );
+    virtual int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp) override;
+    virtual int StartComponent(const magna::StartComponentRequest &req, magna::StartComponentResponse *resp) override;
+    virtual int StopComponent(const magna::StopComponentRequest &req, magna::StopComponentResponse *resp) override;
 
-    virtual int StopComponent( const magna::StopComponentRequest & req,
-        magna::StopComponentResponse * resp );
-
-private:
-    ServiceArgs_t & args_;
+  private:
+    ServiceArgs_t &args_;
 };
 

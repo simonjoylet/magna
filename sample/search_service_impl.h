@@ -9,29 +9,30 @@
 #include "search.pb.h"
 #include "phxrpc_search_service.h"
 
+
 class SearchServerConfig;
 
-typedef struct tagServiceArgs {
-    SearchServerConfig * config;
-    //You can add other arguments here and initiate in main().
-}ServiceArgs_t;
 
-class SearchServiceImpl : public SearchService
-{
-public:
-    SearchServiceImpl( ServiceArgs_t & app_args );
+typedef struct tagServiceArgs {
+    SearchServerConfig *config;
+    //You can add other arguments here and initiate in main().
+} ServiceArgs_t;
+
+
+class SearchServiceImpl : public SearchService {
+  public:
+    SearchServiceImpl(ServiceArgs_t &app_args);
     virtual ~SearchServiceImpl();
 
-    virtual int PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp );
+    virtual int PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp) override;
+    virtual int PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp) override;
+    virtual int PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req) override;
 
-    virtual int Search( const search::SearchRequest & req,
-        search::SearchResult * resp );
+    virtual int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp) override;
+    virtual int Search(const search::SearchRequest &req, search::SearchResult *resp) override;
+    virtual int Notify(const google::protobuf::StringValue &req, google::protobuf::Empty *resp) override;
 
-    virtual int Notify( const google::protobuf::StringValue & req,
-        google::protobuf::Empty * resp );
-
-private:
-    ServiceArgs_t & args_;
+  private:
+    ServiceArgs_t &args_;
 };
 

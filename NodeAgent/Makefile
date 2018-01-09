@@ -8,19 +8,19 @@ include /usr/local/etc/phxrpc/phxrpc.mk
 
 LDFLAGS := -L$(PHXRPC_ROOT)/lib -lphxrpc $(LDFLAGS)
 
-#choose to use boost for network
+# choose to use boost for network
 #LDFLAGS := $(PLUGIN_BOOST_LDFLAGS) $(LDFLAGS)
 
 SVR_OBJS = node.pb.o \
-		   node_service_impl.o \
-		   phxrpc_node_service.o \
-		   phxrpc_node_dispatcher.o \
-		   node_server_config.o \
-		   node_main.o
+		node_service_impl.o \
+		phxrpc_node_service.o \
+		phxrpc_node_dispatcher.o \
+		node_server_config.o \
+		node_main.o
 
 CLI_OBJS = node.pb.o \
-		   node_client.o \
-		   phxrpc_node_stub.o
+		node_client.o \
+		phxrpc_node_stub.o
 
 TARGETS = libnode_client.a node_main node_tool_main
 
@@ -50,7 +50,7 @@ node_client.cpp: phxrpc_node_stub.h
 node_client.o: phxrpc_node_stub.h
 
 phxrpc_node_stub.h: node.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2client $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2client $(PBFLAGS) -f $^ -d . -p mqtt
 
 ########## service ##########
 
@@ -62,7 +62,7 @@ phxrpc_node_dispatcher.cpp: phxrpc_node_service.h
 phxrpc_node_dispatcher.o: phxrpc_node_service.h
 
 phxrpc_node_service.h: node.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -p mqtt
 
 ########## tool ##########
 
@@ -74,7 +74,7 @@ node_tool_main.cpp: phxrpc_node_tool.h
 node_tool_main.o: phxrpc_node_tool.h
 
 phxrpc_node_tool.h: node.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2tool $(PBFLAGS) -f $^ -d .
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2tool $(PBFLAGS) -f $^ -d . -p mqtt
 
 clean:
 	@($(RM) $(TARGETS))

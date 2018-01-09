@@ -4,30 +4,29 @@
 
 */
 
-#include "search.pb.h"
 #include "search_server_config.h"
 
-SearchServerConfig :: SearchServerConfig()
-{
+#include "search.pb.h"
+
+
+SearchServerConfig::SearchServerConfig() {
 }
 
-SearchServerConfig :: ~SearchServerConfig()
-{
+SearchServerConfig::~SearchServerConfig() {
 }
 
-bool SearchServerConfig :: Read( const char * config_file )
-{
-    bool ret = ep_server_config_.Read( config_file );
+bool SearchServerConfig::Read(const char *config_file) {
+    bool ret{ep_server_config_.Read(config_file)};
 
-    if ( strlen( ep_server_config_.GetPackageName() ) == 0 ) {
-        ep_server_config_.SetPackageName( 
-search::SearchRequest::default_instance().GetDescriptor()->file()->package().c_str() );
+    if (0 == strlen(ep_server_config_.GetPackageName())) {
+        ep_server_config_.SetPackageName(
+search::SearchRequest::default_instance().GetDescriptor()->file()->package().c_str());
     }
 
     return ret;
 }
 
-phxrpc::HshaServerConfig & SearchServerConfig :: GetHshaServerConfig()
-{
+phxrpc::HshaServerConfig &SearchServerConfig::GetHshaServerConfig() {
     return ep_server_config_;
 }
+

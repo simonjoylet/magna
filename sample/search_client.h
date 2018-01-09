@@ -9,28 +9,23 @@
 #include "search.pb.h"
 #include "phxrpc/rpc.h"
 
-class SearchClient
-{
-public:
-    static bool Init( const char * config_file );
 
-    static const char * GetPackageName();
+class SearchClient {
+  public:
+    static bool Init(const char *config_file);
 
-public:
+    static const char *GetPackageName();
+
     SearchClient();
-    ~SearchClient();
+    virtual ~SearchClient();
 
-    int PHXEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp );
-
-    int PhxBatchEcho( const google::protobuf::StringValue & req,
-        google::protobuf::StringValue * resp );
-
-    int Search( const search::SearchRequest & req,
-        search::SearchResult * resp );
-
-    int Notify( const google::protobuf::StringValue & req,
-        google::protobuf::Empty * resp );
-
+    int PhxMqttConnect(const phxrpc::MqttConnectPb &req, phxrpc::MqttConnackPb *resp);
+    int PhxMqttPublish(const phxrpc::MqttPublishPb &req, phxrpc::MqttPubackPb *resp);
+    int PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req);
+    int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
+    int PhxBatchEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
+    int Search(const search::SearchRequest &req, search::SearchResult *resp);
+    int Notify(const google::protobuf::StringValue &req, google::protobuf::Empty *resp);
 
 };
+
