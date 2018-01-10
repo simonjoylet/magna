@@ -83,8 +83,8 @@ const char * PHXRPC_CLIENT_CPP_TEMPLATE =
 #include "phxrpc/rpc.h"
 
 
-static phxrpc::ClientConfig global_$ClientClassLower$_config_;
-static phxrpc::ClientMonitorPtr global_$ClientClassLower$_monitor_;
+phxrpc::ClientConfig global_$ClientClassLower$_config_;
+phxrpc::ClientMonitorPtr global_$ClientClassLower$_monitor_;
 
 
 bool $ClientClass$::Init(const char *config_file) {
@@ -135,8 +135,8 @@ const char * PHXRPC_UTHREAD_CLIENT_CPP_TEMPLATE =
 #include "phxrpc/rpc.h"
 
 
-static phxrpc::ClientConfig global_$ClientClassLower$_config_;
-static phxrpc::ClientMonitorPtr global_$ClientClassLower$_monitor_;
+phxrpc::ClientConfig global_$ClientClassLower$_config_;
+phxrpc::ClientMonitorPtr global_$ClientClassLower$_monitor_;
 
 
 bool $ClientClass$::Init(const char *config_file) {
