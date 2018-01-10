@@ -50,6 +50,41 @@ ClientMonitorPtr ClientConfig::GetClientMonitor() {
     return client_monitor_;
 }
 
+
+bool ClientConfig::Add(const Endpoint_t & end_point)
+{
+	for (size_t i = 0; i < endpoints_.size(); ++i)
+	{
+		if (strcmp(endpoints_[i].ip, end_point.ip) == 0 && endpoints_[i].port == end_point.port)
+		{
+			return false;
+		}
+	}
+	endpoints_.push_back(end_point);
+	return true;
+}
+
+bool ClientConfig::Remove(const Endpoint_t & end_point)
+{
+	for (size_t i = 0; i < endpoints_.size(); ++i)
+	{
+		if (strcmp(endpoints_[i].ip, end_point.ip) == 0 && endpoints_[i].port == end_point.port)
+		{
+			endpoints_.erase(endpoints_.begin() + i);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ClientConfig::Init(int connect_timeout_ms, int socket_timeout_ms, const char * package_name)
+{
+	connect_timeout_ms_ = connect_timeout_ms;
+	socket_timeout_ms_ = socket_timeout_ms;
+	snprintf(package_name_, sizeof(package_name_), "%s", package_name != nullptr ? package_name : "");
+	return true;
+}
+
 bool ClientConfig::Read(const char *config_file) {
     Config config;
     if (!config.InitConfig(config_file)) {

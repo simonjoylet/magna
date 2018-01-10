@@ -59,6 +59,12 @@ class ClientConfig {
 
     ClientMonitorPtr GetClientMonitor();
 
+	bool Add(const Endpoint_t & end_point);
+
+	bool Remove(const Endpoint_t & end_point);
+
+	bool Init(int connect_timeout_ms, int socket_timeout_ms, const char * package_name);
+
   private:
     std::vector<Endpoint_t> endpoints_;
 
