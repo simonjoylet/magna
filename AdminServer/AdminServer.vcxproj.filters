@@ -16,6 +16,9 @@
       <UniqueIdentifier>{e48677e6-1fb5-4aac-8f0c-d7e6c77e13aa}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Client files">
+      <UniqueIdentifier>{55bbb9e3-e5ea-436b-8cd4-5e972115560e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="admin_main.cpp">
@@ -51,6 +54,15 @@
     <ClCompile Include="AdminData.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="admin_client.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin_tool_impl.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="admin_tool_main.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="admin_server_config.h">
@@ -76,6 +88,12 @@
     </ClInclude>
     <ClInclude Include="AdminData.h">
       <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="admin_client.h">
+      <Filter>Client files</Filter>
+    </ClInclude>
+    <ClInclude Include="admin_tool_impl.h">
+      <Filter>Client files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

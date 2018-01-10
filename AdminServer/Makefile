@@ -17,7 +17,7 @@ SVR_OBJS = admin.pb.o \
 		   phxrpc_admin_dispatcher.o \
 		   admin_server_config.o \
 		   admin_main.o \
-		   AdminData.o
+		   AdminData.o 
 
 CLI_OBJS = admin.pb.o \
 		admin_client.o \
@@ -28,7 +28,7 @@ TARGETS = libadmin_client.a admin_main admin_tool_main
 all: $(TARGETS)
 
 admin_main: $(SVR_OBJS)
-	$(LINKER) $^ $(LDFLAGS) -o $@
+	$(LINKER) $^ -L/home/simon/magna/NodeAgent/ -lnode_client $(LDFLAGS) -o $@
 
 libadmin_client.a: $(CLI_OBJS)
 	$(AR) $@ $^

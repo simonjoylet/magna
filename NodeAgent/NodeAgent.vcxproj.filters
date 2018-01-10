@@ -16,6 +16,9 @@
       <UniqueIdentifier>{d08ccd1d-2df5-45d6-9a48-5a344c13b327}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Client files">
+      <UniqueIdentifier>{2752463d-fccc-4827-bc98-5a3780d6b243}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="node_main.cpp">
@@ -54,6 +57,15 @@
     <ClCompile Include="NodeData.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="node_client.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="node_tool_impl.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="node_tool_main.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="node_server_config.h">
@@ -82,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="NodeData.h">
       <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="node_client.h">
+      <Filter>Client files</Filter>
+    </ClInclude>
+    <ClInclude Include="node_tool_impl.h">
+      <Filter>Client files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

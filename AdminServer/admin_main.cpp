@@ -16,7 +16,7 @@
 #include "phxrpc/rpc.h"
 #include "phxrpc/msg.h"
 #include "phxrpc/file.h"
-
+#include "../NodeAgent/node_client.h"
 
 using namespace std;
 
@@ -43,6 +43,17 @@ void ShowUsage(const char *program) {
     printf("\n");
 
     exit(0);
+}
+
+void testEcho()
+{
+	NodeClient nc;
+	google::protobuf::StringValue req;
+	google::protobuf::StringValue resp;
+	req.set_value("Access NodeAgent Success");
+	int ret = nc.PhxEcho(req, &resp);
+	printf("NodeClient.PhxEcho return %d\n", ret);
+	printf("resp: {\n%s}\n", resp.DebugString().c_str());
 }
 
 int main(int argc, char **argv) {
@@ -79,6 +90,11 @@ int main(int argc, char **argv) {
 
     phxrpc::openlog(argv[0], config.GetHshaServerConfig().GetLogDir(),
             config.GetHshaServerConfig().GetLogLevel());
+
+	// test Echo of NodeAgent
+	NodeClient::Init("../NodeAgent/node_client.conf");
+	testEcho();
+	
 
     ServiceArgs_t service_args;
     service_args.config = &config;

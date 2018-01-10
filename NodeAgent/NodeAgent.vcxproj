@@ -75,9 +75,12 @@
     <ClCompile Include="HeatbeatThread.cpp" />
     <ClCompile Include="node.pb.cc" />
     <ClCompile Include="NodeData.cpp" />
+    <ClCompile Include="node_client.cpp" />
     <ClCompile Include="node_main.cpp" />
     <ClCompile Include="node_server_config.cpp" />
     <ClCompile Include="node_service_impl.cpp" />
+    <ClCompile Include="node_tool_impl.cpp" />
+    <ClCompile Include="node_tool_main.cpp" />
     <ClCompile Include="phxrpc_node_dispatcher.cpp" />
     <ClCompile Include="phxrpc_node_service.cpp" />
     <ClCompile Include="phxrpc_node_stub.cpp" />
@@ -85,8 +88,10 @@
     <ClInclude Include="HeatbeatThread.h" />
     <ClInclude Include="node.pb.h" />
     <ClInclude Include="NodeData.h" />
+    <ClInclude Include="node_client.h" />
     <ClInclude Include="node_server_config.h" />
     <ClInclude Include="node_service_impl.h" />
+    <ClInclude Include="node_tool_impl.h" />
     <ClInclude Include="phxrpc_node_dispatcher.h" />
     <ClInclude Include="phxrpc_node_service.h" />
     <ClInclude Include="phxrpc_node_stub.h" />
