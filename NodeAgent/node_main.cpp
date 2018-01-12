@@ -16,7 +16,7 @@
 #include "phxrpc/rpc.h"
 #include "phxrpc/msg.h"
 #include "phxrpc/file.h"
-
+#include "../AdminServer/admin_client.h"
 
 using namespace std;
 
@@ -44,6 +44,19 @@ void ShowUsage(const char *program) {
 
     exit(0);
 }
+
+bool testAdminEcho()
+{
+	AdminClient ac;
+	google::protobuf::StringValue req;
+	google::protobuf::StringValue resp;
+	req.set_value("Access AdminServer Success");
+	int ret = ac.PhxEcho(req, &resp);
+	printf("AdminServer.PhxEcho return %d\n", ret);
+	printf("resp: {\n%s}\n", resp.DebugString().c_str());
+	return ret == 0;
+}
+
 
 int main(int argc, char **argv) {
     const char *config_file{nullptr};
@@ -79,6 +92,21 @@ int main(int argc, char **argv) {
 
     phxrpc::openlog(argv[0], config.GetHshaServerConfig().GetLogDir(),
             config.GetHshaServerConfig().GetLogLevel());
+
+	AdminClient::Init("../AdminServer/admin_client.conf");
+	bool adminOK = testAdminEcho();
+	if (adminOK)
+	{
+		AdminClient ac;
+		magna::RegisterNodeRequest req;
+		magna::RegisterNodeResponse rsp;
+		req.mutable_addr()->set_ip("127.0.0.1");
+		req.mutable_addr()->set_port(16161);
+		int ret = ac.RegisterNode(req, &rsp);
+		printf("AdminServer.RegisterNode return %d\n", ret);
+		printf("resp: {\n%s}\n", rsp.DebugString().c_str());
+	}
+
 
     ServiceArgs_t service_args;
     service_args.config = &config;

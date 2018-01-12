@@ -45,7 +45,7 @@ void ShowUsage(const char *program) {
     exit(0);
 }
 
-void testEcho()
+void testNodeEcho()
 {
 	NodeClient nc;
 	google::protobuf::StringValue req;
@@ -92,8 +92,14 @@ int main(int argc, char **argv) {
             config.GetHshaServerConfig().GetLogLevel());
 
 	// test Echo of NodeAgent
-	NodeClient::Init("../NodeAgent/node_client.conf");
-	testEcho();
+	extern phxrpc::ClientConfig global_nodeclient_config_;
+	global_nodeclient_config_.Init(1000, 2000, "magna");
+	phxrpc::Endpoint_t end_point;
+	snprintf(end_point.ip, sizeof(end_point.ip), "%s", "127.0.0.1");
+	end_point.port = 16161;
+	global_nodeclient_config_.Add(end_point);
+	testNodeEcho();
+	global_nodeclient_config_.Remove(end_point);
 	
 
     ServiceArgs_t service_args;

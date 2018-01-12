@@ -17,15 +17,18 @@ struct InetAddress
 {
 	string ip;
 	int32 port;
-	InetAddress(string ip, int32 port);
+	InetAddress();
+	InetAddress(string _ip, int32 _port);
 	bool operator<(const InetAddress &);
 };
 
-struct NodeAddr
+struct NodeInfo
 {
 	InetAddress addr;
-	int mips;			// cpu处理能力，百万指令每秒
+	int32 mips;			// cpu处理能力，百万指令每秒
 	int32 heatbeat;		// 心跳计数，默认为0
+	NodeInfo()
+		:mips(0), heatbeat(0){}
 };
 
 
@@ -33,9 +36,10 @@ struct NodeStatus
 {
 	float cpuload;
 	map<string, int32> netrtt;
+	NodeStatus() : cpuload(0){}
 };
 
-struct ServiceAddr
+struct ServiceInfo
 {
 	int32 id;
 	string name;
@@ -57,13 +61,13 @@ public:
 	static AdminData * GetInstance();
 
 	// 注册的节点
-	map<string/*ip*/, localdata::NodeAddr> m_nodeList;
+	map<string/*ip*/, localdata::NodeInfo> m_nodeList;
 
 	// 节点的状态
 	map<string/*ip*/, localdata::NodeStatus> m_nodeStatus;
 
 	// 注册的服务
-	map<int32/*id*/, localdata::ServiceAddr> m_serviceList;
+	map<int32/*id*/, localdata::ServiceInfo> m_serviceList;
 
 	// 服务的状态
 	map<int32/*id*/, localdata::ServiceStatus> m_serviceStatus;

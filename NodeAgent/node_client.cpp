@@ -16,8 +16,8 @@
 #include "phxrpc/rpc.h"
 
 
-static phxrpc::ClientConfig global_nodeclient_config_;
-static phxrpc::ClientMonitorPtr global_nodeclient_monitor_;
+phxrpc::ClientConfig global_nodeclient_config_;
+phxrpc::ClientMonitorPtr global_nodeclient_monitor_;
 
 
 bool NodeClient::Init(const char *config_file) {

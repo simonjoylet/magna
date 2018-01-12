@@ -28,7 +28,7 @@ TARGETS = libadmin_client.a admin_main admin_tool_main
 all: $(TARGETS)
 
 admin_main: $(SVR_OBJS)
-	$(LINKER) $^ -L/home/simon/magna/NodeAgent/ -lnode_client $(LDFLAGS) -o $@
+	$(LINKER) $^ -L../NodeAgent/ -lnode_client $(LDFLAGS) -o $@
 
 libadmin_client.a: $(CLI_OBJS)
 	$(AR) $@ $^

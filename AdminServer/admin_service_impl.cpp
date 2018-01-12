@@ -9,6 +9,7 @@
 #include "admin_server_config.h"
 #include "admin.pb.h"
 #include "phxrpc/file.h"
+#include "AdminData.h"
 
 
 AdminServiceImpl::AdminServiceImpl(ServiceArgs_t &app_args)
@@ -39,7 +40,14 @@ int AdminServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::
 }
 
 int AdminServiceImpl::RegisterNode(const magna::RegisterNodeRequest &req, magna::RegisterNodeResponse *resp) {
-    return -1;
+	localdata::NodeInfo nodeaddr;
+	nodeaddr.addr.ip = req.addr().ip();
+	nodeaddr.addr.port = req.addr().port();
+	nodeaddr.mips = req.mips();
+	AdminData::GetInstance()->m_nodeList.insert(make_pair(req.addr().ip(), nodeaddr));
+	resp->set_ack(true);
+	resp->set_msg("Register success");
+    return 0;
 }
 
 int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp) {

@@ -16,8 +16,8 @@
 #include "phxrpc/rpc.h"
 
 
-static phxrpc::ClientConfig global_adminclient_config_;
-static phxrpc::ClientMonitorPtr global_adminclient_monitor_;
+phxrpc::ClientConfig global_adminclient_config_;
+phxrpc::ClientMonitorPtr global_adminclient_monitor_;
 
 
 bool AdminClient::Init(const char *config_file) {
