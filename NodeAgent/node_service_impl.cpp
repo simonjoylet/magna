@@ -9,7 +9,8 @@
 #include "node_server_config.h"
 #include "node.pb.h"
 #include "phxrpc/file.h"
-
+#include <sys/types.h>
+#include <errno.h>
 
 NodeServiceImpl::NodeServiceImpl(ServiceArgs_t &app_args)
     : args_(app_args) {
@@ -39,7 +40,27 @@ int NodeServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::p
 }
 
 int NodeServiceImpl::StartComponent(const magna::StartComponentRequest &req, magna::StartComponentResponse *resp) {
-    return -1;
+	pid_t pid = vfork();
+	switch (pid)
+	{
+	case -1:
+		printf("\n!!! fork failed\n");
+		break;
+	case 0:
+		execlp(req.path().c_str(), req.param().c_str(), NULL);
+		if (errno) printf("%d", errno);
+		_exit(0);
+		break;
+	default:
+		printf("\ncreate process: %d\n", pid);
+		break;
+	}
+
+	resp->set_success(true);
+	resp->set_ip("223.3.87.0"); // TODO
+	resp->set_pid(pid);
+
+    return 0;
 }
 
 int NodeServiceImpl::StopComponent(const magna::StopComponentRequest &req, magna::StopComponentResponse *resp) {

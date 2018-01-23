@@ -44,14 +44,14 @@ void ShowUsage(const char *program) {
 
     exit(0);
 }
-
+NodeClient * g_nodeProxy;
 void testNodeEcho()
 {
-	NodeClient nc;
+	g_nodeProxy = new NodeClient;
 	google::protobuf::StringValue req;
 	google::protobuf::StringValue resp;
 	req.set_value("Access NodeAgent Success");
-	int ret = nc.PhxEcho(req, &resp);
+	int ret = g_nodeProxy->PhxEcho(req, &resp);
 	printf("NodeClient.PhxEcho return %d\n", ret);
 	printf("resp: {\n%s}\n", resp.DebugString().c_str());
 }
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
     phxrpc::openlog(argv[0], config.GetHshaServerConfig().GetLogDir(),
             config.GetHshaServerConfig().GetLogLevel());
 
-	// test Echo of NodeAgent
+	// test Echo of NodeAgent // TODO
 	extern phxrpc::ClientConfig global_nodeclient_config_;
 	global_nodeclient_config_.Init(1000, 2000, "magna");
 	phxrpc::Endpoint_t end_point;
@@ -99,7 +99,12 @@ int main(int argc, char **argv) {
 	end_point.port = 16161;
 	global_nodeclient_config_.Add(end_point);
 	testNodeEcho();
-	global_nodeclient_config_.Remove(end_point);
+	magna::StartComponentRequest req;
+	magna::StartComponentResponse rsp;
+	req.set_path("../../test/test");
+	req.set_param("");
+	g_nodeProxy->StartComponent(req, &rsp);
+	//global_nodeclient_config_.Remove(end_point);
 	
 
     ServiceArgs_t service_args;
