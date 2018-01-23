@@ -51,7 +51,10 @@ int AdminServiceImpl::RegisterNode(const magna::RegisterNodeRequest &req, magna:
 }
 
 int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp) {
-    return -1;
+	printf("\nNode heatbeat received. req: {%s}\n", req.DebugString().c_str());
+	resp->set_ack(true);
+	resp->set_msg("success");
+    return 0;
 }
 
 int AdminServiceImpl::RegisterService(const magna::RegisterServiceRequest &req, magna::RegisterServiceResponse *resp) {

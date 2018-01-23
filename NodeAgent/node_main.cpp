@@ -17,8 +17,11 @@
 #include "phxrpc/msg.h"
 #include "phxrpc/file.h"
 #include "../AdminServer/admin_client.h"
+#include "HeartbeatThread.h"
 
 using namespace std;
+
+AdminClient * g_adminProxy;
 
 
 void Dispatch(const phxrpc::BaseRequest *request,
@@ -47,11 +50,12 @@ void ShowUsage(const char *program) {
 
 bool testAdminEcho()
 {
-	AdminClient ac;
+	g_adminProxy = new AdminClient;
+	//AdminClient ac;
 	google::protobuf::StringValue req;
 	google::protobuf::StringValue resp;
 	req.set_value("Access AdminServer Success");
-	int ret = ac.PhxEcho(req, &resp);
+	int ret = g_adminProxy->PhxEcho(req, &resp);
 	printf("AdminServer.PhxEcho return %d\n", ret);
 	printf("resp: {\n%s}\n", resp.DebugString().c_str());
 	return ret == 0;
@@ -97,16 +101,17 @@ int main(int argc, char **argv) {
 	bool adminOK = testAdminEcho();
 	if (adminOK)
 	{
-		AdminClient ac;
+		//AdminClient ac;
 		magna::RegisterNodeRequest req;
 		magna::RegisterNodeResponse rsp;
 		req.mutable_addr()->set_ip("127.0.0.1");
 		req.mutable_addr()->set_port(16161);
-		int ret = ac.RegisterNode(req, &rsp);
+		int ret = g_adminProxy->RegisterNode(req, &rsp);
 		printf("AdminServer.RegisterNode return %d\n", ret);
 		printf("resp: {\n%s}\n", rsp.DebugString().c_str());
 	}
 
+	int hbRet = HeartbeatThread::GetInstance()->Start();
 
     ServiceArgs_t service_args;
     service_args.config = &config;

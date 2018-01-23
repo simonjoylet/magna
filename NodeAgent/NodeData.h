@@ -6,6 +6,10 @@
 using std::string;
 using std::set;
 
+#include <google/protobuf/stubs/common.h>
+using google::protobuf::int32;
+
+
 class NodeData
 {
 public:
@@ -16,6 +20,8 @@ public:
 
 	// ±¾µØIP
 	string m_ip;
+
+	int32 m_port;
 
 
 private:

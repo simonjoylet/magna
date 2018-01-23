@@ -51,9 +51,6 @@
     <ClCompile Include="phxrpc_node_tool.cpp">
       <Filter>Auto files</Filter>
     </ClCompile>
-    <ClCompile Include="HeatbeatThread.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
     <ClCompile Include="NodeData.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
@@ -65,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="node_tool_main.cpp">
       <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="HeartbeatThread.cpp">
+      <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,9 +89,6 @@
     <ClInclude Include="phxrpc_node_tool.h">
       <Filter>Auto files</Filter>
     </ClInclude>
-    <ClInclude Include="HeatbeatThread.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="NodeData.h">
       <Filter>Source files</Filter>
     </ClInclude>
@@ -100,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="node_tool_impl.h">
       <Filter>Client files</Filter>
+    </ClInclude>
+    <ClInclude Include="HeartbeatThread.h">
+      <Filter>Source files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

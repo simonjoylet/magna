@@ -16,7 +16,9 @@ SVR_OBJS = node.pb.o \
 		phxrpc_node_service.o \
 		phxrpc_node_dispatcher.o \
 		node_server_config.o \
-		node_main.o
+		node_main.o \
+		NodeData.o \
+		HeartbeatThread.o 
 
 CLI_OBJS = node.pb.o \
 		node_client.o \
@@ -60,6 +62,8 @@ node_service_impl.cpp: phxrpc_node_service.h
 node_service_impl.o: phxrpc_node_service.h
 phxrpc_node_dispatcher.cpp: phxrpc_node_service.h
 phxrpc_node_dispatcher.o: phxrpc_node_service.h
+NodeData.o: NodeData.h
+HeartbeatThread.o: HeartbeatThread.h
 
 phxrpc_node_service.h: node.proto
 	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -p mqtt

@@ -9,13 +9,11 @@ public:
 	int Start();
 	int Stop();
 
-	pthread_t m_tid;
-	bool m_shouldrun;
+	pthread_t m_tid = 0;
+	bool m_shouldrun = true;
 private:
 	static HeartbeatThread * m_instance;
-	HeartbeatThread()
-		:m_shouldrun(true), m_tid(0){}
-
+	HeartbeatThread(){}
 	~HeartbeatThread(){}
 };
 

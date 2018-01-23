@@ -1,4 +1,5 @@
-#include "HeatbeatThread.h"
+#include "HeartbeatThread.h"
+#include "NodeData.h"
 
 HeartbeatThread * HeartbeatThread::m_instance = NULL;
 
@@ -21,6 +22,7 @@ int HeartbeatThread::Start()
 int HeartbeatThread::Stop()
 {
 	m_shouldrun = false;
+	return 0;
 }
 
 #include "../AdminServer/admin_client.h"
@@ -34,20 +36,22 @@ void * NodeHeatbeatFunc(void * param)
 	HeartbeatThread * hbThread = HeartbeatThread::GetInstance();
 	NodeData * nodeData = NodeData::GetInstance();
 	printf("\nNode heatbeat thread start running...\n");
-	magna::InetAddress addr;
-	magna::NodeStatus load;
 	magna::NodeHeartbeatRequest req;
 	magna::NodeHeartbeatResponse rsp;
+
+	// test info // TODO
+	req.mutable_addr()->set_ip(nodeData->m_ip);
+	req.mutable_addr()->set_port(nodeData->m_port);
 	while (hbThread->m_shouldrun)
 	{
 		sleep(2);
-		req.set_allocated_addr(&addr);
-		req.set_allocated_load(&load);
+		req.mutable_load()->set_cpu(0.1);
 		int ret = g_adminProxy->NodeHeatbeat(req, &rsp);
 		if (0 == ret)
 		{
 			if (rsp.ack())
 			{
+				printf("\nNode heatbeat ack received\n");
 				// 更新节点数据
 			}
 			else

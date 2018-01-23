@@ -72,7 +72,7 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <ClCompile Include="HeatbeatThread.cpp" />
+    <ClCompile Include="HeartbeatThread.cpp" />
     <ClCompile Include="node.pb.cc" />
     <ClCompile Include="NodeData.cpp" />
     <ClCompile Include="node_client.cpp" />
@@ -85,7 +85,7 @@
     <ClCompile Include="phxrpc_node_service.cpp" />
     <ClCompile Include="phxrpc_node_stub.cpp" />
     <ClCompile Include="phxrpc_node_tool.cpp" />
-    <ClInclude Include="HeatbeatThread.h" />
+    <ClInclude Include="HeartbeatThread.h" />
     <ClInclude Include="node.pb.h" />
     <ClInclude Include="NodeData.h" />
     <ClInclude Include="node_client.h" />
