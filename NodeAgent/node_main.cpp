@@ -18,6 +18,7 @@
 #include "phxrpc/file.h"
 #include "../AdminServer/admin_client.h"
 #include "HeartbeatThread.h"
+#include "NodeData.h"
 
 using namespace std;
 
@@ -90,7 +91,15 @@ int main(int argc, char **argv) {
     if (nullptr == config_file) ShowUsage(argv[0]);
 
     NodeServerConfig config;
-    if (!config.Read(config_file)) ShowUsage(argv[0]);
+	if (!config.Read(config_file))
+	{
+		ShowUsage(argv[0]);
+	}
+	else
+	{
+		NodeData::GetInstance()->Init(config.GetHshaServerConfig().GetBindIP(), config.GetHshaServerConfig().GetPort());
+	}
+	
 
     if (log_level > 0) config.GetHshaServerConfig().SetLogLevel(log_level);
 
@@ -101,14 +110,14 @@ int main(int argc, char **argv) {
 	bool adminOK = testAdminEcho();
 	if (adminOK)
 	{
-		//AdminClient ac;
+		// ×¢²á½Úµã
 		magna::RegisterNodeRequest req;
 		magna::RegisterNodeResponse rsp;
-		req.mutable_addr()->set_ip("127.0.0.1");
-		req.mutable_addr()->set_port(16161);
+		req.mutable_addr()->set_ip(NodeData::GetInstance()->m_ip);
+		req.mutable_addr()->set_port(NodeData::GetInstance()->m_port);
 		int ret = g_adminProxy->RegisterNode(req, &rsp);
 		printf("AdminServer.RegisterNode return %d\n", ret);
-		printf("resp: {\n%s}\n", rsp.DebugString().c_str());
+		printf("resp: \n{\n%s\n}\n", rsp.DebugString().c_str());
 	}
 
 	int hbRet = HeartbeatThread::GetInstance()->Start();

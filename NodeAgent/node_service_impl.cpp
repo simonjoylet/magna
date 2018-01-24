@@ -11,6 +11,8 @@
 #include "phxrpc/file.h"
 #include <sys/types.h>
 #include <errno.h>
+#include <signal.h>
+#include "NodeData.h"
 
 NodeServiceImpl::NodeServiceImpl(ServiceArgs_t &app_args)
     : args_(app_args) {
@@ -48,22 +50,35 @@ int NodeServiceImpl::StartComponent(const magna::StartComponentRequest &req, mag
 		break;
 	case 0:
 		execlp(req.path().c_str(), req.param().c_str(), NULL);
-		if (errno) printf("%d", errno);
+		if (errno) perror("exec failed");
 		_exit(0);
 		break;
 	default:
 		printf("\ncreate process: %d\n", pid);
+		resp->set_success(true);
+		resp->set_ip(NodeData::GetInstance()->m_ip);
+		resp->set_pid(pid);
 		break;
 	}
-
-	resp->set_success(true);
-	resp->set_ip("223.3.87.0"); // TODO
-	resp->set_pid(pid);
-
+	
     return 0;
 }
 
 int NodeServiceImpl::StopComponent(const magna::StopComponentRequest &req, magna::StopComponentResponse *resp) {
-    return -1;
+    
+	pid_t pid = req.pid();
+	int ret = kill(pid, SIGKILL);
+	if (ret)
+	{
+		perror("kill failed");
+		resp->set_success(false);
+	}
+	else
+	{
+		printf("kill %d success\n", pid);
+		resp->set_success(true);
+	}
+	
+	return 0;
 }
 

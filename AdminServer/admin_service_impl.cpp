@@ -10,6 +10,7 @@
 #include "admin.pb.h"
 #include "phxrpc/file.h"
 #include "AdminData.h"
+#include <mutex>
 
 
 AdminServiceImpl::AdminServiceImpl(ServiceArgs_t &app_args)
@@ -40,20 +41,55 @@ int AdminServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::
 }
 
 int AdminServiceImpl::RegisterNode(const magna::RegisterNodeRequest &req, magna::RegisterNodeResponse *resp) {
-	localdata::NodeInfo nodeaddr;
-	nodeaddr.addr.ip = req.addr().ip();
-	nodeaddr.addr.port = req.addr().port();
-	nodeaddr.mips = req.mips();
-	AdminData::GetInstance()->m_nodeList.insert(make_pair(req.addr().ip(), nodeaddr));
+	localdata::NodeInfo nodeInfo;
+	nodeInfo.addr.ip = req.addr().ip();
+	nodeInfo.addr.port = req.addr().port();
+	nodeInfo.mips = req.mips();
+
+	extern phxrpc::ClientConfig global_nodeclient_config_;
+	extern std::mutex * g_nodelist_mutex;
+	phxrpc::Endpoint_t ep;
+	snprintf(ep.ip, sizeof(ep.ip), "%s", nodeInfo.addr.ip.c_str());
+	ep.port = nodeInfo.addr.port;
+
+	g_nodelist_mutex->lock();
+	global_nodeclient_config_.Add(ep);
+	AdminData::GetInstance()->m_nodeList.insert(make_pair(req.addr().ip(), nodeInfo));
+	g_nodelist_mutex->unlock();
+	
 	resp->set_ack(true);
 	resp->set_msg("Register success");
     return 0;
 }
 
 int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp) {
-	printf("\nNode heatbeat received. req: {%s}\n", req.DebugString().c_str());
-	resp->set_ack(true);
-	resp->set_msg("success");
+	map<string, localdata::NodeStatus> & statusList = AdminData::GetInstance()->m_nodeStatus;
+
+	if (statusList.find(req.addr().ip()) != statusList.end())
+	{
+		printf("\nNode not registered: %s\n", req.addr().ip().c_str());
+		resp->set_ack(false);
+		resp->set_msg("Node not found");
+	}
+	else
+	{
+		localdata::NodeStatus & nodeStatus = statusList.find(req.addr().ip())->second;
+		nodeStatus.cpuload = req.load().cpu();
+		auto rtt = req.load().rtt();
+		if (rtt.size() > 0)
+		{
+			nodeStatus.netrtt.clear();
+		}
+		for (auto it = rtt.begin(); it != rtt.end(); ++it)
+		{
+			nodeStatus.netrtt.insert(make_pair(it->first, it->second));
+		}
+		
+		resp->set_ack(true);
+		resp->set_msg("success");
+
+		printf("\nNode status updated: %s cpu: %f\n", req.addr().ip().c_str(), req.load().cpu());
+	}
     return 0;
 }
 

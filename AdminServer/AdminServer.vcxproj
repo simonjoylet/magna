@@ -80,6 +80,7 @@
     <ClCompile Include="admin_service_impl.cpp" />
     <ClCompile Include="admin_tool_impl.cpp" />
     <ClCompile Include="admin_tool_main.cpp" />
+    <ClCompile Include="HbThread.cpp" />
     <ClCompile Include="phxrpc_admin_dispatcher.cpp" />
     <ClCompile Include="phxrpc_admin_service.cpp" />
     <ClCompile Include="phxrpc_admin_stub.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="admin_server_config.h" />
     <ClInclude Include="admin_service_impl.h" />
     <ClInclude Include="admin_tool_impl.h" />
+    <ClInclude Include="HbThread.h" />
     <ClInclude Include="phxrpc_admin_dispatcher.h" />
     <ClInclude Include="phxrpc_admin_service.h" />
     <ClInclude Include="phxrpc_admin_stub.h" />

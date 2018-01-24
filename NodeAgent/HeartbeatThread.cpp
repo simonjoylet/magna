@@ -39,13 +39,12 @@ void * NodeHeatbeatFunc(void * param)
 	magna::NodeHeartbeatRequest req;
 	magna::NodeHeartbeatResponse rsp;
 
-	// test info // TODO
 	req.mutable_addr()->set_ip(nodeData->m_ip);
 	req.mutable_addr()->set_port(nodeData->m_port);
 	while (hbThread->m_shouldrun)
 	{
 		sleep(2);
-		req.mutable_load()->set_cpu(0.1);
+		req.mutable_load()->set_cpu(0.1);// TODO
 		int ret = g_adminProxy->NodeHeatbeat(req, &rsp);
 		if (0 == ret)
 		{

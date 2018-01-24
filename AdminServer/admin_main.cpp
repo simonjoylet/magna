@@ -17,6 +17,8 @@
 #include "phxrpc/msg.h"
 #include "phxrpc/file.h"
 #include "../NodeAgent/node_client.h"
+#include <mutex>
+#include "HbThread.h"
 
 using namespace std;
 
@@ -45,9 +47,9 @@ void ShowUsage(const char *program) {
     exit(0);
 }
 NodeClient * g_nodeProxy;
+std::mutex * g_nodelist_mutex;
 void testNodeEcho()
 {
-	g_nodeProxy = new NodeClient;
 	google::protobuf::StringValue req;
 	google::protobuf::StringValue resp;
 	req.set_value("Access NodeAgent Success");
@@ -84,29 +86,23 @@ int main(int argc, char **argv) {
     if (nullptr == config_file) ShowUsage(argv[0]);
 
     AdminServerConfig config;
-    if (!config.Read(config_file)) ShowUsage(argv[0]);
+	if (!config.Read(config_file)) ShowUsage(argv[0]);
 
     if (log_level > 0) config.GetHshaServerConfig().SetLogLevel(log_level);
 
     phxrpc::openlog(argv[0], config.GetHshaServerConfig().GetLogDir(),
             config.GetHshaServerConfig().GetLogLevel());
 
-	// test Echo of NodeAgent // TODO
+
+	// 初始化全局变量
 	extern phxrpc::ClientConfig global_nodeclient_config_;
 	global_nodeclient_config_.Init(1000, 2000, "magna");
-	phxrpc::Endpoint_t end_point;
-	snprintf(end_point.ip, sizeof(end_point.ip), "%s", "127.0.0.1");
-	end_point.port = 16161;
-	global_nodeclient_config_.Add(end_point);
-	testNodeEcho();
-	magna::StartComponentRequest req;
-	magna::StartComponentResponse rsp;
-	req.set_path("../../test/test");
-	req.set_param("");
-	g_nodeProxy->StartComponent(req, &rsp);
-	//global_nodeclient_config_.Remove(end_point);
-	
+	g_nodeProxy = new NodeClient;
+	g_nodelist_mutex = new std::mutex;
 
+	// 启动心跳线程
+	HbThread::GetInstance()->Start();
+	
     ServiceArgs_t service_args;
     service_args.config = &config;
 

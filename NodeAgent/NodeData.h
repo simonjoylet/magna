@@ -15,6 +15,8 @@ class NodeData
 public:
 	static NodeData * GetInstance();
 
+	int32 Init(string ip, int32 port);
+
 	// 系统所有的Node
 	set<string/*ip*/> m_allNodes;
 

@@ -17,7 +17,8 @@ SVR_OBJS = admin.pb.o \
 		   phxrpc_admin_dispatcher.o \
 		   admin_server_config.o \
 		   admin_main.o \
-		   AdminData.o 
+		   AdminData.o \
+		   HbThread.o
 
 CLI_OBJS = admin.pb.o \
 		admin_client.o \
@@ -61,8 +62,8 @@ admin_service_impl.cpp: phxrpc_admin_service.h
 admin_service_impl.o: phxrpc_admin_service.h
 phxrpc_admin_dispatcher.cpp: phxrpc_admin_service.h
 phxrpc_admin_dispatcher.o: phxrpc_admin_service.h
-AdminData.cpp: AdminData.h
 AdminData.o: AdminData.h
+HbThread.o: HbThread.h
 
 phxrpc_admin_service.h: admin.proto
 	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -p mqtt
