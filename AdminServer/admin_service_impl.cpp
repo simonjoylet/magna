@@ -101,3 +101,7 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
     return -1;
 }
 
+int AdminServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *resp) {
+    return -1;
+}
+
