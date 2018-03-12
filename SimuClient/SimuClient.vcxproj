@@ -41,7 +41,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0004\phxrpc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
@@ -76,5 +76,8 @@
     <None Include="Makefile" />
     <None Include="SimuClient-Debug.vgdbsettings" />
     <None Include="SimuClient-Release.vgdbsettings" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ReqAnalytics.h" />
   </ItemGroup>
 </Project>

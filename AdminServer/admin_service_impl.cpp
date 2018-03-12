@@ -102,6 +102,10 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
 }
 
 int AdminServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *resp) {
-    return -1;
+	
+	resp->set_id(req.id());
+	resp->set_ack(true);
+	usleep(1000);
+	return 0;
 }
 
