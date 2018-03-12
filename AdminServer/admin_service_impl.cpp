@@ -105,7 +105,7 @@ int AdminServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *r
 	
 	resp->set_id(req.id());
 	resp->set_ack(true);
-	usleep(1000);
+	//usleep(1000);
 	return 0;
 }
 
