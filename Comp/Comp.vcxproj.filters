@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{5da08c16-7545-4d0a-bcca-29f616017a8b}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource files">
+      <UniqueIdentifier>{69b08ff7-4dc9-464b-90a6-46f12231ab84}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="VisualGDB settings">
+      <UniqueIdentifier>{0b3d614a-3a0c-4cbb-89db-633311e01581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client files">
+      <UniqueIdentifier>{6798f728-d187-4b49-a144-08f3e0f9df94}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Auto files">
+      <UniqueIdentifier>{8b58e342-3dfd-4fe8-afda-44a61f9f24ad}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="comp_main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_server_config.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClInclude Include="comp_client.h">
+      <Filter>Client files</Filter>
+    </ClInclude>
+    <ClInclude Include="comp_tool_impl.h">
+      <Filter>Client files</Filter>
+    </ClInclude>
+    <None Include="Comp-Debug.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="Comp-Release.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <ClCompile Include="comp_client.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_tool_main.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_tool_impl.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp.pb.cc">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_comp_dispatcher.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_comp_service.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_comp_stub.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_comp_tool.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_service_impl_1.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_service_impl_2.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_service_impl_3.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_service_impl_4.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_service_impl_0.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="comp_server_config.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="comp_service_impl.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="comp.pb.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_comp_dispatcher.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_comp_service.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_comp_stub.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_comp_tool.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="comp_client.conf">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="comp_server.conf">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="comp.proto">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="Makefile">
+      <Filter>Source files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

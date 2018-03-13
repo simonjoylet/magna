@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package magna;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "phxrpc/rpc/phxrpc.proto";
+
+message AppRequest
+{
+	int32 id = 1;
+	string serviceName = 2;
+	int32 clientType = 3;
+}
+
+message AppResponse
+{
+	int32 id = 1;
+	bool ack = 2;
+}
+
+service Comp
+{
+	rpc Handle (AppRequest) returns (AppResponse);
+}

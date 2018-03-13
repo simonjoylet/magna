@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2C225C01-49D4-4809-91A3-C743B6B5AB76}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="VisualGDBPackageDefinitions">
+    <ToolchainID>com.sysprogs.toolchain.default-gcc</ToolchainID>
+  </PropertyGroup>
+  <ImportGroup Label="VisualGDBFindComponents">
+    <Import Project="$(LOCALAPPDATA)\VisualGDB\FindComponents.props" />
+  </ImportGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0005\phxrpc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
+    <NMakeOutput>$(ProjectDir)Comp-Debug.vgdbsettings</NMakeOutput>
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.72.27\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes>$(ProjectDir)\gcc_Release.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Release;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
+    <NMakeOutput>$(ProjectDir)Comp-Release.vgdbsettings</NMakeOutput>
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ItemGroup>
+    <ClCompile Include="comp.pb.cc" />
+    <ClCompile Include="comp_client.cpp" />
+    <ClCompile Include="comp_main.cpp" />
+    <ClCompile Include="comp_server_config.cpp" />
+    <ClCompile Include="comp_service_impl_0.cpp" />
+    <ClCompile Include="comp_service_impl_1.cpp" />
+    <ClCompile Include="comp_service_impl_2.cpp" />
+    <ClCompile Include="comp_service_impl_3.cpp" />
+    <ClCompile Include="comp_service_impl_4.cpp" />
+    <ClCompile Include="comp_tool_impl.cpp" />
+    <ClCompile Include="comp_tool_main.cpp" />
+    <ClCompile Include="phxrpc_comp_dispatcher.cpp" />
+    <ClCompile Include="phxrpc_comp_service.cpp" />
+    <ClCompile Include="phxrpc_comp_stub.cpp" />
+    <ClCompile Include="phxrpc_comp_tool.cpp" />
+    <ClInclude Include="comp.pb.h" />
+    <ClInclude Include="comp_client.h" />
+    <ClInclude Include="comp_server_config.h" />
+    <ClInclude Include="comp_service_impl.h" />
+    <ClInclude Include="comp_tool_impl.h" />
+    <ClInclude Include="phxrpc_comp_dispatcher.h" />
+    <ClInclude Include="phxrpc_comp_service.h" />
+    <ClInclude Include="phxrpc_comp_stub.h" />
+    <ClInclude Include="phxrpc_comp_tool.h" />
+    <None Include="Comp-Debug.vgdbsettings" />
+    <None Include="Comp-Release.vgdbsettings" />
+    <None Include="comp.proto" />
+    <None Include="comp_client.conf" />
+    <None Include="comp_server.conf" />
+    <None Include="Makefile" />
+  </ItemGroup>
+</Project>
