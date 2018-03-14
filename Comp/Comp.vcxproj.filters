@@ -106,13 +106,16 @@
     <None Include="comp_client.conf">
       <Filter>Source files</Filter>
     </None>
-    <None Include="comp_server.conf">
-      <Filter>Source files</Filter>
-    </None>
     <None Include="comp.proto">
       <Filter>Source files</Filter>
     </None>
     <None Include="Makefile">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="comp1.conf">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="comp2.conf">
       <Filter>Source files</Filter>
     </None>
   </ItemGroup>

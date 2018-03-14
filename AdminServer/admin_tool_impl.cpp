@@ -133,3 +133,31 @@ int AdminToolImpl::ServiceHeatbeat(phxrpc::OptMap &opt_map) {
     return ret;
 }
 
+int AdminToolImpl::Handle(phxrpc::OptMap &opt_map) {
+    magna::AppRequest req;
+    magna::AppResponse resp;
+
+    // TODO: fill req from opt_map
+
+    AdminClient client;
+    int ret{client.Handle(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+
+int AdminToolImpl::GetServiceTable(phxrpc::OptMap &opt_map) {
+    magna::ServiceTableRequest req;
+    magna::ServiceTableResponse resp;
+
+    // TODO: fill req from opt_map
+
+    AdminClient client;
+    int ret{client.GetServiceTable(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+

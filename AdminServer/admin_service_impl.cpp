@@ -109,3 +109,22 @@ int AdminServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *r
 	return 0;
 }
 
+int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) {
+	magna::ServiceScale * ss = NULL;
+	// 用两个组件进行测试
+	ss = resp->add_routertable();
+	ss->set_name("Comp1");
+	ss->mutable_ep()->set_ip("223.3.69.5");
+	ss->mutable_ep()->set_port(20001);
+	ss->set_percentage(1);
+	
+	ss = resp->add_routertable();
+	ss->set_name("Comp2");
+	ss->mutable_ep()->set_ip("223.3.69.5");
+	ss->mutable_ep()->set_port(20002);
+	ss->set_percentage(1);
+
+
+	//AdminData::GetInstance()->GetServiceTable();
+    return 0;
+}

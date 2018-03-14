@@ -72,17 +72,21 @@ message ServiceHeartbeatResponse
 	string msg = 2;
 }
 
-message AppRequest
+message ServiceScale
 {
-	int32 id = 1;
-	string serviceName = 2;
-	int32 clientType = 3;
+	string name = 1;
+	InetAddress ep = 2;
+	double percentage = 3;
 }
 
-message AppResponse
+message ServiceTableRequest
 {
-	int32 id = 1;
-	bool ack = 2;
+	
+}
+
+message ServiceTableResponse
+{
+	repeated ServiceScale routerTable = 1;
 }
 
 // 提供部署分布式软件的功能。
@@ -95,7 +99,7 @@ service Admin
 	rpc RegisterService (RegisterServiceRequest) returns (RegisterServiceResponse);
 	rpc ServiceHeatbeat (ServiceHeartbeatRequest) returns (ServiceHeartbeatResponse);
 
-	rpc Handle (AppRequest) returns (AppResponse);
+	rpc GetServiceTable(ServiceTableRequest) returns (ServiceTableResponse);
 }
 
 

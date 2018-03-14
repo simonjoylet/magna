@@ -169,3 +169,19 @@ int CompClient::Handle(const magna::AppRequest &req, magna::AppResponse *resp) {
     return -1;
 }
 
+
+int CompClient::Handle(const phxrpc::Endpoint_t &ep, magna::AppRequest &req, magna::AppResponse *resp)
+{
+	phxrpc::BlockTcpStream socket;
+	bool open_ret = phxrpc::PhxrpcTcpUtils::Open(&socket, ep.ip, ep.port,
+		global_compclient_config_.GetConnectTimeoutMS(), nullptr, 0,
+		*(global_compclient_monitor_.get()));
+	if (open_ret) {
+		socket.SetTimeout(global_compclient_config_.GetSocketTimeoutMS());
+
+		CompStub stub(socket, *(global_compclient_monitor_.get()));
+		return stub.Handle(req, resp);
+	}
+
+	return -1;
+}

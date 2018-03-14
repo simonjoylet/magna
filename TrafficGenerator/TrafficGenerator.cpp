@@ -54,7 +54,7 @@ int GenerateTraffic(
 
 int main()
 {
-	vector<string> services = { "Comp_1", "Comp_2", "Comp_3" };
+	vector<string> services = { "Comp1", "Comp2"};
 	vector<uint32_t> weights = { 1, 2, 3 };
 	string filePath = "./test.dat";
 	GenerateTraffic(1000, 10000, services, weights, filePath);

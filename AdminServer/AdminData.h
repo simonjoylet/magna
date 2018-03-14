@@ -72,8 +72,7 @@ public:
 	// 服务的状态
 	map<int32/*id*/, localdata::ServiceStatus> m_serviceStatus;
 
-	// 服务的DNS
-	map<string/*name*/, set<int32>/*服务id集合*/> m_serviceDNS;
+	int32_t GetServiceTable() { return 0; }
 
 
 private:

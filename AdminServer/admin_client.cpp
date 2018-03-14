@@ -245,3 +245,22 @@ int AdminClient::Handle(const magna::AppRequest &req, magna::AppResponse *resp) 
     return -1;
 }
 
+int AdminClient::GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) {
+    const phxrpc::Endpoint_t *ep = global_adminclient_config_.GetRandom();
+
+    if (ep != nullptr) {
+        phxrpc::BlockTcpStream socket;
+        bool open_ret = phxrpc::PhxrpcTcpUtils::Open(&socket, ep->ip, ep->port,
+                    global_adminclient_config_.GetConnectTimeoutMS(), nullptr, 0,
+                    *(global_adminclient_monitor_.get()));
+        if (open_ret) {
+            socket.SetTimeout(global_adminclient_config_.GetSocketTimeoutMS());
+
+            AdminStub stub(socket, *(global_adminclient_monitor_.get()));
+            return stub.GetServiceTable(req, resp);
+        }
+    }
+
+    return -1;
+}
+

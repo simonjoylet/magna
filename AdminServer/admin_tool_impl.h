@@ -33,5 +33,7 @@ class AdminToolImpl : public AdminTool {
     virtual int NodeHeatbeat(phxrpc::OptMap &opt_map) override;
     virtual int RegisterService(phxrpc::OptMap &opt_map) override;
     virtual int ServiceHeatbeat(phxrpc::OptMap &opt_map) override;
+    virtual int Handle(phxrpc::OptMap &opt_map) override;
+    virtual int GetServiceTable(phxrpc::OptMap &opt_map) override;
 };
 

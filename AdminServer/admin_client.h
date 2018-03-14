@@ -29,6 +29,7 @@ class AdminClient {
     int RegisterService(const magna::RegisterServiceRequest &req, magna::RegisterServiceResponse *resp);
     int ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req, magna::ServiceHeartbeatResponse *resp);
     int Handle(const magna::AppRequest &req, magna::AppResponse *resp);
+    int GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp);
 
 };
 

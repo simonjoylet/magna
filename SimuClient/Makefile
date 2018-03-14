@@ -19,7 +19,7 @@ TARGETS = simu_client
 all: $(TARGETS)
 
 simu_client: $(SIMU_CLIENT_OBJS)
-	$(LINKER) $^ -L../AdminServer/ -ladmin_client $(LDFLAGS) -o $@
+	$(LINKER) $^ -L../AdminServer/ -ladmin_client -L../Comp/ -lcomp_client $(LDFLAGS) -o $@
 
 
 SimuMain.o: SimuMain.cpp

@@ -24,7 +24,8 @@ class CompClient {
     int PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req);
     int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
     int PhxBatchEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
-    int Handle(const magna::AppRequest &req, magna::AppResponse *resp);
+	int Handle(const magna::AppRequest &req, magna::AppResponse *resp); 
+	int Handle(const phxrpc::Endpoint_t &ep, magna::AppRequest &req, magna::AppResponse *resp);
 
 };
 
