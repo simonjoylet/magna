@@ -101,6 +101,7 @@
     <None Include="comp.proto" />
     <None Include="comp1.conf" />
     <None Include="comp2.conf" />
+    <None Include="comp3.conf" />
     <None Include="comp_client.conf" />
     <None Include="Makefile" />
   </ItemGroup>

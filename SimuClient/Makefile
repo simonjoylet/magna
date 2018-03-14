@@ -11,7 +11,7 @@ LDFLAGS := -L$(PHXRPC_ROOT)/lib -lphxrpc $(LDFLAGS)
 # choose to use boost for network
 #LDFLAGS := $(PLUGIN_BOOST_LDFLAGS) $(LDFLAGS)
 
-SIMU_CLIENT_OBJS = SimuMain.o 
+SIMU_CLIENT_OBJS = SimuMain.o ServiceSelector.o
 				
 
 TARGETS = simu_client 
@@ -23,7 +23,7 @@ simu_client: $(SIMU_CLIENT_OBJS)
 
 
 SimuMain.o: SimuMain.cpp
-
+ServiceSelector.o: ServiceSelector.cpp
 
 clean:
 	@($(RM) $(TARGETS))

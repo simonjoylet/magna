@@ -6,20 +6,22 @@
 // using google::protobuf::uint32;
 
 #include "ReqAnalytics.h"
+#include "ServiceSelector.h"
 #include "phxrpc/network/timer.h"
 #include <iostream>
 #include <map>
 #include <vector>
+#include <random>
 using namespace std;
 
 AdminClient * g_adminProxy;
-map<string, vector<pair<phxrpc::Endpoint_t, double>>> g_serviceTable;
+map<string, ServiceSelector> * g_serviceTable;
 
 bool TestAccessAdminServer();
 
 bool ReadTrafficFile(string filePath, vector<AppReq> & traffic);
 
-int UpdateServiceTable(map<string, vector<pair<phxrpc::Endpoint_t, double>>> & table);
+int UpdateServiceTable(map<string, ServiceSelector> & table);
 
 int StartSimu(
 	const vector<AppReq> & traffic, 
@@ -49,12 +51,13 @@ int main()
 	}
 
 	// 获取服务路由表
-	if (UpdateServiceTable(g_serviceTable) < 0)
+	map<string, ServiceSelector> serviceTable;
+	if (UpdateServiceTable(serviceTable) < 0)
 	{
 		cout << "Fail to get ServiceTable\n";
 		return -3;
 	}
-	
+	g_serviceTable = &serviceTable;
 
 	// 向AdminServer发出服务请求，并记录开始和截止的时间戳
 	vector<ReqLog> rstData;
@@ -114,23 +117,23 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 	{
 		simuReq.set_id(traffic[i].id);
 		simuReq.set_clienttype(traffic[i].weight);
-		simuReq.set_servicename(traffic[i].service);
+		string serviceName = traffic[i].service;
+		simuReq.set_servicename(serviceName);
 
 		ReqLog reqLog;
 		reqLog.req = traffic[i];
 
 		reqLog.begin = phxrpc::Timer::GetSteadyClockMS();
-		if (g_serviceTable.find(traffic[i].service) == g_serviceTable.end())
+		map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
+		if (foundIt == g_serviceTable->end())
 		{
 			cout << "Service not found\n";
 			continue;// 需要慎重考虑是否可以直接跳过后续代码
 		}
 		
-		vector<pair<phxrpc::Endpoint_t, double>> & balancer = g_serviceTable[traffic[i].service];
-		//均衡器使用稍后再写，初步计划用vector存储累计概率，然后看落到哪个区间。
-
 		CompClient cc;
-		int32_t ret = cc.Handle(balancer[0].first, simuReq, &simuRsp);
+		
+		int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
 		
 		//int32_t ret = g_adminProxy->Handle(simuReq, &simuRsp);
 
@@ -149,7 +152,7 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 	return 0;
 }
 
-int UpdateServiceTable(map<string, vector<pair<phxrpc::Endpoint_t, double>>> & table)
+int UpdateServiceTable(map<string, ServiceSelector> & table)
 {
 	magna::ServiceTableRequest req;
 	magna::ServiceTableResponse rsp;
@@ -168,7 +171,7 @@ int UpdateServiceTable(map<string, vector<pair<phxrpc::Endpoint_t, double>>> & t
 		strcpy(ep.ip, rsp.routertable(i).ep().ip().c_str());
 		ep.port = rsp.routertable(i).ep().port();
 		double percentage = rsp.routertable(i).percentage();
-		table[name].push_back(make_pair(ep, percentage));
+		table[name].AddService(ep, percentage);
 	}
 	return 0;
 }

@@ -32,9 +32,15 @@
     <ClCompile Include="SimuMain.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
+    <ClCompile Include="ServiceSelector.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ReqAnalytics.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServiceSelector.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

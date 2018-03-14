@@ -118,5 +118,8 @@
     <None Include="comp2.conf">
       <Filter>Source files</Filter>
     </None>
+    <None Include="comp3.conf">
+      <Filter>Source files</Filter>
+    </None>
   </ItemGroup>
 </Project>

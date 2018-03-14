@@ -33,7 +33,6 @@ class AdminServiceImpl : public AdminService {
     virtual int NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp) override;
     virtual int RegisterService(const magna::RegisterServiceRequest &req, magna::RegisterServiceResponse *resp) override;
     virtual int ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req, magna::ServiceHeartbeatResponse *resp) override;
-    virtual int Handle(const magna::AppRequest &req, magna::AppResponse *resp) override;
     virtual int GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) override;
 
   private:
