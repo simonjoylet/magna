@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package magna;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "phxrpc/rpc/phxrpc.proto";
+
+message InetAddress
+{
+	string ip = 1;
+	int32 port = 2;
+}
+
+message RegisterRequest
+{
+	message ServiceScale
+	{
+		repeated InetAddress ep = 1;
+	}
+	InetAddress addr = 1;
+	map<string, ServiceScale> table = 2;
+}
+
+message RegisterResult
+{
+	bool success = 1;
+	bytes content = 2;
+}
+
+service Magna
+{
+	rpc RegisterNode( RegisterRequest ) returns( RegisterResult ){}
+	
+}
+
+

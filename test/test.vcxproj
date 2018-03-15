@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{376D4E77-6288-4982-A369-C0772516AF97}</ProjectGuid>
+    <ProjectGuid>{9FBA0C6A-9D15-4E3F-9B93-5D046461B657}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -41,25 +41,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0004\phxrpc;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0004\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
-    <NMakeOutput>$(ProjectDir)SimuClient-Debug.vgdbsettings</NMakeOutput>
+    <NMakeOutput>$(ProjectDir)test-Debug.vgdbsettings</NMakeOutput>
     <IncludePath />
     <ReferencePath />
     <LibraryPath />
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.87.0\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\x86_64-linux-gnu\c++\5;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\c++\5\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\223.3.69.5\0000\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Release.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakePreprocessorDefinitions>__VisualGDB_CFG_Release;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
-    <NMakeOutput>$(ProjectDir)SimuClient-Release.vgdbsettings</NMakeOutput>
+    <NMakeOutput>$(ProjectDir)test-Release.vgdbsettings</NMakeOutput>
     <IncludePath />
     <ReferencePath />
     <LibraryPath />
@@ -67,19 +67,16 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ServiceSelector.cpp" />
-    <ClCompile Include="SimuMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
+    <ClCompile Include="magna_main.cpp" />
+    <ClCompile Include="magna_server_config.cpp" />
+    <ClInclude Include="magna_server_config.h" />
     <None Include="Makefile" />
-    <None Include="SimuClient-Debug.vgdbsettings" />
-    <None Include="SimuClient-Release.vgdbsettings" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ReqAnalytics.h" />
-    <ClInclude Include="ServiceSelector.h" />
+    <None Include="test-Debug.vgdbsettings" />
+    <None Include="test-Release.vgdbsettings" />
   </ItemGroup>
 </Project>

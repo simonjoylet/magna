@@ -6,7 +6,7 @@
 
 include /usr/local/etc/phxrpc/phxrpc.mk
 
-LDFLAGS := -L$(PHXRPC_ROOT)/lib -lphxrpc $(LDFLAGS)
+LDFLAGS := -L$(PHXRPC_ROOT)/lib -lphxrpc $(LDFLAGS) -lrt -lpthread
 
 # choose to use boost for network
 #LDFLAGS := $(PLUGIN_BOOST_LDFLAGS) $(LDFLAGS)
