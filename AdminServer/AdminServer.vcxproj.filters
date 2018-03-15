@@ -63,9 +63,6 @@
     <ClCompile Include="admin_tool_main.cpp">
       <Filter>Client files</Filter>
     </ClCompile>
-    <ClCompile Include="HbThread.cpp">
-      <Filter>Source files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="admin_server_config.h">
@@ -97,9 +94,6 @@
     </ClInclude>
     <ClInclude Include="admin_tool_impl.h">
       <Filter>Client files</Filter>
-    </ClInclude>
-    <ClInclude Include="HbThread.h">
-      <Filter>Source files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

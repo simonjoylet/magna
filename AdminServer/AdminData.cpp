@@ -2,6 +2,11 @@
 
 AdminData * AdminData::m_instance = NULL;
 
+AdminData::AdminData()
+{
+	m_serviceIdCount = 0;
+}
+
 AdminData * AdminData::GetInstance()
 {
 	if (NULL == m_instance)
@@ -12,10 +17,12 @@ AdminData * AdminData::GetInstance()
 	return m_instance;
 }
 
-localdata::InetAddress::InetAddress()
+int32_t AdminData::GetNewServiceId()
 {
-	ip = "";
-	port = 0;
+	lock();
+	int32_t rst = ++m_serviceIdCount;
+	unlock();
+	return rst;
 }
 
 localdata::InetAddress::InetAddress(string _ip, int32 _port)

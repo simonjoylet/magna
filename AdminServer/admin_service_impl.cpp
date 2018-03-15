@@ -44,18 +44,19 @@ int AdminServiceImpl::RegisterNode(const magna::RegisterNodeRequest &req, magna:
 	localdata::NodeInfo nodeInfo;
 	nodeInfo.addr.ip = req.addr().ip();
 	nodeInfo.addr.port = req.addr().port();
-	nodeInfo.mips = req.mips();
+	nodeInfo.type = req.type();
 
 	extern phxrpc::ClientConfig global_nodeclient_config_;
-	extern std::mutex * g_nodelist_mutex;
+	
 	phxrpc::Endpoint_t ep;
 	snprintf(ep.ip, sizeof(ep.ip), "%s", nodeInfo.addr.ip.c_str());
 	ep.port = nodeInfo.addr.port;
 
-	g_nodelist_mutex->lock();
+	AdminData * ad = AdminData::GetInstance();
+	ad->lock();
 	global_nodeclient_config_.Add(ep);
-	AdminData::GetInstance()->m_nodeList.insert(make_pair(req.addr().ip(), nodeInfo));
-	g_nodelist_mutex->unlock();
+	ad->m_nodeList.insert(make_pair(req.addr().ip(), nodeInfo));
+	ad->unlock();
 	
 	resp->set_ack(true);
 	resp->set_msg("Register success");
@@ -63,9 +64,10 @@ int AdminServiceImpl::RegisterNode(const magna::RegisterNodeRequest &req, magna:
 }
 
 int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna::NodeHeartbeatResponse *resp) {
-	map<string, localdata::NodeStatus> & statusList = AdminData::GetInstance()->m_nodeStatus;
+	AdminData * ad = AdminData::GetInstance();
+	ad->lock();
 
-	if (statusList.find(req.addr().ip()) != statusList.end())
+	if (ad->m_nodeList.find(req.addr().ip()) == ad->m_nodeList.end())
 	{
 		printf("\nNode not registered: %s\n", req.addr().ip().c_str());
 		resp->set_ack(false);
@@ -73,16 +75,18 @@ int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna
 	}
 	else
 	{
-		localdata::NodeStatus & nodeStatus = statusList.find(req.addr().ip())->second;
-		nodeStatus.cpuload = req.load().cpu();
+		localdata::NodeInfo & info = ad->m_nodeList.find(req.addr().ip())->second;
+		info.heatbeat = 0;
+		info.cpuload = req.load().cpu();
+		info.diskload = req.load().disk();
 		auto rtt = req.load().rtt();
 		if (rtt.size() > 0)
 		{
-			nodeStatus.netrtt.clear();
+			info.netrtt.clear();
 		}
 		for (auto it = rtt.begin(); it != rtt.end(); ++it)
 		{
-			nodeStatus.netrtt.insert(make_pair(it->first, it->second));
+			info.netrtt.insert(make_pair(it->first, it->second));
 		}
 		
 		resp->set_ack(true);
@@ -90,15 +94,60 @@ int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna
 
 		printf("\nNode status updated: %s cpu: %f\n", req.addr().ip().c_str(), req.load().cpu());
 	}
+
+	ad->unlock();
     return 0;
 }
 
 int AdminServiceImpl::RegisterService(const magna::RegisterServiceRequest &req, magna::RegisterServiceResponse *resp) {
-    return -1;
+
+	AdminData * ad = AdminData::GetInstance();
+	int serviceId = ad->GetNewServiceId();
+	localdata::ServiceInfo info;
+	info.addr.ip = req.addr().ip();
+	info.addr.port = req.addr().port();
+	info.heatbeat = 0;
+	info.id = serviceId;
+	info.name = req.servicename();
+	ad->lock();
+	ad->m_serviceList[serviceId] = info;
+	ad->unlock();
+
+	resp->set_ack(true);
+	resp->set_msg("success");
+	resp->set_serviceid(serviceId);
+    return 0;
 }
 
 int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req, magna::ServiceHeartbeatResponse *resp) {
-    return -1;
+    
+	AdminData * ad = AdminData::GetInstance();
+	uint32_t serviceId = req.serviceid();
+	ad->lock();
+
+	if (ad->m_serviceList.find(serviceId) == ad->m_serviceList.end())
+	{
+		printf("\n[ERROR]: Service not found, id: %d\n", serviceId);
+		resp->set_ack(false);
+		resp->set_msg("serviceId not found");
+	}
+	else
+	{
+		localdata::ServiceInfo & info = ad->m_serviceList[serviceId];
+		info.heatbeat = 0;
+		const ::google::protobuf::Map<string, magna::InterfaceData > & interfaces = req.services();
+		for (auto it = interfaces.begin(); it != interfaces.end(); ++it)
+		{
+			info.interfaceStatus[it->first].lamda = it->second.lamda();
+			info.interfaceStatus[it->first].averageTime = it->second.averagetime();
+		}
+
+		resp->set_ack(true);
+		resp->set_msg("success");
+	}
+	
+	ad->unlock();
+	return 0;
 }
 
 int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) {

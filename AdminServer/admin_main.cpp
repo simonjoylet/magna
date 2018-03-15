@@ -18,7 +18,9 @@
 #include "phxrpc/file.h"
 #include "../NodeAgent/node_client.h"
 #include <mutex>
-#include "HbThread.h"
+#include <thread>
+#include "AdminData.h"
+//#include "HbThread.h"
 
 using namespace std;
 
@@ -46,8 +48,50 @@ void ShowUsage(const char *program) {
 
     exit(0);
 }
+
 NodeClient * g_nodeProxy;
-std::mutex * g_nodelist_mutex;
+bool g_hbShouldRun = true;
+extern phxrpc::ClientConfig global_nodeclient_config_;
+
+void AdminHbFunc()
+{
+	AdminData * adminData = AdminData::GetInstance();
+
+	printf("\nAdmin HbThread start running...\n");
+
+	// 时钟轮盘
+	while (g_hbShouldRun)
+	{
+		static int32 count = 0;
+		sleep(1);
+		++count;
+
+		// 每2秒心跳计数加1，移除心跳超时的节点。
+		if (count % 2 == 0)
+		{
+			adminData->lock();
+			for (auto it = adminData->m_nodeList.begin(); it != adminData->m_nodeList.end(); ++it)
+			{
+				it->second.heatbeat += 1;
+				if (it->second.heatbeat > 5)
+				{
+					phxrpc::Endpoint_t ep;
+					snprintf(ep.ip, sizeof(ep.ip), "%s", it->second.addr.ip.c_str());
+					ep.port = it->second.addr.port;
+					global_nodeclient_config_.Remove(ep);
+					adminData->m_nodeList.erase(it++);
+					printf("\nnode: %s: %d removed\n", ep.ip, ep.port);
+					continue;
+				}
+			}
+			adminData->unlock();
+		}
+
+	}
+	printf("\nAdmin HbThread stopped...\n");
+	return;
+}
+
 void testNodeEcho()
 {
 	google::protobuf::StringValue req;
@@ -98,10 +142,9 @@ int main(int argc, char **argv) {
 	extern phxrpc::ClientConfig global_nodeclient_config_;
 	global_nodeclient_config_.Init(1000, 2000, "magna");
 	g_nodeProxy = new NodeClient;
-	g_nodelist_mutex = new std::mutex;
 
 	// 启动心跳线程
-	HbThread::GetInstance()->Start();
+	std::thread hb(AdminHbFunc);
 	
     ServiceArgs_t service_args;
     service_args.config = &config;

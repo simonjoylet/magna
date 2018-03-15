@@ -16,11 +16,10 @@
 #include "phxrpc/rpc.h"
 #include "phxrpc/msg.h"
 #include "phxrpc/file.h"
-
+#include "../AdminServer/admin_client.h"
+#include <thread>
 
 using namespace std;
-
-
 void Dispatch(const phxrpc::BaseRequest *request,
               phxrpc::BaseResponse *response,
               phxrpc::DispatcherArgs_t *args) {
@@ -43,6 +42,58 @@ void ShowUsage(const char *program) {
     printf("\n");
 
     exit(0);
+}
+
+
+AdminClient * g_adminProxy;
+uint32_t g_serviceId = 0;
+bool g_hbShouldRun = true;
+
+// 心跳线程
+void ServiceHb(string ip, uint16_t port)
+{
+	printf("\nService heatbeat thread start running...\n");
+	magna::ServiceHeartbeatRequest req;
+	magna::ServiceHeartbeatResponse rsp;
+
+	req.set_serviceid(g_serviceId);
+	
+	while (g_hbShouldRun)
+	{
+		sleep(2);
+		req.mutable_services(); // TODO，更新接口统计数据
+		
+		int ret = g_adminProxy->ServiceHeatbeat(req, &rsp);
+		if (0 != ret)
+		{
+			printf("\n[ERROR]: ServiceHeartbeat failed\n");
+			continue;
+		}
+		
+		if (!rsp.ack())
+		{
+			printf("\nNode heatbeat response ERROR. msg:%s\n", rsp.msg().c_str());
+		}
+		else
+		{
+			printf("\n[DEBUG]: Service heartbeat received\n");
+		}
+	}
+	printf("\nNode heatbeat thread stopped...\n");
+}
+
+// 测试AdminServer是否可用
+bool testAdminEcho()
+{
+	g_adminProxy = new AdminClient;
+	//AdminClient ac;
+	google::protobuf::StringValue req;
+	google::protobuf::StringValue resp;
+	req.set_value("Access AdminServer Success");
+	int ret = g_adminProxy->PhxEcho(req, &resp);
+	printf("AdminServer.PhxEcho return %d\n", ret);
+	printf("resp: {\n%s}\n", resp.DebugString().c_str());
+	return ret == 0;
 }
 
 int main(int argc, char **argv) {
@@ -79,6 +130,28 @@ int main(int argc, char **argv) {
 
     phxrpc::openlog(argv[0], config.GetHshaServerConfig().GetLogDir(),
             config.GetHshaServerConfig().GetLogLevel());
+
+	// 获取当前组件绑定的IP和端口号
+	string bindIP = config.GetHshaServerConfig().GetBindIP();
+	uint16_t bindPort = config.GetHshaServerConfig().GetPort();
+
+	// 向AdminServer注册服务
+	AdminClient::Init("../AdminServer/admin_client.conf");
+	bool adminOK = testAdminEcho();
+	if (adminOK)
+	{
+		// 注册节点
+		magna::RegisterServiceRequest req;
+		magna::RegisterServiceResponse rsp;
+		req.mutable_addr()->set_ip(bindIP);
+		req.mutable_addr()->set_port(bindPort);
+		int ret = g_adminProxy->RegisterService(req, &rsp);
+		printf("AdminServer.RegisterService return %d\n", ret);
+		printf("resp: \n{\n%s\n}\n", rsp.DebugString().c_str());
+	}
+
+	// 起一个线程向AdminServer更新服务状态。
+	std::thread hb(ServiceHb, bindIP, bindPort);
 
     ServiceArgs_t service_args;
     service_args.config = &config;

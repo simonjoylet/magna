@@ -17,13 +17,10 @@
 #include "phxrpc/msg.h"
 #include "phxrpc/file.h"
 #include "../AdminServer/admin_client.h"
-#include "HeartbeatThread.h"
+#include <thread>
 #include "NodeData.h"
 
 using namespace std;
-
-AdminClient * g_adminProxy;
-
 
 void Dispatch(const phxrpc::BaseRequest *request,
               phxrpc::BaseResponse *response,
@@ -49,6 +46,42 @@ void ShowUsage(const char *program) {
     exit(0);
 }
 
+AdminClient * g_adminProxy;
+bool g_hbShouldRun = true;
+
+void NodeHbFunc()
+{
+	NodeData * nodeData = NodeData::GetInstance();
+	printf("\nNode heatbeat thread start running...\n");
+	magna::NodeHeartbeatRequest req;
+	magna::NodeHeartbeatResponse rsp;
+
+	req.mutable_addr()->set_ip(nodeData->m_ip);
+	req.mutable_addr()->set_port(nodeData->m_port);
+	while (g_hbShouldRun)
+	{
+		sleep(2);
+		req.mutable_load()->set_cpu(0.1);// TODO
+		int ret = g_adminProxy->NodeHeatbeat(req, &rsp);
+		if (0 != ret)
+		{
+			printf("\nNode heatbeat failed, ret: %d\n", ret);
+		}
+
+		if (rsp.ack())
+		{
+			printf("\nNode heatbeat ack received\n");
+			// 更新节点数据
+		}
+		else
+		{
+			printf("\nNode heatbeat response ERROR. msg:%s\n", rsp.msg().c_str());
+		}
+	}
+	printf("\nNode heatbeat thread stopped...\n");
+	return;
+}
+
 bool testAdminEcho()
 {
 	g_adminProxy = new AdminClient;
@@ -61,7 +94,6 @@ bool testAdminEcho()
 	printf("resp: {\n%s}\n", resp.DebugString().c_str());
 	return ret == 0;
 }
-
 
 int main(int argc, char **argv) {
     const char *config_file{nullptr};
@@ -106,6 +138,7 @@ int main(int argc, char **argv) {
     phxrpc::openlog(argv[0], config.GetHshaServerConfig().GetLogDir(),
             config.GetHshaServerConfig().GetLogLevel());
 
+	// 检查AdminServer是否可用
 	AdminClient::Init("../AdminServer/admin_client.conf");
 	bool adminOK = testAdminEcho();
 	if (adminOK)
@@ -120,7 +153,8 @@ int main(int argc, char **argv) {
 		printf("resp: \n{\n%s\n}\n", rsp.DebugString().c_str());
 	}
 
-	int hbRet = HeartbeatThread::GetInstance()->Start();
+	// 启动心跳线程
+	std::thread hb(NodeHbFunc);
 
     ServiceArgs_t service_args;
     service_args.config = &config;

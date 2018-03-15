@@ -15,7 +15,7 @@ message InetAddress
 message RegisterNodeRequest
 {
 	InetAddress addr = 1;
-	int32 mips = 2;	// cpu处理能力，百万指令每秒
+	int32 type = 2;	// 实例类型，分为标准实例和大型实例。
 }
 
 message RegisterNodeResponse
@@ -27,7 +27,8 @@ message RegisterNodeResponse
 message NodeStatus
 {
 	float cpu = 1; // cpu负载
-	map<string, int32> rtt = 2; // 到各个节点的往返时间
+	float disk = 2; // 磁盘负载
+	map<string, int32> rtt = 3; // 到各个节点的往返时间
 }
 
 message NodeHeartbeatRequest
@@ -56,14 +57,18 @@ message RegisterServiceResponse
 	int32 serviceId = 3; // 对每个服务分配唯一id
 }
 
-message ServiceStatus
+message InterfaceData
 {
-	map<string, int32> interfaceTime = 1; // 每个接口的处理时间 
+	string name = 1;
+	double lamda = 2; // 单位qps
+	double averageTime = 3; // 单位ms
+	
 }
 
 message ServiceHeartbeatRequest
 {
-	map<int32, ServiceStatus> services = 3; // 每个id所对应的服务状态
+	int32 serviceId = 1;
+	map<string, InterfaceData> services = 2;
 }
 
 message ServiceHeartbeatResponse

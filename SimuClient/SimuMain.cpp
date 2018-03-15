@@ -119,13 +119,10 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 	uint32_t index = -1;
 	vector<std::thread *> threadVec;
 
-
 	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
-	struct timespec r, n;
-	memset(&n, 0, sizeof(n));
 	while (++index < traffic.size())
 	{
-		usleep(traffic[index].interval);
+		 usleep(traffic[index].interval);
 		
 		auto func = [&](int i)
 		{
