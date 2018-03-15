@@ -11,6 +11,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <thread>
 #include <random>
 #include <signal.h>    /* union sigval / struct sigevent */
 #include <unistd.h> /* sleep */
@@ -30,13 +31,6 @@ int StartSimu(
 	vector<ReqLog> & rstData, 
 	map<int32_t, int32_t> & retMap);
 
-timer_t g_timerId;
-uint32_t g_trafficIndex = 0;
-vector<AppReq> g_traffic;
-vector<ReqLog> g_rstData;
-map<int32_t, int32_t> g_retMap;
-bool g_shouldStop = false;
-
 int main()
 {
 	AdminClient::Init("../AdminServer/admin_client.conf");
@@ -52,8 +46,8 @@ int main()
 
 	// 读入测试流量集
 	string dataFile = "../TrafficGenerator/test.dat";
-	//vector<AppReq> traffic;
-	if (!ReadTrafficFile(dataFile, g_traffic)) 
+	vector<AppReq> traffic;
+	if (!ReadTrafficFile(dataFile, traffic)) 
 	{
 		cout << "Traffic file read error\n";
 		return -2;
@@ -71,21 +65,9 @@ int main()
 	// 向AdminServer发出服务请求，并记录开始和截止的时间戳
 	vector<ReqLog> rstData;
 	map<int32_t, int32_t> retMap;
-	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
-	StartSimu(g_traffic, g_rstData, g_retMap);
+	StartSimu(traffic, rstData, retMap);
 	
-	while (!g_shouldStop)
-	{
-		sleep(1);
-	}
-	timer_delete(g_timerId);
-	cout << "Time Used: " << phxrpc::Timer::GetSteadyClockMS() - stamp << "ms\n";
-	uint64_t tmp = 0;
-	for (uint32_t i = 0; i < g_traffic.size(); ++i)
-	{
-		tmp += g_traffic[i].interval;
-	}
-	cout << "Time expect: " << tmp / 1000 << "ms\n";
+
 	return 0;
 }
 
@@ -130,126 +112,69 @@ bool ReadTrafficFile(string filePath, vector<AppReq> & traffic)
 	return true;
 }
 
-void timer_cb(union sigval val)
-{
-	uint32_t curIndex = g_trafficIndex;
-
-	// 下一轮循环
-	++g_trafficIndex;
-	if (g_trafficIndex >= g_traffic.size())
-	{
-		g_shouldStop = true;
-		return;
-	}
-
-	struct timespec spec;
-	struct itimerspec value;
-	memset(&value, 0x00, sizeof(struct itimerspec));
-	clock_gettime(CLOCK_REALTIME, &spec);
-	value.it_value.tv_sec = spec.tv_sec + 0;
-	value.it_value.tv_nsec = spec.tv_nsec + 0;
-	value.it_interval.tv_sec = 0;    /* per second */
-	value.it_interval.tv_nsec = g_traffic[g_trafficIndex].interval * 1000;
-	timer_settime(g_timerId, TIMER_ABSTIME, &value, NULL);
-
-	magna::AppRequest simuReq;
-	magna::AppResponse simuRsp;
-
-	simuReq.set_id(g_traffic[curIndex].id);
-	simuReq.set_clienttype(g_traffic[curIndex].weight);
-	string serviceName = g_traffic[curIndex].service;
-	simuReq.set_servicename(serviceName);
-
-	ReqLog reqLog;
-	reqLog.req = g_traffic[curIndex];
-
-	reqLog.begin = phxrpc::Timer::GetSteadyClockMS();
-	map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
-	if (foundIt == g_serviceTable->end())
-	{
-		cout << "Service not found\n";
-		g_rstData.push_back(reqLog);
-		return;
-	}
-
-	CompClient cc;
-
-	int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
-
-	//int32_t ret = g_adminProxy->Handle(simuReq, &simuRsp);
-
-	if (ret == 0)
-	{
-		reqLog.end = phxrpc::Timer::GetSteadyClockMS();
-	}
-	else
-	{
-		++g_retMap[ret];
-	}
-	g_rstData.push_back(reqLog);
-
-}
-
 int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int32_t, int32_t> & retMap)
 {
-	
-	struct timespec spec;
-	struct sigevent ent;
-	struct itimerspec value;
+	magna::AppRequest simuReq;
+	magna::AppResponse simuRsp;
+	uint32_t index = -1;
+	vector<std::thread *> threadVec;
 
-	memset(&ent, 0x00, sizeof(struct sigevent));
-	memset(&value, 0x00, sizeof(struct itimerspec));
 
-	/* create a timer */
-	ent.sigev_notify = SIGEV_THREAD;
-	ent.sigev_notify_function = timer_cb;
-	timer_create(CLOCK_REALTIME, &ent, &g_timerId);
+	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
+	struct timespec r, n;
+	memset(&n, 0, sizeof(n));
+	while (++index < traffic.size())
+	{
+		usleep(traffic[index].interval);
+		
+		auto func = [&](int i)
+		{
+			simuReq.set_id(traffic[i].id);
+			simuReq.set_clienttype(traffic[i].weight);
+			string serviceName = traffic[i].service;
+			simuReq.set_servicename(serviceName);
 
-	/* start a timer */
-	clock_gettime(CLOCK_REALTIME, &spec);            
-	value.it_value.tv_sec = spec.tv_sec + 0;
-	value.it_value.tv_nsec = spec.tv_nsec + 0;
-	value.it_interval.tv_sec = 0;    /* per second */
-	value.it_interval.tv_nsec = g_traffic[0].interval * 1000;
-	timer_settime(g_timerId, TIMER_ABSTIME, &value, NULL);
+			ReqLog reqLog;
+			reqLog.req = traffic[i];
 
-// 	magna::AppRequest simuReq;
-// 	magna::AppResponse simuRsp;
-// 	for (uint32_t i = 0; i < traffic.size(); ++i)
-// 	{
-// 		simuReq.set_id(traffic[i].id);
-// 		simuReq.set_clienttype(traffic[i].weight);
-// 		string serviceName = traffic[i].service;
-// 		simuReq.set_servicename(serviceName);
-// 
-// 		ReqLog reqLog;
-// 		reqLog.req = traffic[i];
-// 
-// 		reqLog.begin = phxrpc::Timer::GetSteadyClockMS();
-// 		map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
-// 		if (foundIt == g_serviceTable->end())
-// 		{
-// 			cout << "Service not found\n";
-// 			continue;// 需要慎重考虑是否可以直接跳过后续代码
-// 		}
-// 		
-// 		CompClient cc;
-// 		
-// 		int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
-// 		
-// 		//int32_t ret = g_adminProxy->Handle(simuReq, &simuRsp);
-// 
-// 		if (ret == 0)
-// 		{
-// 			reqLog.end = phxrpc::Timer::GetSteadyClockMS();
-// 			rstData.push_back(reqLog);
-// 		}
-// 		else
-// 		{
-// 			++retMap[ret];
-// 		}
-// 
-// 	}
+			reqLog.begin = phxrpc::Timer::GetSteadyClockMS();
+			map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
+			if (foundIt == g_serviceTable->end())
+			{
+				cout << "Service not found\n";
+				return;// 需要慎重考虑是否可以直接跳过后续代码
+			}
+
+			CompClient cc;
+
+			int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
+
+			if (ret == 0)
+			{
+				reqLog.end = phxrpc::Timer::GetSteadyClockMS();
+				rstData.push_back(reqLog);
+			}
+			else
+			{
+				++retMap[ret];
+			}
+		};
+		threadVec.push_back(new std::thread(func, index));
+	}
+
+	cout << "Time Used: " << phxrpc::Timer::GetSteadyClockMS() - stamp << "ms\n";
+	uint64_t tmp = 0;
+	for (uint32_t i = 0; i < traffic.size(); ++i)
+	{
+		tmp += traffic[i].interval;
+	}
+	cout << "Time expect: " << tmp / 1000 << "ms\n";
+
+	for (uint32_t i = 0; i < threadVec.size(); ++i)
+	{
+		threadVec[i]->join();
+		delete threadVec[i];
+	}
 
 	return 0;
 }

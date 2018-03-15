@@ -54,26 +54,10 @@ int GenerateTraffic(
 
 int main()
 {
-// 	int a=0, b=0;
-// 	for (int i = 0; i < 1000; ++i)
-// 	{
-// 		double tmp = rand() % 1000 / (double)1000;
-// 		if (tmp <=0.5 && tmp >=0)
-// 		{
-// 			++a;
-// 		}
-// 		else if (tmp > 0.5 && tmp <= 1)
-// 		{
-// 			++b;
-// 		}
-// 	}
-// 	cout << a << endl;
-// 	cout << b << endl;
-
 	vector<string> services = { "Comp1", "Comp2"};
 	vector<uint32_t> weights = { 1, 2, 3 };
 	string filePath = "./test.dat";
-	GenerateTraffic(1000, 10000, services, weights, filePath);
+	GenerateTraffic(100, 1000, services, weights, filePath);
 	
 	// 测试读入的数据和写入的数据是否吻合。
 	// testRead(filePath);

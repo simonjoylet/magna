@@ -29,10 +29,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SimuMain.cpp">
+    <ClCompile Include="ServiceSelector.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="ServiceSelector.cpp">
+    <ClCompile Include="SimuMain.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
