@@ -20,36 +20,39 @@ void timer_notify_cb(union sigval val)
 
 int main(void)
 {
-	/* Variable Definition */
-	timer_t id;
-	struct timespec spec;
-	struct sigevent ent;
-	struct itimerspec value;
+	pid_t pid = vfork();
+	execl("/home/comp1", "/home/comp1", "-c", "/home/simon/magna/NodeAgent/20001.conf", NULL);
 
-	/* Init */
-	memset(&ent, 0x00, sizeof(struct sigevent));
-	memset(&value, 0x00, sizeof(struct itimerspec));
-
-	/* create a timer */
-	ent.sigev_notify = SIGEV_THREAD;
-	ent.sigev_notify_function = timer_notify_cb;
-	printf_with_time("create timer");
-	timer_create(CLOCK_REALTIME, &ent, &id);        /* CLOCK_REALTIME */
-
-	/* start a timer */
-	clock_gettime(CLOCK_REALTIME, &spec);            /* CLOCK_REALTIME */
-	value.it_value.tv_sec = spec.tv_sec + 0;
-	value.it_value.tv_nsec = spec.tv_nsec + 0;
-	value.it_interval.tv_sec = 0;    /* per second */
-	value.it_interval.tv_nsec = 100000;
-	printf_with_time("start timer");
-	timer_settime(id, TIMER_ABSTIME, &value, NULL); /* TIMER_ABSTIME */
-
-	sleep(5);
-	printf_with_time("delete timer");
-	timer_delete(id);
-	sleep(5);
-	printf("count: %d, overrun: %d\n", count, timer_getoverrun(id));
-	return 0;
+// 	/* Variable Definition */
+// 	timer_t id;
+// 	struct timespec spec;
+// 	struct sigevent ent;
+// 	struct itimerspec value;
+// 
+// 	/* Init */
+// 	memset(&ent, 0x00, sizeof(struct sigevent));
+// 	memset(&value, 0x00, sizeof(struct itimerspec));
+// 
+// 	/* create a timer */
+// 	ent.sigev_notify = SIGEV_THREAD;
+// 	ent.sigev_notify_function = timer_notify_cb;
+// 	printf_with_time("create timer");
+// 	timer_create(CLOCK_REALTIME, &ent, &id);        /* CLOCK_REALTIME */
+// 
+// 	/* start a timer */
+// 	clock_gettime(CLOCK_REALTIME, &spec);            /* CLOCK_REALTIME */
+// 	value.it_value.tv_sec = spec.tv_sec + 0;
+// 	value.it_value.tv_nsec = spec.tv_nsec + 0;
+// 	value.it_interval.tv_sec = 0;    /* per second */
+// 	value.it_interval.tv_nsec = 100000;
+// 	printf_with_time("start timer");
+// 	timer_settime(id, TIMER_ABSTIME, &value, NULL); /* TIMER_ABSTIME */
+// 
+// 	sleep(5);
+// 	printf_with_time("delete timer");
+// 	timer_delete(id);
+// 	sleep(5);
+// 	printf("count: %d, overrun: %d\n", count, timer_getoverrun(id));
+// 	return 0;
 }
 

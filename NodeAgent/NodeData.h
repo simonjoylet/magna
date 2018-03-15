@@ -3,6 +3,7 @@
 
 #include <string>
 #include <set>
+#include <mutex>
 using std::string;
 using std::set;
 
@@ -25,12 +26,17 @@ public:
 
 	int32 m_port;
 
+	uint16_t GetNewCompPort();
+
+	void lock(){ m_mutex.lock(); }
+	void unlock(){ m_mutex.unlock(); }
 
 private:
 	static NodeData * m_instance;
-
+	uint16_t m_compPortCount;
+	std::mutex m_mutex;
 	// not allowed
-	NodeData(){}
+	NodeData() : m_port(0), m_compPortCount(20000){}
 	~NodeData(){}
 };
 

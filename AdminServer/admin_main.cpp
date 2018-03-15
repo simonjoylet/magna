@@ -86,6 +86,17 @@ void AdminHbFunc()
 			}
 			adminData->unlock();
 		}
+// 		if (count % 5 == 0)
+// 		{
+// 			magna::StartComponentRequest req;
+// 			magna::StartComponentResponse rsp;
+// 			req.set_path("/home/comp1");
+// 			int ret = g_nodeProxy->StartComponent(req, &rsp);
+// 			if (ret == 0)
+// 			{
+// 				printf("StartComponent\n\nresp: {\n%s}\n", rsp.DebugString().c_str());
+// 			}
+// 		}
 
 	}
 	printf("\nAdmin HbThread stopped...\n");
@@ -145,6 +156,7 @@ int main(int argc, char **argv) {
 
 	// 启动心跳线程
 	std::thread hb(AdminHbFunc);
+
 	
     ServiceArgs_t service_args;
     service_args.config = &config;

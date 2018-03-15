@@ -97,6 +97,7 @@ bool testAdminEcho()
 }
 
 int main(int argc, char **argv) {
+	printf("argc: %d\n", argc);
     const char *config_file{nullptr};
     bool daemonize{false};
     int log_level{-1};
@@ -140,7 +141,7 @@ int main(int argc, char **argv) {
 	bool adminOK = testAdminEcho();
 	if (adminOK)
 	{
-		// 注册节点
+		// 注册服务组件
 		magna::RegisterServiceRequest req;
 		magna::RegisterServiceResponse rsp;
 		req.mutable_addr()->set_ip(bindIP);
@@ -148,6 +149,10 @@ int main(int argc, char **argv) {
 		int ret = g_adminProxy->RegisterService(req, &rsp);
 		printf("AdminServer.RegisterService return %d\n", ret);
 		printf("resp: \n{\n%s\n}\n", rsp.DebugString().c_str());
+		if (ret == 0)
+		{
+			g_serviceId = rsp.serviceid();
+		}
 	}
 
 	// 起一个线程向AdminServer更新服务状态。

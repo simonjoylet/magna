@@ -42,6 +42,25 @@ int NodeServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::p
 }
 
 int NodeServiceImpl::StartComponent(const magna::StartComponentRequest &req, magna::StartComponentResponse *resp) {
+	// 生成配置文件
+	const char * confTemplate = "[Server]\nBindIP = %s\nPort = %d\nMaxThreads = 8\nIOThreadCount = 3\n\
+PackageName = magna\nMaxConnections = 800000\nMaxQueueLength = 20480\nFastRejectThresholdMS = 20\n\
+FastRejectAdjustRate = 5\n\n[Log]\nLogDir = ~/log\nLogLevel = 3\n\n[ServerTimeout]\nSocketTimeoutMS = 5000";
+	char contentBuf[512] = {};
+	char fileName[16] = {};
+	NodeData * nd = NodeData::GetInstance();
+	uint16_t compPort = nd->GetNewCompPort();
+	sprintf(contentBuf, confTemplate, nd->m_ip.c_str(), compPort);
+	sprintf(fileName, "%d.conf", compPort);
+	FILE * confFile = fopen(fileName, "wt");
+	fwrite(contentBuf, strlen(contentBuf), 1, confFile);
+	fclose(confFile);
+
+	char finalParam[128] = {};
+	char currentPath[128] = {};
+	getcwd(currentPath, sizeof(currentPath));
+	sprintf(finalParam, "%s/%s", currentPath, fileName);
+
 	pid_t pid = vfork();
 	switch (pid)
 	{
@@ -49,7 +68,7 @@ int NodeServiceImpl::StartComponent(const magna::StartComponentRequest &req, mag
 		printf("\n!!! fork failed\n");
 		break;
 	case 0:
-		execlp(req.path().c_str(), req.param().c_str(), NULL);
+		execl(req.path().c_str(), req.path().c_str(), "-c", finalParam, NULL);
 		if (errno) perror("exec failed");
 		_exit(0);
 		break;

@@ -19,3 +19,11 @@ int32 NodeData::Init(string ip, int32 port)
 	return 0;
 }
 
+uint16_t NodeData::GetNewCompPort()
+{
+	lock();
+	uint16_t rst = ++m_compPortCount;
+	unlock();
+	return rst;
+}
+
