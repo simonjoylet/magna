@@ -43,5 +43,8 @@
     <ClInclude Include="ServiceSelector.h">
       <Filter>Header files</Filter>
     </ClInclude>
+    <ClInclude Include="Semaphore.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

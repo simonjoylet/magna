@@ -57,7 +57,7 @@ int main()
 	vector<string> services = { "Comp1", "Comp2"};
 	vector<uint32_t> weights = { 1, 2, 3 };
 	string filePath = "./test.dat";
-	GenerateTraffic(100, 1000, services, weights, filePath);
+	GenerateTraffic(1000, 10000, services, weights, filePath);
 	
 	// 测试读入的数据和写入的数据是否吻合。
 	// testRead(filePath);

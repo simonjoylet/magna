@@ -49,39 +49,6 @@ AdminClient * g_adminProxy;
 uint32_t g_serviceId = 0;
 bool g_hbShouldRun = true;
 
-// 心跳线程
-void ServiceHb(string ip, uint16_t port)
-{
-	printf("\nService heatbeat thread start running...\n");
-	magna::ServiceHeartbeatRequest req;
-	magna::ServiceHeartbeatResponse rsp;
-
-	req.set_serviceid(g_serviceId);
-	
-	while (g_hbShouldRun)
-	{
-		sleep(2);
-		req.mutable_services(); // TODO，更新接口统计数据
-		
-		int ret = g_adminProxy->ServiceHeatbeat(req, &rsp);
-		if (0 != ret)
-		{
-			printf("\n[ERROR]: ServiceHeartbeat failed\n");
-			continue;
-		}
-		
-		if (!rsp.ack())
-		{
-			printf("\nNode heatbeat response ERROR. msg:%s\n", rsp.msg().c_str());
-		}
-		else
-		{
-			printf("\n[DEBUG]: Service heartbeat received\n");
-		}
-	}
-	printf("\nNode heatbeat thread stopped...\n");
-}
-
 // 测试AdminServer是否可用
 bool testAdminEcho()
 {
@@ -94,6 +61,74 @@ bool testAdminEcho()
 	printf("AdminServer.PhxEcho return %d\n", ret);
 	printf("resp: {\n%s}\n", resp.DebugString().c_str());
 	return ret == 0;
+}
+
+int32_t RegisterComponent(string ip, uint16_t port)
+{
+	// 注册服务组件
+	magna::RegisterServiceRequest req;
+	magna::RegisterServiceResponse rsp;
+	req.mutable_addr()->set_ip(ip);
+	req.mutable_addr()->set_port(port);
+	int ret = g_adminProxy->RegisterService(req, &rsp);
+// 	printf("AdminServer.RegisterService return %d\n", ret);
+// 	printf("resp: \n{\n%s\n}\n", rsp.DebugString().c_str());
+	if (ret == 0)
+	{
+		g_serviceId = rsp.serviceid();
+	}
+	return ret;
+}
+
+// 心跳线程
+void ServiceHb(string ip, uint16_t port)
+{
+	printf("\nService heatbeat thread start running...\n");
+	magna::ServiceHeartbeatRequest req;
+	magna::ServiceHeartbeatResponse rsp;
+	bool lostAdminServer = false;
+	uint32_t adminNonAckCount = 0;
+	while (g_hbShouldRun)
+	{
+		sleep(2);
+		int ret = -1;
+		if (lostAdminServer)
+		{
+			ret = RegisterComponent(ip, port);
+			if (ret != 0)
+			{
+				continue;
+			}
+			lostAdminServer = false;
+		}
+
+		req.set_serviceid(g_serviceId);
+		req.mutable_services(); // TODO，更新接口统计数据
+		
+		ret = g_adminProxy->ServiceHeatbeat(req, &rsp);
+		if (0 != ret)
+		{
+			printf("\n[WARNNING]: ServiceHeartbeat failed\n");
+			++adminNonAckCount;
+			if (adminNonAckCount > 5)
+			{
+				lostAdminServer = true;
+				printf("\n[ERROR]: AdminServer lost\n");
+			}
+			continue;
+		}
+		
+		adminNonAckCount = 0;
+		if (!rsp.ack())
+		{
+			printf("\nNode heatbeat response ERROR. msg:%s\n", rsp.msg().c_str());
+		}
+		else
+		{
+			printf("\n[DEBUG]: Service heartbeat received\n");
+		}
+	}
+	printf("\nNode heatbeat thread stopped...\n");
 }
 
 int main(int argc, char **argv) {
@@ -141,18 +176,7 @@ int main(int argc, char **argv) {
 	bool adminOK = testAdminEcho();
 	if (adminOK)
 	{
-		// 注册服务组件
-		magna::RegisterServiceRequest req;
-		magna::RegisterServiceResponse rsp;
-		req.mutable_addr()->set_ip(bindIP);
-		req.mutable_addr()->set_port(bindPort);
-		int ret = g_adminProxy->RegisterService(req, &rsp);
-		printf("AdminServer.RegisterService return %d\n", ret);
-		printf("resp: \n{\n%s\n}\n", rsp.DebugString().c_str());
-		if (ret == 0)
-		{
-			g_serviceId = rsp.serviceid();
-		}
+		RegisterComponent(bindIP, bindPort);
 	}
 
 	// 起一个线程向AdminServer更新服务状态。

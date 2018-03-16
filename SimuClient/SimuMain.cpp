@@ -15,6 +15,7 @@
 #include <random>
 #include <signal.h>    /* union sigval / struct sigevent */
 #include <unistd.h> /* sleep */
+#include "Semaphore.h"
 using namespace std;
 
 AdminClient * g_adminProxy;
@@ -117,15 +118,19 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 	magna::AppRequest simuReq;
 	magna::AppResponse simuRsp;
 	uint32_t index = -1;
-	vector<std::thread *> threadVec;
+	queue<uint32_t> waitQueue;
+	Semaphore sema(0);
+	bool shouldRun = true;
 
-	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
-	while (++index < traffic.size())
+	auto func = [&]()
 	{
-		 usleep(traffic[index].interval);
-		
-		auto func = [&](int i)
+		while (shouldRun)
 		{
+			sema.wait();
+
+			uint32_t i = waitQueue.front();
+			waitQueue.pop();
+
 			simuReq.set_id(traffic[i].id);
 			simuReq.set_clienttype(traffic[i].weight);
 			string serviceName = traffic[i].service;
@@ -155,24 +160,28 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 			{
 				++retMap[ret];
 			}
-		};
-		threadVec.push_back(new std::thread(func, index));
-	}
+		}
+		
+	};
+	std::thread sendThread(func);
 
+	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
+	while (++index < traffic.size())
+	{
+		 usleep(traffic[index].interval);
+		 waitQueue.push(index);
+		 sema.signal();
+	}
+	shouldRun = false;
 	cout << "Time Used: " << phxrpc::Timer::GetSteadyClockMS() - stamp << "ms\n";
+
 	uint64_t tmp = 0;
 	for (uint32_t i = 0; i < traffic.size(); ++i)
 	{
 		tmp += traffic[i].interval;
 	}
 	cout << "Time expect: " << tmp / 1000 << "ms\n";
-
-	for (uint32_t i = 0; i < threadVec.size(); ++i)
-	{
-		threadVec[i]->join();
-		delete threadVec[i];
-	}
-
+	sendThread.join();
 	return 0;
 }
 
