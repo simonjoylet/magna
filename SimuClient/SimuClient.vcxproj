@@ -82,5 +82,6 @@
     <ClInclude Include="ReqAnalytics.h" />
     <ClInclude Include="Semaphore.h" />
     <ClInclude Include="ServiceSelector.h" />
+    <ClInclude Include="SimuFunc.h" />
   </ItemGroup>
 </Project>

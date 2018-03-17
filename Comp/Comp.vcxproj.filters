@@ -75,7 +75,7 @@
     <ClCompile Include="comp_service_impl_4.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="comp_service_impl_0.cpp">
+    <ClCompile Include="comp_service_impl.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>

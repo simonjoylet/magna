@@ -76,7 +76,7 @@
     <ClCompile Include="comp_client.cpp" />
     <ClCompile Include="comp_main.cpp" />
     <ClCompile Include="comp_server_config.cpp" />
-    <ClCompile Include="comp_service_impl_0.cpp" />
+    <ClCompile Include="comp_service_impl.cpp" />
     <ClCompile Include="comp_service_impl_1.cpp" />
     <ClCompile Include="comp_service_impl_2.cpp" />
     <ClCompile Include="comp_service_impl_3.cpp" />
