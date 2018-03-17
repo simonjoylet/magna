@@ -19,6 +19,9 @@
 #include "../AdminServer/admin_client.h"
 #include <thread>
 #include "NodeData.h"
+#include <sys/epoll.h>
+#include <errno.h> 
+
 
 using namespace std;
 
@@ -61,7 +64,8 @@ void NodeHbFunc()
 	while (g_hbShouldRun)
 	{
 		sleep(2);
-		req.mutable_load()->set_cpu(0.1);// TODO
+		req.mutable_load()->set_cpu(0.1); // TODO
+		req.mutable_load()->set_disk(0.2); // TODO
 		int ret = g_adminProxy->NodeHeatbeat(req, &rsp);
 		if (0 != ret)
 		{
@@ -93,6 +97,79 @@ bool testAdminEcho()
 	printf("AdminServer.PhxEcho return %d\n", ret);
 	printf("resp: {\n%s}\n", resp.DebugString().c_str());
 	return ret == 0;
+}
+
+int AtopThreadFunc()
+{
+	struct epoll_event ev;                     //事件临时变量  
+	const int MAXEVENTS = 1024;                //最大事件数  
+	struct epoll_event events[MAXEVENTS];      //监听事件数组  
+	int ret, pid;
+	int pipe_fd[2];
+	if ((ret = pipe(pipe_fd)) < 0)
+	{
+		cout << "create pipe fail:" << ret << ",errno:" << errno << endl;
+		return -1;
+	}
+	ev.data.fd = pipe_fd[0];        //设置监听文件描述符，读端  
+	ev.events = EPOLLIN | EPOLLET;    //设置要处理的事件类型  
+	int epfd = epoll_create(MAXEVENTS);
+	ret = epoll_ctl(epfd, EPOLL_CTL_ADD, pipe_fd[0], &ev);
+	if (ret != 0)
+	{
+		cout << "epoll_ctl fail:" << ret << ",errno:" << errno << endl;
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		close(epfd);
+		return -1;
+	}
+	if ((pid = fork()) > 0)
+	{
+		string atopReport;
+		while (g_hbShouldRun)
+		{
+			int count = epoll_wait(epfd, events, MAXEVENTS, 500);
+			if (count == 0)// 超时，处理上一轮的数据
+			{
+				if (atopReport.empty())
+				{
+					continue;
+				}
+				printf("%s", atopReport.c_str());
+				// TODO 处理监控数据，更新到NodeData中
+				atopReport.clear();
+			}
+			char readBuffer[2048] = {};
+			for (int i = 0; i < count; i++)
+			{
+				if ((events[i].data.fd == pipe_fd[0]) && (events[i].events&EPOLLIN))
+				{
+					read(pipe_fd[0], readBuffer, sizeof(readBuffer));
+					atopReport.append(readBuffer);
+					//printf("%s", readBuffer);
+				}
+			}
+		}
+		
+		close(pipe_fd[1]);
+		close(pipe_fd[0]);
+		close(epfd);
+		cout << "parent close read pipe" << endl;
+
+	}
+	else if (pid == 0)
+	{
+		close(pipe_fd[0]);//关闭读端
+		if (dup2(pipe_fd[1], STDOUT_FILENO) != STDOUT_FILENO)//子进程的输出重定向到管道的输入
+		{
+			printf("重定向失败！");
+			exit(0);
+		}
+		close(pipe_fd[1]);
+		execlp("atop", "atop", "-o", NULL);
+	}
+
+	return 0;
 }
 
 int main(int argc, char **argv) {
@@ -155,6 +232,9 @@ int main(int argc, char **argv) {
 
 	// 启动心跳线程
 	std::thread hb(NodeHbFunc);
+
+	// 启动atop监控线程
+	std::thread atop(AtopThreadFunc);
 
     ServiceArgs_t service_args;
     service_args.config = &config;
