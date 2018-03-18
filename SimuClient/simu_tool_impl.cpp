@@ -91,3 +91,17 @@ int SimuToolImpl::GetRet(phxrpc::OptMap &opt_map) {
     return ret;
 }
 
+int SimuToolImpl::ReportLoad(phxrpc::OptMap &opt_map) {
+    magna::ReportLoadRequest req;
+    magna::ReportLoadResponse resp;
+
+    // TODO: fill req from opt_map
+
+    SimuClient client;
+    int ret{client.ReportLoad(req, &resp)};
+    printf("%s return %d\n", __func__, ret);
+    printf("resp: {\n%s}\n", resp.DebugString().c_str());
+
+    return ret;
+}
+

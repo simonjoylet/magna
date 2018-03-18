@@ -4,12 +4,25 @@
 #include <string>
 #include <set>
 #include <mutex>
+#include <list>
 using std::string;
 using std::set;
+using std::list;
 
 #include <google/protobuf/stubs/common.h>
 using google::protobuf::int32;
 
+struct NodeLoad 
+{
+	double cpuLoad;
+	double diskLoad;
+	NodeLoad() :cpuLoad(0), diskLoad(0){}
+	NodeLoad(double _cpuLoad, double _diskLoad)
+	{
+		cpuLoad = _cpuLoad;
+		diskLoad = _diskLoad;
+	}
+};
 
 class NodeData
 {
@@ -30,11 +43,14 @@ public:
 
 	void lock(){ m_mutex.lock(); }
 	void unlock(){ m_mutex.unlock(); }
+	void UpdateLoadData(double cpuLoad, double diskLoad);
+	void GetLoadData(double & cpuLoad, double & diskLoad, int round);
 
 private:
 	static NodeData * m_instance;
 	uint16_t m_compPortCount;
 	std::mutex m_mutex;
+	list<NodeLoad> m_loadList;
 	// not allowed
 	NodeData() : m_port(0), m_compPortCount(20000){}
 	~NodeData(){}

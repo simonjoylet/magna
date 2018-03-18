@@ -20,7 +20,7 @@
 #include <mutex>
 #include <thread>
 #include "AdminData.h"
-//#include "HbThread.h"
+#include "ResourceCost.h"
 
 using namespace std;
 
@@ -86,6 +86,7 @@ void AdminHbFunc()
 			}
 			adminData->unlock();
 		}
+		// 启动组件的测试代码
 // 		if (count % 5 == 0)
 // 		{
 // 			magna::StartComponentRequest req;
@@ -101,6 +102,21 @@ void AdminHbFunc()
 	}
 	printf("\nAdmin HbThread stopped...\n");
 	return;
+}
+
+// 读取组件的压测数据
+int ReadStressData(string compName, string filePath)
+{
+	return -1;
+}
+
+// 负责负载平衡的调度线程
+int BalanceThreadFunc()
+{
+	return -1;
+	// 根据AdminData中的到达强度统计来判断资源是否够用。
+	// 资源够用时使用0-1背包问题进行优化
+	// 资源不够用时以损失最小为原则进行流量调度
 }
 
 void testNodeEcho()
@@ -154,9 +170,14 @@ int main(int argc, char **argv) {
 	global_nodeclient_config_.Init(1000, 2000, "magna");
 	g_nodeProxy = new NodeClient;
 
+	// 读取各个组件的压测数据
+// 	ReadStressData("Comp_1", );
+// 	ReadStressData("Comp_2", );
+// 	ReadStressData("Comp_3", );
+
 	// 启动心跳线程
 	std::thread hb(AdminHbFunc);
-
+	std::thread balanceTh(BalanceThreadFunc);
 	
     ServiceArgs_t service_args;
     service_args.config = &config;

@@ -21,6 +21,7 @@
 #include "NodeData.h"
 #include <sys/epoll.h>
 #include <errno.h> 
+#include "../SimuClient/simu_client.h"
 
 
 using namespace std;
@@ -50,36 +51,50 @@ void ShowUsage(const char *program) {
 }
 
 AdminClient * g_adminProxy;
+SimuClient * g_simuClient;
 bool g_hbShouldRun = true;
 
 void NodeHbFunc()
 {
 	NodeData * nodeData = NodeData::GetInstance();
 	printf("\nNode heatbeat thread start running...\n");
-	magna::NodeHeartbeatRequest req;
-	magna::NodeHeartbeatResponse rsp;
-
-	req.mutable_addr()->set_ip(nodeData->m_ip);
-	req.mutable_addr()->set_port(nodeData->m_port);
+	magna::NodeHeartbeatRequest hbReq;
+	magna::NodeHeartbeatResponse hbRsp;
+	hbReq.mutable_addr()->set_ip(nodeData->m_ip);
+	hbReq.mutable_addr()->set_port(nodeData->m_port);
+	magna::ReportLoadRequest reportReq;
+	magna::ReportLoadResponse reportRsp;
+	reportReq.set_ip(nodeData->m_ip);
 	while (g_hbShouldRun)
 	{
-		sleep(2);
-		req.mutable_load()->set_cpu(0.1); // TODO
-		req.mutable_load()->set_disk(0.2); // TODO
-		int ret = g_adminProxy->NodeHeatbeat(req, &rsp);
+		sleep(1);
+		double cpuLoad = 0;
+		double diskLoad = 0;
+		// 向SimuClient发送数据，用于压测信息统计
+		nodeData->GetLoadData(cpuLoad, diskLoad, 5);//计算最近5秒的均值
+
+		reportReq.set_cpuload(cpuLoad);
+		reportReq.set_diskload(diskLoad);
+		g_simuClient->ReportLoad(reportReq, &reportRsp);//用于压测
+
+
+		// 向AdminServer发送心跳报文
+		hbReq.mutable_load()->set_cpu(cpuLoad); 
+		hbReq.mutable_load()->set_disk(diskLoad); 
+		int ret = g_adminProxy->NodeHeatbeat(hbReq, &hbRsp);
 		if (0 != ret)
 		{
 			printf("\nNode heatbeat failed, ret: %d\n", ret);
 		}
 
-		if (rsp.ack())
+		if (hbRsp.ack())
 		{
 			printf("\nNode heatbeat ack received\n");
 			// 更新节点数据
 		}
 		else
 		{
-			printf("\nNode heatbeat response ERROR. msg:%s\n", rsp.msg().c_str());
+			printf("\nNode heatbeat response ERROR. msg:%s\n", hbRsp.msg().c_str());
 		}
 	}
 	printf("\nNode heatbeat thread stopped...\n");
@@ -88,8 +103,6 @@ void NodeHbFunc()
 
 bool testAdminEcho()
 {
-	g_adminProxy = new AdminClient;
-	//AdminClient ac;
 	google::protobuf::StringValue req;
 	google::protobuf::StringValue resp;
 	req.set_value("Access AdminServer Success");
@@ -98,6 +111,74 @@ bool testAdminEcho()
 	printf("resp: {\n%s}\n", resp.DebugString().c_str());
 	return ret == 0;
 }
+
+void CalcNodeLoad(const string & atopReport, double & cpuLoad, double & diskLoad)
+{
+	// 获取CPU负载
+	int beginPos = atopReport.find("idle");
+	
+	int endPos = atopReport.find('%', beginPos); 
+	if (beginPos == string::npos || endPos == string::npos)
+	{
+		cout << "----------------------idle Not Found\n";
+		return;
+	}
+	string idleStr = atopReport.substr(beginPos + 4, endPos - beginPos - 4);
+	int cpuIdle = atoi(idleStr.c_str());
+	const int coreNumber = 4; // cpu核心数量
+	cpuLoad = 1.0 * (100 * coreNumber - cpuIdle) / (100 * coreNumber);
+	cpuLoad = cpuLoad < 0 ? 0 : cpuLoad;
+
+	// 获取磁盘负载
+	beginPos = atopReport.find("PID"); // 以PID为标志找到进程负载字符串
+	if (beginPos == string::npos)
+	{
+		cout << "---------------------PID Not Found\n";
+		return;
+	}
+	string processStr = atopReport.substr(beginPos, atopReport.size() - beginPos);
+	char * buf = new char[processStr.size() + 1];
+	strcpy(buf, processStr.c_str());
+	char * linePtr = strtok(buf, "\n"); // 按行分割
+	linePtr = strtok(NULL, "\n");// 不要第一行
+
+	double diskWrite = 0;
+	while (linePtr != NULL) {
+		string lineStr = linePtr;
+		endPos = lineStr.find("/s");
+		if (endPos != string::npos)
+		{
+			beginPos = lineStr.rfind('K', endPos - 2);
+			string diskStr = lineStr.substr(beginPos + 1, endPos - beginPos - 2);
+			char endChar = lineStr[endPos - 1];
+			double kps = 0;
+			if (endChar == 'K')
+			{
+				kps = atof(diskStr.c_str());
+			}
+			else if (endChar == 'M')
+			{
+				kps = atof(diskStr.c_str()) * 1024;
+			}
+			else if (endChar == 'G')
+			{
+				kps = atof(diskStr.c_str()) * 1024 * 1024;
+			}
+			diskWrite += kps;
+		}
+
+
+		linePtr = strtok(NULL, "\n");
+	}
+	delete[] buf;
+	const int MAX_DISK_MPS = 200; // 测试发现，机械磁盘每秒最多读200MB
+	diskLoad = diskWrite / (MAX_DISK_MPS * 1024) ;
+	diskLoad = diskLoad > 1 ? 1 : diskLoad;
+
+	printf("\n[DEBUG]: cpuLoad: %.2f, diskLoad: %.2f\n", cpuLoad, diskLoad);
+}
+
+
 
 int AtopThreadFunc()
 {
@@ -135,8 +216,12 @@ int AtopThreadFunc()
 				{
 					continue;
 				}
-				printf("%s", atopReport.c_str());
-				// TODO 处理监控数据，更新到NodeData中
+				// 处理监控数据，更新到NodeData中
+				double cpuLoad = 0;
+				double diskLoad = 0;
+				CalcNodeLoad(atopReport, cpuLoad, diskLoad);
+				NodeData::GetInstance()->UpdateLoadData(cpuLoad, diskLoad);
+				
 				atopReport.clear();
 			}
 			char readBuffer[2048] = {};
@@ -166,7 +251,7 @@ int AtopThreadFunc()
 			exit(0);
 		}
 		close(pipe_fd[1]);
-		execlp("atop", "atop", "-o", NULL);
+		execlp("atop", "atop", "-o", "-1", NULL);
 	}
 
 	return 0;
@@ -217,6 +302,7 @@ int main(int argc, char **argv) {
 
 	// 检查AdminServer是否可用
 	AdminClient::Init("../AdminServer/admin_client.conf");
+	g_adminProxy = new AdminClient;
 	bool adminOK = testAdminEcho();
 	if (adminOK)
 	{
@@ -234,6 +320,8 @@ int main(int argc, char **argv) {
 	std::thread hb(NodeHbFunc);
 
 	// 启动atop监控线程
+	SimuClient::Init("../SimuClient/simu_client.conf");
+	g_simuClient = new SimuClient;
 	std::thread atop(AtopThreadFunc);
 
     ServiceArgs_t service_args;

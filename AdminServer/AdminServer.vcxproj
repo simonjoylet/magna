@@ -94,6 +94,7 @@
     <ClInclude Include="phxrpc_admin_service.h" />
     <ClInclude Include="phxrpc_admin_stub.h" />
     <ClInclude Include="phxrpc_admin_tool.h" />
+    <ClInclude Include="ResourceCost.h" />
     <None Include="admin.proto" />
     <None Include="AdminServer-Debug.vgdbsettings" />
     <None Include="AdminServer-Release.vgdbsettings" />

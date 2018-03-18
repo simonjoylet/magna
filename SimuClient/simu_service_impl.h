@@ -30,6 +30,7 @@ class SimuServiceImpl : public SimuService {
 
     virtual int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp) override;
     virtual int GetRet(const magna::RetRequest &req, magna::RetResponse *resp) override;
+    virtual int ReportLoad(const magna::ReportLoadRequest &req, magna::ReportLoadResponse *resp) override;
 
   private:
     ServiceArgs_t &args_;

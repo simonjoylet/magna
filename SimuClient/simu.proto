@@ -19,7 +19,21 @@ message RetResponse
 	bool ack = 2;
 }
 
+message ReportLoadRequest
+{
+	string ip = 1;
+	double cpuLoad = 2;
+	double diskLoad = 3;
+}
+
+message ReportLoadResponse
+{
+	bool ack = 1;
+	string msg = 2;
+}
+
 service Simu
 {
 	rpc GetRet (RetRequest) returns (RetResponse);
+	rpc ReportLoad (ReportLoadRequest) returns (ReportLoadResponse);
 }

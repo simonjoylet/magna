@@ -28,7 +28,7 @@ TARGETS = libnode_client.a node_main node_tool_main
 all: $(TARGETS)
 
 node_main: $(SVR_OBJS)
-	$(LINKER) $^ -L../AdminServer/ -ladmin_client $(LDFLAGS) -o $@
+	$(LINKER) $^ -L../AdminServer/ -ladmin_client -L../SimuClient/ -lsimu_client $(LDFLAGS) -o $@
 
 libnode_client.a: $(CLI_OBJS)
 	$(AR) $@ $^

@@ -169,3 +169,22 @@ int SimuClient::GetRet(const magna::RetRequest &req, magna::RetResponse *resp) {
     return -1;
 }
 
+int SimuClient::ReportLoad(const magna::ReportLoadRequest &req, magna::ReportLoadResponse *resp) {
+    const phxrpc::Endpoint_t *ep = global_simuclient_config_.GetRandom();
+
+    if (ep != nullptr) {
+        phxrpc::BlockTcpStream socket;
+        bool open_ret = phxrpc::PhxrpcTcpUtils::Open(&socket, ep->ip, ep->port,
+                    global_simuclient_config_.GetConnectTimeoutMS(), nullptr, 0,
+                    *(global_simuclient_monitor_.get()));
+        if (open_ret) {
+            socket.SetTimeout(global_simuclient_config_.GetSocketTimeoutMS());
+
+            SimuStub stub(socket, *(global_simuclient_monitor_.get()));
+            return stub.ReportLoad(req, resp);
+        }
+    }
+
+    return -1;
+}
+

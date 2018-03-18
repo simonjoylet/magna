@@ -49,3 +49,8 @@ int SimuServiceImpl::GetRet(const magna::RetRequest &req, magna::RetResponse *re
     return 0;
 }
 
+int SimuServiceImpl::ReportLoad(const magna::ReportLoadRequest &req, magna::ReportLoadResponse *resp) {
+	printf("%s: cpuLoad: %.2f, diskLoad: %.2f\n", req.ip().c_str(), req.cpuload(), req.diskload());
+	
+    return 0;
+}

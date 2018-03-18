@@ -30,5 +30,6 @@ class SimuToolImpl : public SimuTool {
     virtual int PhxMqttDisconnect(phxrpc::OptMap &opt_map) override;
     virtual int PhxEcho(phxrpc::OptMap &opt_map) override;
     virtual int GetRet(phxrpc::OptMap &opt_map) override;
+    virtual int ReportLoad(phxrpc::OptMap &opt_map) override;
 };
 

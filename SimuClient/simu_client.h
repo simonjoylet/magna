@@ -25,6 +25,7 @@ class SimuClient {
     int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
     int PhxBatchEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
     int GetRet(const magna::RetRequest &req, magna::RetResponse *resp);
+    int ReportLoad(const magna::ReportLoadRequest &req, magna::ReportLoadResponse *resp);
 
 };
 
