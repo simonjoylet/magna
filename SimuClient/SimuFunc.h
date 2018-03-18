@@ -79,60 +79,42 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 {
 	magna::AppRequest simuReq;
 	magna::AppResponse simuRsp;
-	uint32_t index = -1;
-	queue<uint32_t> waitQueue;
-	Semaphore sema(0);
-	bool shouldRun = true;
+	uint32_t i = -1;
 	uint32_t sendCount = 0;
-	auto func = [&]()
+	
+	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
+	while (++i < traffic.size())
 	{
-		while (shouldRun)
+		usleep(traffic[i].interval);
+		simuReq.set_id(traffic[i].id);
+		simuReq.set_clienttype(traffic[i].weight);
+		string serviceName = traffic[i].service;
+		simuReq.set_servicename(serviceName);
+
+		ReqLog reqLog;
+		reqLog.req = traffic[i];
+
+		reqLog.begin = phxrpc::Timer::GetSteadyClockMS();
+		map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
+		if (foundIt == g_serviceTable->end())
 		{
-			sema.wait();
-
-			uint32_t i = waitQueue.front();
-			waitQueue.pop();
-
-			simuReq.set_id(traffic[i].id);
-			simuReq.set_clienttype(traffic[i].weight);
-			string serviceName = traffic[i].service;
-			simuReq.set_servicename(serviceName);
-
-			ReqLog reqLog;
-			reqLog.req = traffic[i];
-
-			reqLog.begin = phxrpc::Timer::GetSteadyClockMS();
-			map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
-			if (foundIt == g_serviceTable->end())
-			{
-				cout << "Service not found\n";
-				return;// 需要慎重考虑是否可以直接跳过后续代码
-			}
-
-			CompClient cc;
-
-			cout << "sendcount: " << ++sendCount << endl;
-			int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
-			if (ret == 0)
-			{
-				reqLog.end = phxrpc::Timer::GetSteadyClockMS();
-				rstData.push_back(reqLog);
-			}
-			else
-			{
-				++retMap[ret];
-			}
+			cout << "Service not found\n";
+			continue;// 需要慎重考虑是否可以直接跳过后续代码
 		}
 
-	};
-	std::thread sendThread(func);
+		CompClient cc;
 
-	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
-	while (++index < traffic.size())
-	{
-		usleep(traffic[index].interval);
-		waitQueue.push(index);
-		sema.signal();
+		cout << "sendcount: " << ++sendCount << endl;
+		int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
+		if (ret == 0)
+		{
+			reqLog.end = phxrpc::Timer::GetSteadyClockMS();
+			rstData.push_back(reqLog);
+		}
+		else
+		{
+			++retMap[ret];
+		}
 	}
 
 	cout << "Time Used: " << phxrpc::Timer::GetSteadyClockMS() - stamp << "ms\n";
@@ -143,20 +125,51 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 		tmp += traffic[i].interval;
 	}
 	cout << "Time expect: " << tmp / 1000 << "ms\n";
-	while (true)
-	{
-		sleep(1);
-		if (waitQueue.empty())
-		{
-			shouldRun = false;
-			break;
-		}
-	}
+
 	
-	sendThread.join();
 	return 0;
 }
 
+int SimuAll()
+{
+	AdminClient::Init("../AdminServer/admin_client.conf");
+	CompClient::Init("../Comp/comp_client.conf");
 
+	g_adminProxy = new AdminClient;
+
+	// 测试是否可以访问AdminServer
+	if (!TestAccessAdminServer())
+	{
+		cout << "AdminServer not available\n";
+		return -1;
+	}
+
+	// 读入测试流量集
+	string dataFile = "../TrafficGenerator/test.dat";
+	vector<AppReq> traffic;
+	if (!ReadTrafficFile(dataFile, traffic))
+	{
+		cout << "Traffic file read error\n";
+		return -2;
+	}
+
+	// 获取服务路由表
+	map<string, ServiceSelector> serviceTable;
+	if (UpdateServiceTable(serviceTable) < 0)
+	{
+		cout << "Fail to get ServiceTable\n";
+		return -3;
+	}
+	g_serviceTable = &serviceTable;
+
+	// 向AdminServer发出服务请求，并记录开始和截止的时间戳
+	vector<ReqLog> rstData;
+	map<int32_t, int32_t> retMap;
+
+	StartSimu(traffic, rstData, retMap);
+
+
+	return 0;
+}
 
 #endif//SIMU_FUNC_H

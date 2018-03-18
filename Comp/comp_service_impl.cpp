@@ -11,8 +11,9 @@
 #include "phxrpc/file.h"
 
 
-CompServiceImpl::CompServiceImpl(ServiceArgs_t &app_args)
-    : args_(app_args) {
+CompServiceImpl::CompServiceImpl(ServiceArgs_t &app_args,
+        phxrpc::UThreadEpollScheduler *worker_uthread_scheduler)
+        : args_(app_args), worker_uthread_scheduler_(worker_uthread_scheduler) {
 }
 
 CompServiceImpl::~CompServiceImpl() {

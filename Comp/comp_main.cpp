@@ -25,14 +25,17 @@ void Dispatch(const phxrpc::BaseRequest *request,
               phxrpc::DispatcherArgs_t *args) {
     ServiceArgs_t *service_args = (ServiceArgs_t *)(args->service_args);
 
-    CompServiceImpl service(*service_args);
+    CompServiceImpl service(*service_args, args->server_worker_uthread_scheduler);
     CompDispatcher dispatcher(service, args);
 
     phxrpc::BaseDispatcher<CompDispatcher> base_dispatcher(
             dispatcher, CompDispatcher::GetMqttFuncMap(),
             CompDispatcher::GetURIFuncMap());
     if (!base_dispatcher.Dispatch(request, response)) {
-        response->DispatchErr();
+		if (dispatcher.Handle_Post(request, response) < 0)
+		{
+			response->DispatchErr();
+		}
     }
 }
 

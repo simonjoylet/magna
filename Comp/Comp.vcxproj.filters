@@ -51,9 +51,6 @@
     <ClCompile Include="comp.pb.cc">
       <Filter>Auto files</Filter>
     </ClCompile>
-    <ClCompile Include="phxrpc_comp_dispatcher.cpp">
-      <Filter>Auto files</Filter>
-    </ClCompile>
     <ClCompile Include="phxrpc_comp_service.cpp">
       <Filter>Auto files</Filter>
     </ClCompile>
@@ -76,6 +73,12 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="comp_service_impl.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="comp_client_uthread.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_comp_dispatcher.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,6 +104,9 @@
     <ClInclude Include="phxrpc_comp_tool.h">
       <Filter>Auto files</Filter>
     </ClInclude>
+    <ClInclude Include="comp_client_uthread.h">
+      <Filter>Client files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="comp_client.conf">
@@ -119,6 +125,9 @@
       <Filter>Source files</Filter>
     </None>
     <None Include="comp3.conf">
+      <Filter>Source files</Filter>
+    </None>
+    <None Include="comp_server.conf">
       <Filter>Source files</Filter>
     </None>
   </ItemGroup>

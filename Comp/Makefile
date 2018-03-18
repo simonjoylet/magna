@@ -19,6 +19,7 @@ SVR_OBJS = comp.pb.o \
 
 CLI_OBJS = comp.pb.o \
 		comp_client.o \
+		comp_client_uthread.o \
 		phxrpc_comp_stub.o
 
 TARGETS = libcomp_client.a comp1 comp2 comp3 comp4 comp_tool_main
@@ -56,6 +57,8 @@ phxrpc_comp_stub.cpp: phxrpc_comp_stub.h
 phxrpc_comp_stub.o: phxrpc_comp_stub.h
 comp_client.cpp: phxrpc_comp_stub.h
 comp_client.o: phxrpc_comp_stub.h
+comp_client_uthread.cpp: phxrpc_comp_stub.h
+comp_client_uthread.o: phxrpc_comp_stub.h
 
 phxrpc_comp_stub.h: comp.proto
 	$(PHXRPC_ROOT)/codegen/phxrpc_pb2client $(PBFLAGS) -f $^ -d . -p mqtt
@@ -72,7 +75,7 @@ phxrpc_comp_dispatcher.cpp: phxrpc_comp_service.h
 phxrpc_comp_dispatcher.o: phxrpc_comp_service.h
 
 phxrpc_comp_service.h: comp.proto
-	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -p mqtt
+	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -u -p mqtt
 
 ########## tool ##########
 

@@ -5,16 +5,22 @@
       <UniqueIdentifier>{8abea98a-1160-4650-ba17-37455391437e}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header files">
-      <UniqueIdentifier>{5c0dea9a-07d6-4879-bba5-8aa83da96790}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource files">
       <UniqueIdentifier>{ac1740bd-20eb-4104-b951-f81512f04b3b}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="VisualGDB settings">
       <UniqueIdentifier>{02a91947-49ff-4d6d-b6a9-a97a69f4b3d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto files">
+      <UniqueIdentifier>{5c0dea9a-07d6-4879-bba5-8aa83da96790}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Client files">
+      <UniqueIdentifier>{c23c765f-16c3-4728-b0c1-5d970309e299}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server files">
+      <UniqueIdentifier>{3ee8d44e-f3d2-426a-ac72-0b11098d2699}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -27,27 +33,84 @@
     <None Include="Makefile">
       <Filter>Source files</Filter>
     </None>
+    <None Include="simu_client.conf">
+      <Filter>Client files</Filter>
+    </None>
+    <None Include="simu_server.conf">
+      <Filter>Server files</Filter>
+    </None>
+    <None Include="simu.proto">
+      <Filter>Server files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServiceSelector.cpp">
       <Filter>Source files</Filter>
     </ClCompile>
-    <ClCompile Include="SimuMain.cpp">
-      <Filter>Source files</Filter>
+    <ClCompile Include="phxrpc_simu_dispatcher.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_simu_service.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_simu_stub.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="phxrpc_simu_tool.cpp">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="simu.pb.cc">
+      <Filter>Auto files</Filter>
+    </ClCompile>
+    <ClCompile Include="simu_client.cpp">
+      <Filter>Client files</Filter>
+    </ClCompile>
+    <ClCompile Include="simu_server_config.cpp">
+      <Filter>Server files</Filter>
+    </ClCompile>
+    <ClCompile Include="simu_service_impl.cpp">
+      <Filter>Server files</Filter>
+    </ClCompile>
+    <ClCompile Include="simu_main.cpp">
+      <Filter>Server files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ReqAnalytics.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="ServiceSelector.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
-    <ClInclude Include="Semaphore.h">
-      <Filter>Header files</Filter>
-    </ClInclude>
     <ClInclude Include="SimuFunc.h">
       <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReqAnalytics.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="Semaphore.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServiceSelector.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_simu_dispatcher.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_simu_service.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_simu_stub.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="phxrpc_simu_tool.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="simu.pb.h">
+      <Filter>Auto files</Filter>
+    </ClInclude>
+    <ClInclude Include="simu_client.h">
+      <Filter>Client files</Filter>
+    </ClInclude>
+    <ClInclude Include="simu_server_config.h">
+      <Filter>Server files</Filter>
+    </ClInclude>
+    <ClInclude Include="simu_service_impl.h">
+      <Filter>Server files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

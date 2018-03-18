@@ -5,6 +5,7 @@ int CompServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *re
 	//usleep(5000);
 	static uint32_t count = 0;
 	uint64_t ts = phxrpc::Timer::GetSteadyClockMS();
+	printf("%d req received. id = %d, servicename = %s, clienttype = %d, ", ++count, req.id(), req.servicename().c_str(), req.clienttype());
 	uint32_t calNum = rand() % 10000 * 1000;
 	for (uint32_t i = 0; i < calNum; ++i)
 	{
@@ -13,7 +14,7 @@ int CompServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *re
 
 	resp->set_id(req.id());
 	resp->set_ack(true);
-	printf("received: %d, time used: %dms\n", ++count, phxrpc::Timer::GetSteadyClockMS()-ts);
+	printf("time used: %dms\n", phxrpc::Timer::GetSteadyClockMS()-ts);
     return 0;
 }
 

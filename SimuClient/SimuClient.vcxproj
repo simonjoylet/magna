@@ -67,21 +67,40 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="phxrpc_simu_dispatcher.cpp" />
+    <ClCompile Include="phxrpc_simu_service.cpp" />
+    <ClCompile Include="phxrpc_simu_stub.cpp" />
+    <ClCompile Include="phxrpc_simu_tool.cpp" />
     <ClCompile Include="ServiceSelector.cpp" />
-    <ClCompile Include="SimuMain.cpp" />
+    <ClCompile Include="simu.pb.cc" />
+    <ClCompile Include="simu_client.cpp" />
+    <ClCompile Include="simu_main.cpp" />
+    <ClCompile Include="simu_server_config.cpp" />
+    <ClCompile Include="simu_service_impl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="simu.proto" />
     <None Include="SimuClient-Debug.vgdbsettings" />
     <None Include="SimuClient-Release.vgdbsettings" />
+    <None Include="simu_client.conf" />
+    <None Include="simu_server.conf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="phxrpc_simu_dispatcher.h" />
+    <ClInclude Include="phxrpc_simu_service.h" />
+    <ClInclude Include="phxrpc_simu_stub.h" />
+    <ClInclude Include="phxrpc_simu_tool.h" />
     <ClInclude Include="ReqAnalytics.h" />
     <ClInclude Include="Semaphore.h" />
     <ClInclude Include="ServiceSelector.h" />
+    <ClInclude Include="simu.pb.h" />
     <ClInclude Include="SimuFunc.h" />
+    <ClInclude Include="simu_client.h" />
+    <ClInclude Include="simu_server_config.h" />
+    <ClInclude Include="simu_service_impl.h" />
   </ItemGroup>
 </Project>

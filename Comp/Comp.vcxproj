@@ -74,6 +74,7 @@
   <ItemGroup>
     <ClCompile Include="comp.pb.cc" />
     <ClCompile Include="comp_client.cpp" />
+    <ClCompile Include="comp_client_uthread.cpp" />
     <ClCompile Include="comp_main.cpp" />
     <ClCompile Include="comp_server_config.cpp" />
     <ClCompile Include="comp_service_impl.cpp" />
@@ -89,6 +90,7 @@
     <ClCompile Include="phxrpc_comp_tool.cpp" />
     <ClInclude Include="comp.pb.h" />
     <ClInclude Include="comp_client.h" />
+    <ClInclude Include="comp_client_uthread.h" />
     <ClInclude Include="comp_server_config.h" />
     <ClInclude Include="comp_service_impl.h" />
     <ClInclude Include="comp_tool_impl.h" />
@@ -103,6 +105,7 @@
     <None Include="comp2.conf" />
     <None Include="comp3.conf" />
     <None Include="comp_client.conf" />
+    <None Include="comp_server.conf" />
     <None Include="Makefile" />
   </ItemGroup>
 </Project>
