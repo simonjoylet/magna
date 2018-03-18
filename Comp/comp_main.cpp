@@ -18,6 +18,8 @@
 #include "phxrpc/file.h"
 #include "../AdminServer/admin_client.h"
 #include <thread>
+#include "InnerHandle.h"
+#include "../SimuClient/simu_client.h"
 
 using namespace std;
 void Dispatch(const phxrpc::BaseRequest *request,
@@ -133,6 +135,28 @@ void ServiceHb(string ip, uint16_t port)
 	}
 	printf("\nNode heatbeat thread stopped...\n");
 }
+#include "Semaphore.h"
+#include <list>
+Semaphore g_sema(0);
+std::mutex g_queueMutex;
+list<magna::AppRequest> g_reqQueue;
+SimuClient * g_simuProxy;
+void HandleFunc()
+{
+	while (true)
+	{
+		g_sema.wait();
+		g_queueMutex.lock();
+		magna::AppRequest & req = g_reqQueue.front();
+		g_reqQueue.pop_front();
+		g_queueMutex.unlock();
+		// TODO 处理请求
+		static int doneCount = 0;
+		magna::AppResponse rsp;
+		InnerHandle(req, &rsp);
+		printf("doneCount: %d\n", ++doneCount);
+	}
+}
 
 int main(int argc, char **argv) {
 	printf("argc: %d\n", argc);
@@ -184,7 +208,10 @@ int main(int argc, char **argv) {
 
 	// 起一个线程向AdminServer更新服务状态。
 	std::thread hb(ServiceHb, bindIP, bindPort);
+	std::thread handleTh(HandleFunc);
 
+	SimuClient::Init("../SimuClient/simu_client.conf");
+	g_simuProxy = new SimuClient();
     ServiceArgs_t service_args;
     service_args.config = &config;
 

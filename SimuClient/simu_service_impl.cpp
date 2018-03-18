@@ -9,7 +9,8 @@
 #include "simu_server_config.h"
 #include "simu.pb.h"
 #include "phxrpc/file.h"
-
+#include <map>
+#include "ReqAnalytics.h"
 
 SimuServiceImpl::SimuServiceImpl(ServiceArgs_t &app_args)
     : args_(app_args) {
@@ -37,8 +38,14 @@ int SimuServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::p
 
     return 0;
 }
-
+extern std::map<uint32_t, ReqLog> g_rstData;
 int SimuServiceImpl::GetRet(const magna::RetRequest &req, magna::RetResponse *resp) {
-    return -1;
+	uint32_t id = req.id();
+	ReqLog & log = g_rstData[id];
+	log.end = phxrpc::Timer::GetSteadyClockMS();
+	static int32_t retCount = 0;
+	printf("return count: %d, id: %d\n", ++retCount, id);
+
+    return 0;
 }
 

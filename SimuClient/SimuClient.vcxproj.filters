@@ -82,9 +82,6 @@
     <ClInclude Include="ReqAnalytics.h">
       <Filter>Source files</Filter>
     </ClInclude>
-    <ClInclude Include="Semaphore.h">
-      <Filter>Source files</Filter>
-    </ClInclude>
     <ClInclude Include="ServiceSelector.h">
       <Filter>Source files</Filter>
     </ClInclude>

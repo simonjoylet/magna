@@ -14,12 +14,12 @@
 #include <random>
 #include <signal.h>    /* union sigval / struct sigevent */
 #include <unistd.h> /* sleep */
-#include "Semaphore.h"
 
 using namespace std;
 
 AdminClient * g_adminProxy;
 map<string, ServiceSelector> * g_serviceTable;
+map<uint32_t, ReqLog> g_rstData;
 
 bool TestAccessAdminServer()
 {
@@ -75,7 +75,7 @@ int UpdateServiceTable(map<string, ServiceSelector> & table)
 	return 0;
 }
 
-int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int32_t, int32_t> & retMap)
+int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, map<int32_t, int32_t> & retMap)
 {
 	magna::AppRequest simuReq;
 	magna::AppResponse simuRsp;
@@ -109,14 +109,25 @@ int StartSimu(const vector<AppReq> & traffic, vector<ReqLog> & rstData, map<int3
 		if (ret == 0)
 		{
 			reqLog.end = phxrpc::Timer::GetSteadyClockMS();
-			rstData.push_back(reqLog);
+			rstData[reqLog.req.id] = reqLog;
 		}
 		else
 		{
 			++retMap[ret];
 		}
 	}
-
+	// 测试最高并发
+// 	int32_t stressTmp = 0;
+// 	map<string, ServiceSelector>::iterator foundIt = g_serviceTable->begin();
+// 	while (++stressTmp < 100000)
+	{
+		CompClient cc;
+// 		int32_t ret = cc.Handle(g_serviceTable->begin()->second.GetService(), simuReq, &simuRsp);
+// 		if (ret == 0)
+// 		{
+// 			cout << "sendcount: " << ++sendCount << endl;
+// 		}
+	}
 	cout << "Time Used: " << phxrpc::Timer::GetSteadyClockMS() - stamp << "ms\n";
 
 	uint64_t tmp = 0;
@@ -163,10 +174,10 @@ int SimuAll()
 	g_serviceTable = &serviceTable;
 
 	// 向AdminServer发出服务请求，并记录开始和截止的时间戳
-	vector<ReqLog> rstData;
+	
 	map<int32_t, int32_t> retMap;
 
-	StartSimu(traffic, rstData, retMap);
+	StartSimu(traffic, g_rstData, retMap);
 
 
 	return 0;

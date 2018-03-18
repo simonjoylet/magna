@@ -107,11 +107,14 @@
     <ClInclude Include="comp_client_uthread.h">
       <Filter>Client files</Filter>
     </ClInclude>
+    <ClInclude Include="Semaphore.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="InnerHandle.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="comp_client.conf">
-      <Filter>Source files</Filter>
-    </None>
     <None Include="comp.proto">
       <Filter>Source files</Filter>
     </None>
@@ -129,6 +132,9 @@
     </None>
     <None Include="comp_server.conf">
       <Filter>Source files</Filter>
+    </None>
+    <None Include="comp_client.conf">
+      <Filter>Client files</Filter>
     </None>
   </ItemGroup>
 </Project>

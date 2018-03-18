@@ -1,5 +1,9 @@
 #include "comp_service_impl.cpp"
 
-int CompServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *resp) {
+#include "InnerHandle.h"
+#include <iostream>
+#include <math.h>
+
+int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 	return -1;
 }

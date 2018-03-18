@@ -94,10 +94,12 @@
     <ClInclude Include="comp_server_config.h" />
     <ClInclude Include="comp_service_impl.h" />
     <ClInclude Include="comp_tool_impl.h" />
+    <ClInclude Include="InnerHandle.h" />
     <ClInclude Include="phxrpc_comp_dispatcher.h" />
     <ClInclude Include="phxrpc_comp_service.h" />
     <ClInclude Include="phxrpc_comp_stub.h" />
     <ClInclude Include="phxrpc_comp_tool.h" />
+    <ClInclude Include="Semaphore.h" />
     <None Include="Comp-Debug.vgdbsettings" />
     <None Include="Comp-Release.vgdbsettings" />
     <None Include="comp.proto" />

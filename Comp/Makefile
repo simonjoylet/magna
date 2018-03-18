@@ -27,16 +27,16 @@ TARGETS = libcomp_client.a comp1 comp2 comp3 comp4 comp_tool_main
 all: $(TARGETS)
 
 comp1: $(SVR_OBJS) comp_service_impl_1.o
-	$(LINKER) $^ -L../AdminServer/ -ladmin_client $(LDFLAGS) -o $@
+	$(LINKER) $^ -L../AdminServer/ -ladmin_client -L../SimuClient/ -lsimu_client $(LDFLAGS) -o $@
 
 comp2: $(SVR_OBJS) comp_service_impl_2.o
-	$(LINKER) $^ -L../AdminServer/ -ladmin_client $(LDFLAGS) -o $@
+	$(LINKER) $^ -L../AdminServer/ -ladmin_client -L../SimuClient/ -lsimu_client $(LDFLAGS) -o $@
 
 comp3: $(SVR_OBJS) comp_service_impl_3.o
-	$(LINKER) $^ -L../AdminServer/ -ladmin_client $(LDFLAGS) -o $@
+	$(LINKER) $^ -L../AdminServer/ -ladmin_client -L../SimuClient/ -lsimu_client $(LDFLAGS) -o $@
 
 comp4: $(SVR_OBJS) comp_service_impl_4.o
-	$(LINKER) $^ -L../AdminServer/ -ladmin_client $(LDFLAGS) -o $@
+	$(LINKER) $^ -L../AdminServer/ -ladmin_client -L../SimuClient/ -lsimu_client $(LDFLAGS) -o $@
 
 libcomp_client.a: $(CLI_OBJS)
 	$(AR) $@ $^

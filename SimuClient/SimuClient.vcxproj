@@ -95,7 +95,6 @@
     <ClInclude Include="phxrpc_simu_stub.h" />
     <ClInclude Include="phxrpc_simu_tool.h" />
     <ClInclude Include="ReqAnalytics.h" />
-    <ClInclude Include="Semaphore.h" />
     <ClInclude Include="ServiceSelector.h" />
     <ClInclude Include="simu.pb.h" />
     <ClInclude Include="SimuFunc.h" />

@@ -9,7 +9,9 @@
 #include "comp_server_config.h"
 #include "comp.pb.h"
 #include "phxrpc/file.h"
-
+#include <mutex>
+#include <list>
+#include "Semaphore.h"
 
 CompServiceImpl::CompServiceImpl(ServiceArgs_t &app_args,
         phxrpc::UThreadEpollScheduler *worker_uthread_scheduler)
@@ -38,5 +40,15 @@ int CompServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::p
 
     return 0;
 }
-
+extern std::mutex g_queueMutex;
+extern std::list<magna::AppRequest> g_reqQueue;
+extern Semaphore g_sema;
+int CompServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *resp) {
+	// 将请求放入队列，发送信号量。
+	g_queueMutex.lock();
+	g_reqQueue.push_back(req);
+	g_queueMutex.unlock();
+	g_sema.signal();
+	return 0;
+}
 
