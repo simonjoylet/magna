@@ -75,6 +75,7 @@ int32_t RegisterComponent(string ip, uint16_t port)
 	magna::RegisterServiceResponse rsp;
 	req.mutable_addr()->set_ip(ip);
 	req.mutable_addr()->set_port(port);
+	req.set_servicename(g_compName);
 	int ret = g_adminProxy->RegisterService(req, &rsp);
 // 	printf("AdminServer.RegisterService return %d\n", ret);
 // 	printf("resp: \n{\n%s\n}\n", rsp.DebugString().c_str());
@@ -147,7 +148,7 @@ void HandleFunc()
 	{
 		g_sema.wait();
 		g_queueMutex.lock();
-		magna::AppRequest & req = g_reqQueue.front();
+		magna::AppRequest req = g_reqQueue.front();
 		g_reqQueue.pop_front();
 		g_queueMutex.unlock();
 		// TODO ¥¶¿Ì«Î«Û

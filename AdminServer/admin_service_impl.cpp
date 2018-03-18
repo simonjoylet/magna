@@ -157,13 +157,13 @@ int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, mag
 	ss->set_name("Comp1");
 	ss->mutable_ep()->set_ip("223.3.69.5");
 	ss->mutable_ep()->set_port(20001);
-	ss->set_percentage(0.7);
+	ss->set_percentage(0.3);
 
 	ss = resp->add_routertable();
 	ss->set_name("Comp1");
 	ss->mutable_ep()->set_ip("223.3.69.5");
 	ss->mutable_ep()->set_port(20003);
-	ss->set_percentage(0.3);
+	ss->set_percentage(0.7);
 	
 	ss = resp->add_routertable();
 	ss->set_name("Comp2");
