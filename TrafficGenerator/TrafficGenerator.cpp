@@ -34,11 +34,11 @@ int GenerateTraffic(
 	srand(d(gen) * MILLION);
 
 	fwrite(&n, sizeof(n), 1, f);
-
+	static uint32_t idCount = 0;
 	for (uint32_t i = 0; i < n; ++i) 
 	{
 		AppReq req;
-		req.id = i + 1;
+		req.id = ++idCount;
 		req.interval = d(gen) * MILLION;
 		strcpy(req.service, serviceVec[rand() % serviceVec.size()].c_str());
 		req.weight = weightVec[rand() % weightVec.size()];
@@ -54,10 +54,18 @@ int GenerateTraffic(
 
 int main()
 {
-	vector<string> services = { "Comp1", "Comp2"};
+	vector<string> services = { "Comp_1"};
 	vector<uint32_t> weights = { 1, 2, 3 };
-	string filePath = "./test.dat";
-	GenerateTraffic(100, 10000, services, weights, filePath);
+	const char * filePathTemplate = "./Comp_1_%d.dat";
+	const int period = 10;
+	for (int i = 1; i <= 10; ++i)
+	{
+		char filePath[32] = {};
+		int lamda = 10 * i;
+		sprintf(filePath, filePathTemplate, 10 * i);
+		GenerateTraffic(lamda, lamda * period, services, weights, filePath);
+	}
+	
 	
 	// 测试读入的数据和写入的数据是否吻合。
 	// testRead(filePath);

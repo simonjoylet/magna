@@ -80,7 +80,7 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 	magna::AppRequest simuReq;
 	magna::AppResponse simuRsp;
 	uint32_t i = -1;
-	uint32_t sendCount = 0;
+	static uint32_t sendCount = 0;
 	
 	uint64_t stamp = phxrpc::Timer::GetSteadyClockMS();
 	while (++i < traffic.size())
@@ -92,9 +92,10 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 		simuReq.set_servicename(serviceName);
 
 		ReqLog reqLog;
-		reqLog.req = traffic[i];
-
-		reqLog.begin = phxrpc::Timer::GetSteadyClockMS();
+		reqLog.reqId = traffic[i].id;
+		strcpy(reqLog.serviceName, traffic[i].service);
+		reqLog.clientWeight = traffic[i].weight;
+		reqLog.localBegin = phxrpc::Timer::GetSteadyClockMS();
 		map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
 		if (foundIt == g_serviceTable->end())
 		{
@@ -108,8 +109,8 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 		int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
 		if (ret == 0)
 		{
-			reqLog.end = phxrpc::Timer::GetSteadyClockMS();
-			rstData[reqLog.req.id] = reqLog;
+			// reqLog.localEnd = phxrpc::Timer::GetSteadyClockMS();
+			rstData[reqLog.reqId] = reqLog;
 		}
 		else
 		{
@@ -120,14 +121,14 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 // 	int32_t stressTmp = 0;
 // 	map<string, ServiceSelector>::iterator foundIt = g_serviceTable->begin();
 // 	while (++stressTmp < 100000)
-	{
-		CompClient cc;
+// 	{
+// 		CompClient cc;
 // 		int32_t ret = cc.Handle(g_serviceTable->begin()->second.GetService(), simuReq, &simuRsp);
 // 		if (ret == 0)
 // 		{
 // 			cout << "sendcount: " << ++sendCount << endl;
 // 		}
-	}
+//	}
 	cout << "Time Used: " << phxrpc::Timer::GetSteadyClockMS() - stamp << "ms\n";
 
 	uint64_t tmp = 0;
@@ -182,5 +183,41 @@ int SimuAll()
 
 	return 0;
 }
+
+
+int Stress(string compName, const phxrpc::Endpoint_t & ep, map<int, string> & trafficFiles)
+{
+	CompClient::Init("../Comp/comp_client.conf");
+
+	// 获取服务路由表
+	ServiceSelector selector;
+	map<string, ServiceSelector> serviceTable;
+	selector.AddService(ep, 1);
+	serviceTable.insert(make_pair(compName, selector));
+	g_serviceTable = &serviceTable;
+
+	map<int32_t, int32_t> retMap;
+	for (map<int, string>::iterator it = trafficFiles.begin(); it != trafficFiles.end(); it++)
+	{
+		int lamda = it->first;
+		// 读入测试流量集
+		string dataFile = it->second;
+		vector<AppReq> traffic;
+		if (!ReadTrafficFile(dataFile, traffic))
+		{
+			cout << "Traffic file read error\n";
+			return -2;
+		}
+		
+		// 开始压测
+		
+		StartSimu(traffic, g_rstData, retMap);
+	}
+	
+	return 0;
+}
+
+
+
 
 #endif//SIMU_FUNC_H

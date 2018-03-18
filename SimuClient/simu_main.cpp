@@ -85,7 +85,27 @@ int main(int argc, char **argv) {
     service_args.config = &config;
     phxrpc::HshaServer server(config.GetHshaServerConfig(), Dispatch, &service_args);
 
-	std::thread simuTh(SimuAll);
+	// Ä£Äâ´úÂë
+	//std::thread simuTh(SimuAll);
+
+	// Ñ¹²â´úÂë
+	phxrpc::Endpoint_t ep;
+	strcpy(ep.ip, "223.3.69.5");
+	ep.port = 20001;
+	map<int, string> trafficFiles;
+	const char * filePathTemplate = "../TrafficGenerator/Comp_1_%d.dat";
+	for (int i = 1; i <= 10; ++i)
+	{
+		int lamda = 10 * i;
+		char filePath[64] = {};
+		sprintf(filePath, filePathTemplate, lamda);
+		trafficFiles.insert(make_pair(lamda, filePath));
+	}
+	auto tmpfun = [&]()
+	{
+		Stress("Comp_1", ep, trafficFiles);
+	};
+	std::thread stressTh(tmpfun);
 
     server.RunForever();
 

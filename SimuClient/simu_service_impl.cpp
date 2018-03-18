@@ -42,7 +42,7 @@ extern std::map<uint32_t, ReqLog> g_rstData;
 int SimuServiceImpl::GetRet(const magna::RetRequest &req, magna::RetResponse *resp) {
 	uint32_t id = req.id();
 	ReqLog & log = g_rstData[id];
-	log.end = phxrpc::Timer::GetSteadyClockMS();
+	log.localEnd = phxrpc::Timer::GetSteadyClockMS();
 	static int32_t retCount = 0;
 	printf("return count: %d, id: %d\n", ++retCount, id);
 
