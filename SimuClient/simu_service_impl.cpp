@@ -11,6 +11,7 @@
 #include "phxrpc/file.h"
 #include <map>
 #include "ReqAnalytics.h"
+#include "SimuFunc.h"
 
 SimuServiceImpl::SimuServiceImpl(ServiceArgs_t &app_args)
     : args_(app_args) {
@@ -41,8 +42,16 @@ int SimuServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::p
 extern std::map<uint32_t, ReqLog> g_rstData;
 int SimuServiceImpl::GetRet(const magna::RetRequest &req, magna::RetResponse *resp) {
 	uint32_t id = req.id();
+	g_rstDataMutex.lock();
 	ReqLog & log = g_rstData[id];
+	strcpy(log.serviceName, req.servicename().c_str());
+	log.clientWeight = req.clientweight();
+	log.compLamda = req.complamda();
+	log.queueLength = req.queuelength();
+	log.queueTime = req.queuetime();
+	log.processTime = req.processtime();
 	log.localEnd = phxrpc::Timer::GetSteadyClockMS();
+	g_rstDataMutex.unlock();
 	static int32_t retCount = 0;
 	printf("return count: %d, id: %d\n", ++retCount, id);
 
@@ -50,7 +59,15 @@ int SimuServiceImpl::GetRet(const magna::RetRequest &req, magna::RetResponse *re
 }
 
 int SimuServiceImpl::ReportLoad(const magna::ReportLoadRequest &req, magna::ReportLoadResponse *resp) {
+	LoadLog log;
+	log.sendId = g_sendCount;
+	log.sendLamda = g_sendLamda;
+	log.cpuLoad = req.cpuload();
+	log.diskLoad = req.diskload();
+	g_loadLogDataMutex.lock();
+	g_loadLogList.push_back(log);
+	g_loadLogDataMutex.unlock();
 	printf("%s: cpuLoad: %.2f, diskLoad: %.2f\n", req.ip().c_str(), req.cpuload(), req.diskload());
-	
+	resp->set_ack(true);
     return 0;
 }

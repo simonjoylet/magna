@@ -74,6 +74,9 @@
     <ClCompile Include="simu_main.cpp">
       <Filter>Server files</Filter>
     </ClCompile>
+    <ClCompile Include="SimuFunc.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SimuFunc.h">

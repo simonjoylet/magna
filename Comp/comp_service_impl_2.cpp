@@ -15,7 +15,7 @@ int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 		cout << "File open failed\n";
 		return -1;
 	}
-	const int BLOCK_SIZE = 1024 * 6;
+	const int BLOCK_SIZE = 1024 * 50;
 	char * tmp = new char[BLOCK_SIZE];
 	for (int i = 0; i < 1024; ++i)
 	{

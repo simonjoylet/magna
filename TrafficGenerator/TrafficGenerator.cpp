@@ -50,15 +50,53 @@ int GenerateTraffic(
 	fclose(f);
 	return 0;
 }
+#include "../SimuClient/ReqAnalytics.h"
+int ReadStressFile()
+{
+	string fileName = "Comp_1_223.3.87.60.stress";
+	FILE * stressFile = fopen(fileName.c_str(), "rb");
+	if (stressFile == NULL)
+	{
+		printf("File open failed, path: %s\n", fileName.c_str());
+		return -1;
+	}
 
+	// 保存负载数据
+	vector<LoadLog> loadLogList;
+	uint32_t loadLogCount = 0; 
+	fread(&loadLogCount, sizeof(loadLogCount), 1, stressFile);
+	for (size_t i = 0; i < loadLogCount; i++)
+	{
+		LoadLog log;
+		fread(&log, sizeof(LoadLog), 1, stressFile);
+		loadLogList.push_back(log);
+	}
+
+
+	// 保存请求数据
+	vector<ReqLog> reqLogList;
+	uint32_t reqLogCount = 0;
+	fread(&reqLogCount, sizeof(reqLogCount), 1, stressFile);
+	for (size_t i = 0; i < reqLogCount; ++i)
+	{
+		ReqLog log;
+		fread(&log, sizeof(ReqLog), 1, stressFile);
+		reqLogList.push_back(log);
+	}
+	fclose(stressFile);
+}
 
 int main()
 {
-	vector<string> services = { "Comp_1"};
+	// 测试读取压测数据文件
+	ReadStressFile();
+
+
+	vector<string> services = { "Comp_2"};
 	vector<uint32_t> weights = { 1, 2, 3 };
-	const char * filePathTemplate = "./Comp_1_%d.dat";
+	const char * filePathTemplate = "./Comp_2_%d.dat";
 	const int period = 10;
-	for (int i = 1; i <= 10; ++i)
+	for (int i = 1; i <= 15; ++i)
 	{
 		char filePath[32] = {};
 		int lamda = 10 * i;

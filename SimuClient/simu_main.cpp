@@ -20,7 +20,15 @@
 
 using namespace std;
 
+AdminClient * g_adminProxy;
+map<string, ServiceSelector> * g_serviceTable;
+std::mutex g_rstDataMutex;
+map<uint32_t, ReqLog> g_rstData;
 
+std::mutex g_loadLogDataMutex;
+vector<LoadLog> g_loadLogList;
+uint32_t g_sendCount{ 0 };
+uint32_t g_sendLamda{ 0 };
 
 void Dispatch(const phxrpc::BaseRequest *request,
               phxrpc::BaseResponse *response,
@@ -90,11 +98,11 @@ int main(int argc, char **argv) {
 
 	// Ñ¹²â´úÂë
 	phxrpc::Endpoint_t ep;
-	strcpy(ep.ip, "223.3.69.5");
-	ep.port = 20001;
+	strcpy(ep.ip, "223.3.87.60");
+	ep.port = 20002;
 	map<int, string> trafficFiles;
-	const char * filePathTemplate = "../TrafficGenerator/Comp_1_%d.dat";
-	for (int i = 1; i <= 10; ++i)
+	const char * filePathTemplate = "../TrafficGenerator/Comp_2_%d.dat";
+	for (int i = 1; i <= 6; ++i)
 	{
 		int lamda = 10 * i;
 		char filePath[64] = {};
@@ -103,7 +111,7 @@ int main(int argc, char **argv) {
 	}
 	auto tmpfun = [&]()
 	{
-		Stress("Comp_1", ep, trafficFiles);
+		Stress("Comp_2", ep, trafficFiles);
 	};
 	std::thread stressTh(tmpfun);
 

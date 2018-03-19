@@ -26,4 +26,13 @@ struct ReqLog
 	}
 };
 
+struct LoadLog
+{
+	uint32_t sendId; // 当前正在发送的id
+	uint32_t sendLamda; // 当前的发送lamda
+	double cpuLoad;
+	double diskLoad;
+	LoadLog() : sendId(0), sendLamda(0), cpuLoad(0), diskLoad(0){}
+};
+
 #endif//REQ_ANALYTICS_H

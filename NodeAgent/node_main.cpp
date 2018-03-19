@@ -53,6 +53,8 @@ void ShowUsage(const char *program) {
 AdminClient * g_adminProxy;
 SimuClient * g_simuClient;
 bool g_hbShouldRun = true;
+const int CORE_NUMBER = 1; // cpu核心数量
+const int MAX_DISK_MPS = 1600; // 测试发现，机械磁盘每秒最多读200到300MB
 
 void NodeHbFunc()
 {
@@ -125,8 +127,8 @@ void CalcNodeLoad(const string & atopReport, double & cpuLoad, double & diskLoad
 	}
 	string idleStr = atopReport.substr(beginPos + 4, endPos - beginPos - 4);
 	int cpuIdle = atoi(idleStr.c_str());
-	const int coreNumber = 4; // cpu核心数量
-	cpuLoad = 1.0 * (100 * coreNumber - cpuIdle) / (100 * coreNumber);
+	
+	cpuLoad = 1.0 * (100 * CORE_NUMBER - cpuIdle) / (100 * CORE_NUMBER);
 	cpuLoad = cpuLoad < 0 ? 0 : cpuLoad;
 
 	// 获取磁盘负载
@@ -171,7 +173,7 @@ void CalcNodeLoad(const string & atopReport, double & cpuLoad, double & diskLoad
 		linePtr = strtok(NULL, "\n");
 	}
 	delete[] buf;
-	const int MAX_DISK_MPS = 200; // 测试发现，机械磁盘每秒最多读200MB
+	
 	diskLoad = diskWrite / (MAX_DISK_MPS * 1024) ;
 	diskLoad = diskLoad > 1 ? 1 : diskLoad;
 

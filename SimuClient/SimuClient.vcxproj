@@ -73,6 +73,7 @@
     <ClCompile Include="phxrpc_simu_tool.cpp" />
     <ClCompile Include="ServiceSelector.cpp" />
     <ClCompile Include="simu.pb.cc" />
+    <ClCompile Include="SimuFunc.cpp" />
     <ClCompile Include="simu_client.cpp" />
     <ClCompile Include="simu_main.cpp" />
     <ClCompile Include="simu_server_config.cpp" />

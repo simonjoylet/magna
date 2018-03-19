@@ -17,7 +17,8 @@ SVR_OBJS = simu.pb.o \
 		phxrpc_simu_dispatcher.o \
 		simu_server_config.o \
 		simu_main.o \
-		ServiceSelector.o
+		ServiceSelector.o \
+		SimuFunc.o
 
 CLI_OBJS = simu.pb.o \
 		simu_client.o \
@@ -62,6 +63,7 @@ simu_service_impl.o: phxrpc_simu_service.h
 phxrpc_simu_dispatcher.cpp: phxrpc_simu_service.h
 phxrpc_simu_dispatcher.o: phxrpc_simu_service.h
 ServiceSelector.o: ServiceSelector.cpp
+SimuFunc.o: SimuFunc.cpp
 
 phxrpc_simu_service.h: simu.proto
 	$(PHXRPC_ROOT)/codegen/phxrpc_pb2service $(PBFLAGS) -f $^ -d . -p mqtt
