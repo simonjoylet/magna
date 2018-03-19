@@ -10,7 +10,11 @@ message RetRequest
 {
 	int32 id = 1;
 	string serviceName = 2;
-	int32 clientType = 3;
+	int32 clientWeight = 3;
+	int32 compLamda = 4; // 请求到达时的到达强度
+	int32 queueLength = 5; // 请求到达时的队列长度
+	int32 queueTime = 6; // 排队时间，ms
+	int32 processTime = 7; // 处理时间，ms
 }
 
 message RetResponse

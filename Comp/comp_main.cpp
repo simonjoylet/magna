@@ -141,7 +141,23 @@ void ServiceHb(string ip, uint16_t port)
 Semaphore g_sema(0);
 std::mutex g_queueMutex;
 list<magna::AppRequest> g_reqQueue;
+map<uint32_t, ReqWaitInfo> g_waitInfoMap;
 SimuClient * g_simuProxy;
+
+static const uint32_t ARRIVE_ROUND = 50; //过去50个请求计算出的到达率，不足50个时，到达率为0
+list<uint64_t> g_arriveListForLamda;
+
+uint32_t GetLamda()
+{
+	if (g_arriveListForLamda.size() < 50)
+	{
+		return 0;
+	}
+	uint32_t lamda = 1000 * ARRIVE_ROUND / (g_arriveListForLamda.back() - g_arriveListForLamda.front());
+	printf("lamda: %d, count queue size: %d\n", lamda, g_arriveListForLamda.size());
+	return lamda;
+}
+
 void HandleFunc()
 {
 	while (true)
@@ -151,6 +167,8 @@ void HandleFunc()
 		magna::AppRequest req = g_reqQueue.front();
 		g_reqQueue.pop_front();
 		g_queueMutex.unlock();
+		ReqWaitInfo & waitInfo = g_waitInfoMap[req.id()];
+		waitInfo.queueEnd = phxrpc::Timer::GetSteadyClockMS();
 		// TODO 处理请求
 		static int doneCount = 0;
 		magna::AppResponse rsp;

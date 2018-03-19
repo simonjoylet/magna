@@ -12,6 +12,7 @@
 #include <mutex>
 #include <list>
 #include "Semaphore.h"
+#include "InnerHandle.h"
 
 CompServiceImpl::CompServiceImpl(ServiceArgs_t &app_args,
         phxrpc::UThreadEpollScheduler *worker_uthread_scheduler)
@@ -42,10 +43,26 @@ int CompServiceImpl::PhxEcho(const google::protobuf::StringValue &req, google::p
 }
 extern std::mutex g_queueMutex;
 extern std::list<magna::AppRequest> g_reqQueue;
+extern std::map<uint32_t, ReqWaitInfo> g_waitInfoMap;
 extern Semaphore g_sema;
 int CompServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *resp) {
 	// 将请求放入队列，发送信号量。
 	g_queueMutex.lock();
+	ReqWaitInfo waitInfo;
+	waitInfo.id = req.id();
+	waitInfo.queueLength = g_reqQueue.size();
+	waitInfo.compLamda = GetLamda();
+	waitInfo.queueBegin = phxrpc::Timer::GetSteadyClockMS();
+	g_waitInfoMap[req.id()] = waitInfo;
+
+	// 更新lamda的统计队列
+	if (g_arriveListForLamda.size() >= 50)
+	{
+		g_arriveListForLamda.pop_front();
+		
+	}
+	g_arriveListForLamda.push_back(waitInfo.queueBegin);
+	
 	g_reqQueue.push_back(req);
 	g_queueMutex.unlock();
 	g_sema.signal();
