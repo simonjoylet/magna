@@ -4,6 +4,7 @@
 #include "../AdminServer/admin_client.h"
 #include "../Comp/comp_client.h"
 
+#include "../TrafficGenerator/TrafficDefine.h"
 #include "ReqAnalytics.h"
 #include "ServiceSelector.h"
 #include "phxrpc/network/timer.h"

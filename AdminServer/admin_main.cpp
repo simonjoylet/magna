@@ -62,7 +62,7 @@ void AdminHbFunc()
 	// 时钟轮盘
 	while (g_hbShouldRun)
 	{
-		static int32 count = 0;
+		static uint32_t count = 0;
 		sleep(1);
 		++count;
 
@@ -102,12 +102,6 @@ void AdminHbFunc()
 	}
 	printf("\nAdmin HbThread stopped...\n");
 	return;
-}
-
-// 读取组件的压测数据
-int ReadStressData(string compName, string filePath)
-{
-	return -1;
 }
 
 // 负责负载平衡的调度线程

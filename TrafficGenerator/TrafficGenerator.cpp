@@ -53,7 +53,7 @@ int GenerateTraffic(
 #include "../SimuClient/ReqAnalytics.h"
 int ReadStressFile()
 {
-	string fileName = "Comp_1_223.3.87.60.stress";
+	string fileName = "Comp_3_223.3.87.60.stress";
 	FILE * stressFile = fopen(fileName.c_str(), "rb");
 	if (stressFile == NULL)
 	{
@@ -89,7 +89,7 @@ int ReadStressFile()
 int main()
 {
 	// 测试读取压测数据文件
-	ReadStressFile();
+	//ReadStressFile();
 
 
 	vector<string> services = { "Comp_2"};

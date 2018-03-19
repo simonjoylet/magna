@@ -57,18 +57,19 @@ message RegisterServiceResponse
 	int32 serviceId = 3; // 对每个服务分配唯一id
 }
 
-message InterfaceData
-{
-	string name = 1;
-	double lamda = 2; // 单位qps
-	double averageTime = 3; // 单位ms
-	
-}
+//message InterfaceData
+//{
+//	string name = 1;
+//	double lamda = 2; // 单位qps
+//	double averageTime = 3; // 单位ms	
+//}
 
 message ServiceHeartbeatRequest
 {
 	int32 serviceId = 1;
-	map<string, InterfaceData> services = 2;
+	int32 lamda = 2; // 单位qps
+	int32 queueLength = 3; // 队列长度
+	// map<string, InterfaceData> services = 2;
 }
 
 message ServiceHeartbeatResponse

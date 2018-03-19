@@ -46,7 +46,7 @@ extern std::list<magna::AppRequest> g_reqQueue;
 extern std::map<uint32_t, ReqWaitInfo> g_waitInfoMap;
 extern Semaphore g_sema;
 int CompServiceImpl::Handle(const magna::AppRequest &req, magna::AppResponse *resp) {
-	// 将请求放入队列，发送信号量。
+	// 将请求放入队列，发送信号量。 TODO 排队时，运行满意度优先调度算法
 	g_queueMutex.lock();
 	ReqWaitInfo waitInfo;
 	waitInfo.id = req.id();

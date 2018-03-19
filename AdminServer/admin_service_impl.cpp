@@ -135,13 +135,9 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
 	{
 		localdata::ServiceInfo & info = ad->m_serviceList[serviceId];
 		info.heatbeat = 0;
-		const ::google::protobuf::Map<string, magna::InterfaceData > & interfaces = req.services();
-		for (auto it = interfaces.begin(); it != interfaces.end(); ++it)
-		{
-			info.interfaceStatus[it->first].lamda = it->second.lamda();
-			info.interfaceStatus[it->first].averageTime = it->second.averagetime();
-		}
-
+		info.lamda = req.lamda();
+		info.queueLength = req.queuelength();
+		
 		resp->set_ack(true);
 		resp->set_msg("success");
 	}
@@ -151,27 +147,41 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
 }
 
 int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) {
-	magna::ServiceScale * ss = NULL;
-	// 用两个组件进行测试
-	ss = resp->add_routertable();
-	ss->set_name("Comp1");
-	ss->mutable_ep()->set_ip("223.3.69.5");
-	ss->mutable_ep()->set_port(20001);
-	ss->set_percentage(0.3);
-
-	ss = resp->add_routertable();
-	ss->set_name("Comp1");
-	ss->mutable_ep()->set_ip("223.3.69.5");
-	ss->mutable_ep()->set_port(20003);
-	ss->set_percentage(0.7);
 	
-	ss = resp->add_routertable();
-	ss->set_name("Comp2");
-	ss->mutable_ep()->set_ip("223.3.69.5");
-	ss->mutable_ep()->set_port(20002);
-	ss->set_percentage(1);
+	AdminData * ad = AdminData::GetInstance();
+	ad->lock();
+	vector<localdata::RouterItem> & router = ad->m_router;
+	magna::ServiceScale * ss = NULL;
+	for (uint32_t i = 0; i < router.size(); ++i)
+	{
+		localdata::RouterItem & item = router[i];
+		ss = resp->add_routertable();
+		ss->set_name(item.compName);
+		ss->mutable_ep()->set_ip(item.ip);
+		ss->mutable_ep()->set_port(item.port);
+		ss->set_percentage(item.percentage);
+	}
+	ad->unlock();
 
+// 	// 用两个组件进行测试 
+// 
+// 	ss = resp->add_routertable();
+// 	ss->set_name("Comp1");
+// 	ss->mutable_ep()->set_ip("223.3.69.5");
+// 	ss->mutable_ep()->set_port(20001);
+// 	ss->set_percentage(0.3);
+// 
+// 	ss = resp->add_routertable();
+// 	ss->set_name("Comp1");
+// 	ss->mutable_ep()->set_ip("223.3.69.5");
+// 	ss->mutable_ep()->set_port(20003);
+// 	ss->set_percentage(0.7);
+// 	
+// 	ss = resp->add_routertable();
+// 	ss->set_name("Comp2");
+// 	ss->mutable_ep()->set_ip("223.3.69.5");
+// 	ss->mutable_ep()->set_port(20002);
+// 	ss->set_percentage(1);
 
-	//AdminData::GetInstance()->GetServiceTable();
     return 0;
 }

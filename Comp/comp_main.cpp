@@ -54,6 +54,17 @@ AdminClient * g_adminProxy;
 uint32_t g_serviceId = 0;
 bool g_hbShouldRun = true;
 
+#include "Semaphore.h"
+#include <list>
+Semaphore g_sema(0);
+std::mutex g_queueMutex;
+list<magna::AppRequest> g_reqQueue;
+map<uint32_t, ReqWaitInfo> g_waitInfoMap;
+SimuClient * g_simuProxy;
+
+static const uint32_t ARRIVE_ROUND = 50; //过去50个请求计算出的到达率，不足50个时，到达率为0
+list<uint64_t> g_arriveListForLamda;
+
 // 测试AdminServer是否可用
 bool testAdminEcho()
 {
@@ -96,7 +107,7 @@ void ServiceHb(string ip, uint16_t port)
 	uint32_t adminNonAckCount = 0;
 	while (g_hbShouldRun)
 	{
-		sleep(2);
+		sleep(1);
 		int ret = -1;
 		if (lostAdminServer)
 		{
@@ -109,7 +120,8 @@ void ServiceHb(string ip, uint16_t port)
 		}
 
 		req.set_serviceid(g_serviceId);
-		req.mutable_services(); // TODO，更新接口统计数据
+		req.set_lamda(GetLamda());
+		req.set_queuelength(g_reqQueue.size());
 		
 		ret = g_adminProxy->ServiceHeatbeat(req, &rsp);
 		if (0 != ret)
@@ -136,16 +148,6 @@ void ServiceHb(string ip, uint16_t port)
 	}
 	printf("\nNode heatbeat thread stopped...\n");
 }
-#include "Semaphore.h"
-#include <list>
-Semaphore g_sema(0);
-std::mutex g_queueMutex;
-list<magna::AppRequest> g_reqQueue;
-map<uint32_t, ReqWaitInfo> g_waitInfoMap;
-SimuClient * g_simuProxy;
-
-static const uint32_t ARRIVE_ROUND = 50; //过去50个请求计算出的到达率，不足50个时，到达率为0
-list<uint64_t> g_arriveListForLamda;
 
 uint32_t GetLamda()
 {
@@ -169,7 +171,8 @@ void HandleFunc()
 		g_queueMutex.unlock();
 		ReqWaitInfo & waitInfo = g_waitInfoMap[req.id()];
 		waitInfo.queueEnd = phxrpc::Timer::GetSteadyClockMS();
-		// TODO 处理请求
+
+		// 处理请求
 		static int doneCount = 0;
 		magna::AppResponse rsp;
 		InnerHandle(req, &rsp);

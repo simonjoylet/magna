@@ -1,7 +1,6 @@
 #ifndef REQ_ANALYTICS_H
 #define REQ_ANALYTICS_H
 #include <stdint.h>
-#include "../TrafficGenerator/TrafficDefine.h"
 #include <string.h>
 using std::string;
 
