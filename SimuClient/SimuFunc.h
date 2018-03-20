@@ -19,7 +19,8 @@
 using namespace std;
 
 extern AdminClient * g_adminProxy;
-extern map<string, ServiceSelector> * g_serviceTable;
+extern std::mutex g_routerMutex;
+extern map<string, ServiceSelector> g_serviceTable;
 
 extern std::mutex g_rstDataMutex;
 extern map<uint32_t, ReqLog> g_rstData;
@@ -29,11 +30,12 @@ extern vector<LoadLog> g_loadLogList;
 extern uint32_t g_sendCount;
 extern uint32_t g_sendLamda;
 
+
 bool TestAccessAdminServer();
 
 bool ReadTrafficFile(string filePath, vector<AppReq> & traffic);
 
-int UpdateServiceTable(map<string, ServiceSelector> & table);
+int UpdateServiceTable();
 
 int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, map<int32_t, int32_t> & retMap);
 

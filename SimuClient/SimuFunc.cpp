@@ -30,27 +30,35 @@ bool ReadTrafficFile(string filePath, vector<AppReq> & traffic)
 	return true;
 }
 
-int UpdateServiceTable(map<string, ServiceSelector> & table)
+int UpdateServiceTable()
 {
 	magna::ServiceTableRequest req;
 	magna::ServiceTableResponse rsp;
-	int ret = g_adminProxy->GetServiceTable(req, &rsp);
-	if (ret != 0)
+	while (true)
 	{
-		return -1;
+		int ret = g_adminProxy->GetServiceTable(req, &rsp);
+		if (ret != 0)
+		{
+			printf("Get service table failed, ret: %d\n", ret);
+			continue;
+		}
+		g_routerMutex.lock();
+		g_serviceTable.clear();
+		phxrpc::Endpoint_t ep;
+		for (int32_t i = 0; i < rsp.routertable().size(); ++i)
+		{
+			string name = rsp.routertable(i).name();
+			memset(&ep, 0, sizeof(ep));
+			strcpy(ep.ip, rsp.routertable(i).ep().ip().c_str());
+			ep.port = rsp.routertable(i).ep().port();
+			double percentage = rsp.routertable(i).percentage();
+			g_serviceTable[name].AddService(ep, percentage);
+		}
+		g_routerMutex.unlock();
+		sleep(1);
 	}
-
-	table.clear();
-	phxrpc::Endpoint_t ep;
-	for (int32_t i = 0; i < rsp.routertable().size(); ++i)
-	{
-		string name = rsp.routertable(i).name();
-		memset(&ep, 0, sizeof(ep));
-		strcpy(ep.ip, rsp.routertable(i).ep().ip().c_str());
-		ep.port = rsp.routertable(i).ep().port();
-		double percentage = rsp.routertable(i).percentage();
-		table[name].AddService(ep, percentage);
-	}
+	
+	
 	return 0;
 }
 
@@ -74,17 +82,23 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 		strcpy(reqLog.serviceName, traffic[i].service);
 		reqLog.clientWeight = traffic[i].weight;
 		reqLog.localBegin = phxrpc::Timer::GetSteadyClockMS();
-		map<string, ServiceSelector>::iterator foundIt = g_serviceTable->find(serviceName);
-		if (foundIt == g_serviceTable->end())
+
+		// 查找路由表
+		g_routerMutex.lock();
+		map<string, ServiceSelector>::iterator foundIt = g_serviceTable.find(serviceName);
+		if (foundIt == g_serviceTable.end())
 		{
 			cout << "Service not found\n";
+			g_routerMutex.unlock();
 			continue;// 需要慎重考虑是否可以直接跳过后续代码
 		}
+		ServiceSelector selector = foundIt->second;
+		g_routerMutex.unlock();
 
 		CompClient cc;
 
 		cout << "sendcount: " << ++g_sendCount << endl;
-		int32_t ret = cc.Handle(foundIt->second.GetService(), simuReq, &simuRsp);
+		int32_t ret = cc.Handle(selector.GetService(), simuReq, &simuRsp);
 		if (ret == 0)
 		{
 			// reqLog.localEnd = phxrpc::Timer::GetSteadyClockMS();
@@ -95,18 +109,7 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 			++retMap[ret];
 		}
 	}
-	// 测试最高并发
-	// 	int32_t stressTmp = 0;
-	// 	map<string, ServiceSelector>::iterator foundIt = g_serviceTable->begin();
-	// 	while (++stressTmp < 100000)
-	// 	{
-	// 		CompClient cc;
-	// 		int32_t ret = cc.Handle(g_serviceTable->begin()->second.GetService(), simuReq, &simuRsp);
-	// 		if (ret == 0)
-	// 		{
-	// 			cout << "sendcount: " << ++sendCount << endl;
-	// 		}
-	//	}
+
 	cout << "Time Used: " << phxrpc::Timer::GetSteadyClockMS() - stamp << "ms\n";
 
 	uint64_t tmp = 0;
@@ -143,19 +146,8 @@ int SimuAll()
 		return -2;
 	}
 
-	// 获取服务路由表
-	map<string, ServiceSelector> serviceTable;
-	if (UpdateServiceTable(serviceTable) < 0)
-	{
-		cout << "Fail to get ServiceTable\n";
-		return -3;
-	}
-	g_serviceTable = &serviceTable;
-
 	// 向AdminServer发出服务请求，并记录开始和截止的时间戳
-
 	map<int32_t, int32_t> retMap;
-
 	StartSimu(traffic, g_rstData, retMap);
 
 
@@ -172,7 +164,7 @@ int Stress(string compName, const phxrpc::Endpoint_t & ep, map<int, string> & tr
 	map<string, ServiceSelector> serviceTable;
 	selector.AddService(ep, 1);
 	serviceTable.insert(make_pair(compName, selector));
-	g_serviceTable = &serviceTable;
+	g_serviceTable = serviceTable;// 压测的时候不能开AdminServer
 	uint32_t reqCount = 0;
 
 	map<int32_t, int32_t> retMap;

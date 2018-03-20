@@ -9,6 +9,8 @@
 #include <vector>
 using namespace std;
 
+static const double MAX_UTILIZATION = 0.9; // 最大资源利用率
+
 namespace localdata
 { 
 struct InetAddress
@@ -57,11 +59,21 @@ struct StressInfo
 	uint32_t lamda;
 	double cpuLoad;
 	double diskLoad;
-	uint32_t processTime; // 每条请求的平均处理时间
-	uint32_t queueUnitTime; // 队列中单位人数的排队时间，一般比处理时间略长。
-	StressInfo() : lamda(0), cpuLoad(0), diskLoad(0), processTime(0), queueUnitTime(0){}
+	double queueGrowSpeed; // 队列增长速度，个/s
+	StressInfo() : lamda(0), cpuLoad(0), diskLoad(0), queueGrowSpeed(0){}
 };
-
+struct CompStress
+{
+	string name; // 组件名称
+	double processTime; // 每条请求的平均处理时间
+	double cpuPerLamda; // 单位到达强度下的CPU消耗
+	double diskPerLamda; // 单位到达强度下的disk消耗
+	double cpuBase; // 空载时的CPU消耗
+	double diskBase; // 空载时的disk消耗
+	vector<StressInfo> stressVec;
+	CompStress() :name(""), processTime(0), cpuPerLamda(0),
+		diskPerLamda(0), cpuBase(0), diskBase(0){}
+};
 }
 
 class AdminData
@@ -78,8 +90,8 @@ public:
 	// 服务的路由表
 	vector<localdata::RouterItem> m_router;
 
-	// 
-	map<string/*name*/, vector<localdata::StressInfo>> m_serviceStress;
+	// 各个组件的压测数据表
+	map<string/*name*/, localdata::CompStress> m_stressMap;
 
 	void InitServiceTable(vector<localdata::RouterItem> & m_router);
 	int32_t UpdateServiceTable(); // TODO

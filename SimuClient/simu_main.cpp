@@ -21,10 +21,10 @@
 using namespace std;
 
 AdminClient * g_adminProxy;
-map<string, ServiceSelector> * g_serviceTable;
+std::mutex g_routerMutex;
+map<string, ServiceSelector> g_serviceTable;
 std::mutex g_rstDataMutex;
 map<uint32_t, ReqLog> g_rstData;
-
 std::mutex g_loadLogDataMutex;
 vector<LoadLog> g_loadLogList;
 uint32_t g_sendCount{ 0 };
@@ -113,6 +113,7 @@ int main(int argc, char **argv) {
 	{
 		Stress("Comp_2", ep, trafficFiles);
 	};
+	std::thread routerTh(UpdateServiceTable);
 	std::thread stressTh(tmpfun);
 
     server.RunForever();

@@ -165,9 +165,10 @@ int main(int argc, char **argv) {
 	g_nodeProxy = new NodeClient;
 
 	// 读取各个组件的压测数据
-// 	ReadStressData("Comp_1", );
-// 	ReadStressData("Comp_2", );
-// 	ReadStressData("Comp_3", );
+	AdminData * ad = AdminData::GetInstance();
+	ad->ReadStressData("Comp_1", "../SimuClient/Comp_1_223.3.87.60.stress");
+	ad->ReadStressData("Comp_2", "../SimuClient/Comp_2_223.3.87.60.stress");
+	ad->ReadStressData("Comp_3", "../SimuClient/Comp_3_223.3.87.60.stress");
 
 	// 启动心跳线程
 	std::thread hb(AdminHbFunc);

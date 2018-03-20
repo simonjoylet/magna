@@ -15,6 +15,8 @@ int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 		pow(rand(), i);
 	}
 	
+	// TODO 该用发送队列实现，不然会导致processTime与队列的平均处理时间不一致，因为有网络误差。
+
 	magna::RetRequest retReq;
 	magna::RetResponse retRsp;
 
@@ -27,6 +29,7 @@ int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 	retReq.set_queuetime(waitInfo.queueEnd - waitInfo.queueBegin);
 	uint32_t processTime = phxrpc::Timer::GetSteadyClockMS() - ts;
 	retReq.set_processtime(processTime);
+
 
 	int ret = g_simuProxy->GetRet(retReq, &retRsp);
 	printf("time used: %dms, return %s\n", processTime, ret == 0 ? "succ" : "fail");
