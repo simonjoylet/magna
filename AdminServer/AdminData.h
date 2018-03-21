@@ -7,6 +7,7 @@
 #include <mutex>
 #include <stdint.h>
 #include <vector>
+#include "../NodeAgent/node_client.h"
 using namespace std;
 
 static const double MAX_UTILIZATION = 0.9; // 最大资源利用率
@@ -95,11 +96,12 @@ public:
 	// 各个组件的压测数据表
 	map<string/*name*/, localdata::CompStress> m_stressMap;
 
-	void InitServiceTable(vector<localdata::RouterItem> & m_router);
+	void InitServiceTable();
 	int32_t UpdateServiceTable(); // TODO
 
 	int32_t ReadStressData(string compName, string filePath);
 
+	magna::StartComponentResponse StartComp(localdata::InetAddress & nodeAddr, string compName);
 
 	int32_t GetNewServiceId();
 	

@@ -55,7 +55,7 @@ int UpdateServiceTable()
 			g_serviceTable[name].AddService(ep, percentage);
 		}
 		g_routerMutex.unlock();
-		sleep(1);
+		sleep(10);
 	}
 	
 	

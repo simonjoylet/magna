@@ -61,6 +61,7 @@ int AdminServiceImpl::RegisterNode(const magna::RegisterNodeRequest &req, magna:
 	
 	resp->set_ack(true);
 	resp->set_msg("Register success");
+	printf("\nNode registered, %s\n", ep.ip);
     return 0;
 }
 
@@ -93,7 +94,7 @@ int AdminServiceImpl::NodeHeatbeat(const magna::NodeHeartbeatRequest &req, magna
 		resp->set_ack(true);
 		resp->set_msg("success");
 
-		printf("\nNode status updated: %s cpu: %f\n", req.addr().ip().c_str(), req.load().cpu());
+		//printf("\nNode status updated: %s cpu: %f\n", req.addr().ip().c_str(), req.load().cpu());
 	}
 
 	ad->unlock();
@@ -117,6 +118,8 @@ int AdminServiceImpl::RegisterService(const magna::RegisterServiceRequest &req, 
 	resp->set_ack(true);
 	resp->set_msg("success");
 	resp->set_serviceid(serviceId);
+
+	printf("\nService registered, %s %s: %d\n", info.name.c_str(), info.addr.ip.c_str(), info.addr.port);
     return 0;
 }
 

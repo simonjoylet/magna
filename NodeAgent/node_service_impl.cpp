@@ -61,16 +61,20 @@ FastRejectAdjustRate = 5\n\n[Log]\nLogDir = ~/log\nLogLevel = 3\n\n[ServerTimeou
 	getcwd(currentPath, sizeof(currentPath));
 	sprintf(finalParam, "%s/%s", currentPath, fileName);
 
-	pid_t pid = vfork();
+	char binPath[128] = {};
+	sprintf(binPath, "%s/../Comp/%s", currentPath, req.path().c_str());
+	
+
+	pid_t pid = fork();
 	switch (pid)
 	{
 	case -1:
 		printf("\n!!! fork failed\n");
 		break;
 	case 0:
-		execl(req.path().c_str(), req.path().c_str(), "-c", finalParam, NULL);
+		execl(binPath, binPath, "-c", finalParam, NULL);
 		if (errno) perror("exec failed");
-		_exit(0);
+		//_exit(0);
 		break;
 	default:
 		printf("\ncreate process: %d\n", pid);

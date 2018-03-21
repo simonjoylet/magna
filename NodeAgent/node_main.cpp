@@ -91,7 +91,7 @@ void NodeHbFunc()
 
 		if (hbRsp.ack())
 		{
-			printf("\nNode heatbeat ack received\n");
+			//printf("\nNode heatbeat ack received\n");
 			// 更新节点数据
 		}
 		else
@@ -177,7 +177,7 @@ void CalcNodeLoad(const string & atopReport, double & cpuLoad, double & diskLoad
 	diskLoad = diskWrite / (MAX_DISK_MPS * 1024) ;
 	diskLoad = diskLoad > 1 ? 1 : diskLoad;
 
-	printf("\n[DEBUG]: cpuLoad: %.2f, diskLoad: %.2f\n", cpuLoad, diskLoad);
+	//printf("\n[DEBUG]: cpuLoad: %.2f, diskLoad: %.2f\n", cpuLoad, diskLoad);
 }
 
 

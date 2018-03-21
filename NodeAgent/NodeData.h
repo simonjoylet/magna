@@ -52,7 +52,7 @@ private:
 	std::mutex m_mutex;
 	list<NodeLoad> m_loadList;
 	// not allowed
-	NodeData() : m_port(0), m_compPortCount(20000){}
+	NodeData() : m_port(0), m_compPortCount(30000){}
 	~NodeData(){}
 };
 

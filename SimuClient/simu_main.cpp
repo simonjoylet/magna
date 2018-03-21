@@ -93,28 +93,29 @@ int main(int argc, char **argv) {
     service_args.config = &config;
     phxrpc::HshaServer server(config.GetHshaServerConfig(), Dispatch, &service_args);
 
-	// 模拟代码
-	//std::thread simuTh(SimuAll);
-
-	// 压测代码
-	phxrpc::Endpoint_t ep;
-	strcpy(ep.ip, "223.3.87.60");
-	ep.port = 20002;
-	map<int, string> trafficFiles;
-	const char * filePathTemplate = "../TrafficGenerator/Comp_2_%d.dat";
-	for (int i = 1; i <= 6; ++i)
-	{
-		int lamda = 10 * i;
-		char filePath[64] = {};
-		sprintf(filePath, filePathTemplate, lamda);
-		trafficFiles.insert(make_pair(lamda, filePath));
-	}
-	auto tmpfun = [&]()
-	{
-		Stress("Comp_2", ep, trafficFiles);
-	};
+	// 启动路由表更新
 	std::thread routerTh(UpdateServiceTable);
-	std::thread stressTh(tmpfun);
+	// 模拟代码
+	std::thread simuTh(SimuAll);
+
+// 	// 压测代码
+// 	phxrpc::Endpoint_t ep;
+// 	strcpy(ep.ip, "223.3.87.60");
+// 	ep.port = 20002;
+// 	map<int, string> trafficFiles;
+// 	const char * filePathTemplate = "../TrafficGenerator/Comp_2_%d.dat";
+// 	for (int i = 1; i <= 6; ++i)
+// 	{
+// 		int lamda = 10 * i;
+// 		char filePath[64] = {};
+// 		sprintf(filePath, filePathTemplate, lamda);
+// 		trafficFiles.insert(make_pair(lamda, filePath));
+// 	}
+// 	auto tmpfun = [&]()
+// 	{
+// 		Stress("Comp_2", ep, trafficFiles);
+// 	};
+// 	std::thread stressTh(tmpfun);
 
     server.RunForever();
 

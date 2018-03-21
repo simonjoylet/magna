@@ -4,7 +4,7 @@
 #include "../NodeAgent/node_client.h"
 
 AdminData * AdminData::m_instance = NULL;
-
+extern NodeClient * g_nodeProxy;
 AdminData::AdminData()
 {
 	m_serviceIdCount = 0;
@@ -49,13 +49,30 @@ bool localdata::InetAddress::operator<(const InetAddress & param)
 	}
 }
 
-void AdminData::InitServiceTable(vector<localdata::RouterItem> & router)
+void AdminData::InitServiceTable()
 {
-	m_router = router;
-// 	for (uint32_t i = 0; i < router.size(); ++i)
-// 	{
-// 		m_router.push_back(router[i]);
-// 	}
+	vector<string> compVec = {"Comp_1", "Comp_2"};
+	uint32_t compIndex = 0;
+
+	for (auto it = m_nodeList.begin(); it != m_nodeList.end() && compIndex < compVec.size(); ++it, ++compIndex)
+	{
+		string compName = compVec[compIndex];
+		magna::StartComponentResponse rsp = StartComp(it->second.addr, compName);
+		localdata::RouterItem item;
+		item.compName = compName;
+		item.percentage = 1;
+		if (rsp.success())
+		{
+			item.ip = rsp.ip();
+			item.port = rsp.port();
+			item.pid = rsp.pid();
+			m_router.push_back(item);
+		}
+		else
+		{
+			printf("start component failed\n");
+		}
+	}	
 }
 
 
@@ -171,6 +188,23 @@ int32_t AdminData::ReadStressData(string compName, string filePath)
 	return 0;
 }
 
+magna::StartComponentResponse AdminData::StartComp(localdata::InetAddress & nodeAddr, string compName)
+{
+	map<string, string> nameToPath;
+	nameToPath["Comp_1"] = "comp1";
+	nameToPath["Comp_2"] = "comp2";
+	nameToPath["Comp_3"] = "comp3";
+	magna::StartComponentRequest req;
+	magna::StartComponentResponse rsp;
+	req.set_path(nameToPath[compName]);
+	int ret = g_nodeProxy->StartComponent(req, &rsp);
+	if (ret == 0)
+	{
+		printf("StartComponent\n\nresp: {\n%s}\n", rsp.DebugString().c_str());
+	}
+	return rsp;
+}
+
 // 计算单位CPU的其他资源占用，求差的平方，数值越大，说明资源互补性越高，亲缘度越高。
 double CalAffinity(vector<double> & vec1, vector<double> &vec2)
 {
@@ -256,12 +290,18 @@ int32_t AdminData::UpdateServiceTable()
 		// 构建机器数组
 		struct MachineLoad 
 		{
+			localdata::InetAddress addr;
 			double cpuUsed;
 			double diskUsed;
 			MachineLoad() : cpuUsed(0), diskUsed(0){}
 		};
 		vector<MachineLoad> machineVec(needMachineAmount);
 		uint32_t curMachineId = 0;
+		for (auto it = m_nodeList.begin(); it != m_nodeList.end() && curMachineId < machineVec.size(); ++it, ++curMachineId)
+		{
+			machineVec[curMachineId].addr = it->second.addr;
+		}
+		curMachineId = 0;
 		// 按组件分配资源
 		while (!leftServiceVec.empty())
 		{
@@ -352,12 +392,11 @@ int32_t AdminData::UpdateServiceTable()
 			localdata::RouterItem item;
 			item.compName = rstVec[i].name;
 			item.percentage = rstVec[i].lamda / serviceLamda[rstVec[i].name];
+
 			// 启动组件，拿到IP和端口
-			NodeClient nc;
-			magna::StartComponentRequest req;
-			magna::StartComponentResponse rsp;
-			int ret = nc.StartComponent(req, &rsp);
-			if (ret == 0)
+			MachineLoad & machine = machineVec[rstVec[i].machineId];
+			magna::StartComponentResponse rsp = StartComp(machine.addr, rstVec[i].name);
+			if (rsp.success())
 			{
 				item.ip = rsp.ip();
 				item.port = rsp.port();
@@ -366,7 +405,7 @@ int32_t AdminData::UpdateServiceTable()
 			}
 			else
 			{
-				printf("start component failed, ret: %d\n", ret);
+				printf("start component failed\n");
 			}
 		}
 		m_mutex.lock();

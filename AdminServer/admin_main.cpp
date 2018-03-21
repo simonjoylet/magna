@@ -86,32 +86,12 @@ void AdminHbFunc()
 			}
 			adminData->unlock();
 		}
-		// 启动组件的测试代码
-// 		if (count % 5 == 0)
-// 		{
-// 			magna::StartComponentRequest req;
-// 			magna::StartComponentResponse rsp;
-// 			req.set_path("/home/comp1");
-// 			int ret = g_nodeProxy->StartComponent(req, &rsp);
-// 			if (ret == 0)
-// 			{
-// 				printf("StartComponent\n\nresp: {\n%s}\n", rsp.DebugString().c_str());
-// 			}
-// 		}
 
 	}
 	printf("\nAdmin HbThread stopped...\n");
 	return;
 }
 
-// 负责负载平衡的调度线程
-int BalanceThreadFunc()
-{
-	return -1;
-	// 根据AdminData中的到达强度统计来判断资源是否够用。
-	// 资源够用时使用0-1背包问题进行优化
-	// 资源不够用时以损失最小为原则进行流量调度
-}
 
 void testNodeEcho()
 {
@@ -170,9 +150,24 @@ int main(int argc, char **argv) {
 	ad->ReadStressData("Comp_2", "../SimuClient/Comp_2_223.3.87.60.stress");
 	ad->ReadStressData("Comp_3", "../SimuClient/Comp_3_223.3.87.60.stress");
 
+	// 初始化路由表
+	auto initRouterFunc = [&ad]()
+	{
+		while (true)
+		{
+			sleep(1);
+			if (ad->m_nodeList.size() > 1)
+			{
+				ad->InitServiceTable();
+				break;
+			}
+		}
+		
+	};
+	std::thread initRouter(initRouterFunc);
+
 	// 启动心跳线程
 	std::thread hb(AdminHbFunc);
-	std::thread balanceTh(BalanceThreadFunc);
 	
     ServiceArgs_t service_args;
     service_args.config = &config;
