@@ -51,7 +51,8 @@ struct RouterItem
 	string ip;
 	uint16_t port;
 	double percentage;
-	RouterItem() : compName(""), ip(""), port(0), percentage(0){}
+	uint16_t pid;
+	RouterItem() : compName(""), ip(""), port(0), percentage(0), pid(0){}
 };
 
 struct StressInfo
@@ -86,6 +87,7 @@ public:
 	
 	// 注册的服务
 	map<uint32_t/*id*/, localdata::ServiceInfo> m_serviceList;
+	vector<uint32_t> m_tobeStopedVec;
 	
 	// 服务的路由表
 	vector<localdata::RouterItem> m_router;

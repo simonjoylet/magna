@@ -77,6 +77,7 @@ FastRejectAdjustRate = 5\n\n[Log]\nLogDir = ~/log\nLogLevel = 3\n\n[ServerTimeou
 		resp->set_success(true);
 		resp->set_ip(NodeData::GetInstance()->m_ip);
 		resp->set_pid(pid);
+		resp->set_port(compPort);
 		break;
 	}
 	

@@ -18,7 +18,8 @@ message StartComponentResponse
 {
 	bool success = 1;
 	string ip = 2;
-	int32 pid = 3;
+	int32 port = 3;
+	int32 pid = 4;
 }
 
 message StopComponentRequest

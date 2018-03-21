@@ -11,6 +11,7 @@
 #include "phxrpc/file.h"
 #include "AdminData.h"
 #include <mutex>
+#include <thread>
 
 
 AdminServiceImpl::AdminServiceImpl(ServiceArgs_t &app_args)
@@ -133,6 +134,16 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
 	}
 	else
 	{
+		for (uint32_t i = 0; i < ad->m_tobeStopedVec.size(); i++)
+		{
+			if (serviceId == ad->m_tobeStopedVec[i])
+			{
+				resp->set_ack(true);
+				resp->set_msg("stop");
+				ad->unlock();
+				return 0;
+			}
+		}
 		localdata::ServiceInfo & info = ad->m_serviceList[serviceId];
 		info.heatbeat = 0;
 		info.lamda = req.lamda();
@@ -149,6 +160,7 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
 int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) {
 	
 	AdminData * ad = AdminData::GetInstance();
+	int ret = ad->UpdateServiceTable();
 	ad->lock();
 	vector<localdata::RouterItem> & router = ad->m_router;
 	magna::ServiceScale * ss = NULL;
@@ -163,6 +175,16 @@ int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, mag
 	}
 	ad->unlock();
 
+	auto func = [&]()
+	{
+		sleep(2);
+		// 之前的组件全部加入待关闭列表，这段代码放在返回路由表之后
+		for (auto it = ad->m_serviceList.begin(); it != ad->m_serviceList.end(); ++it)
+		{
+			ad->m_tobeStopedVec.push_back(it->first);
+		}
+	};
+	new std::thread(func);
 // 	// 用两个组件进行测试 
 // 
 // 	ss = resp->add_routertable();

@@ -140,6 +140,21 @@ void ServiceHb(string ip, uint16_t port)
 		if (!rsp.ack())
 		{
 			printf("\nNode heatbeat response ERROR. msg:%s\n", rsp.msg().c_str());
+			if (rsp.msg() == "stop")
+			{
+				auto func = []()
+				{
+					while (true)
+					{
+						sleep(1);
+						if (g_reqQueue.empty())
+						{
+							exit(0);
+						}
+					}
+				};
+				new std::thread(func);
+			}
 		}
 		else
 		{

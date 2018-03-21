@@ -1,6 +1,7 @@
 #include "AdminData.h"
 #include "../SimuClient/ReqAnalytics.h"
 #include <math.h>
+#include "../NodeAgent/node_client.h"
 
 AdminData * AdminData::m_instance = NULL;
 
@@ -173,7 +174,30 @@ int32_t AdminData::ReadStressData(string compName, string filePath)
 // 计算单位CPU的其他资源占用，求差的平方，数值越大，说明资源互补性越高，亲缘度越高。
 double CalAffinity(vector<double> & vec1, vector<double> &vec2)
 {
-
+	// 避免被除数为0
+	if (vec1[0] == 0)
+	{
+		vec1[0] = 0.01;
+	}
+	if (vec2[0] == 0)
+	{
+		vec2[0] = 0.01;
+	}
+	// 以数组中第一个值为单位量。
+	for (uint32_t i = 1; i < vec1.size(); ++i)
+	{
+		vec1[i] /= vec1[0];
+	}
+	for (uint32_t i = 1; i < vec2.size(); ++i)
+	{
+		vec2[i] /= vec2[0];
+	}
+	double affinity = 0; // 差的平方
+	for (uint32_t i = 0; i < vec1.size(); ++i)
+	{
+		affinity += (vec1[i] - vec2[i])*(vec1[i] - vec2[i]);
+	}
+	return affinity;
 }
 
 int32_t AdminData::UpdateServiceTable()
@@ -227,6 +251,7 @@ int32_t AdminData::UpdateServiceTable()
 
 		// 根据组件亲缘度，按照贪心策略进行资源分配。
 		map<string, localdata::CompStress> leftServiceVec = m_stressMap;
+		map<string, uint32_t> leftServiceLamda = serviceLamda;
 
 		// 构建机器数组
 		struct MachineLoad 
@@ -264,9 +289,9 @@ int32_t AdminData::UpdateServiceTable()
 			double lamdaOffer = min(min(lamdaCpu, lamdaDisk), lamdaTime); // 以较小值作为能提供的lamda值
 						
 			// 保存分配表
-			if (lamdaOffer >= serviceLamda[serviceName])
+			if (lamdaOffer >= leftServiceLamda[serviceName])
 			{
-				lamdaOffer = serviceLamda[serviceName];
+				lamdaOffer = leftServiceLamda[serviceName];
 				ScheduleItem item;
 				item.name = serviceName;
 				item.lamda = lamdaOffer;
@@ -281,7 +306,7 @@ int32_t AdminData::UpdateServiceTable()
 				item.lamda = lamdaOffer;
 				item.machineId = curMachineId;
 				rstVec.push_back(item);
-				serviceLamda[serviceName] -= lamdaOffer;
+				leftServiceLamda[serviceName] -= lamdaOffer;
 			}
 
 			// 更新节点资源占用，资源不足时更换下一个节点
@@ -319,14 +344,42 @@ int32_t AdminData::UpdateServiceTable()
 			}
 		}
 		
+		// 计算各类组件在哪启动，流量占比
+		vector<localdata::RouterItem> rstRouter;
 
-		// 计算各类组件在哪启动，流量占比, todo
+		for (uint32_t i = 0; i < rstVec.size(); ++i)
+		{
+			localdata::RouterItem item;
+			item.compName = rstVec[i].name;
+			item.percentage = rstVec[i].lamda / serviceLamda[rstVec[i].name];
+			// 启动组件，拿到IP和端口
+			NodeClient nc;
+			magna::StartComponentRequest req;
+			magna::StartComponentResponse rsp;
+			int ret = nc.StartComponent(req, &rsp);
+			if (ret == 0)
+			{
+				item.ip = rsp.ip();
+				item.port = rsp.port();
+				item.pid = rsp.pid();
+				m_router.push_back(item);
+			}
+			else
+			{
+				printf("start component failed, ret: %d\n", ret);
+			}
+		}
+		m_mutex.lock();
+		m_router = rstRouter;
+		m_mutex.unlock();
 
+
+		return 0;
 	}
 	// 如果不够用，按照流量价值进行路由表计算。
 	else
 	{
-
+		// TODO
 	}
 	
 	return -1;
