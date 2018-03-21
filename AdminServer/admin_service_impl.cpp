@@ -163,7 +163,6 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
 int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) {
 	
 	AdminData * ad = AdminData::GetInstance();
-	int ret = ad->UpdateServiceTable();
 	ad->lock();
 	vector<localdata::RouterItem> & router = ad->m_router;
 	magna::ServiceScale * ss = NULL;
@@ -176,18 +175,14 @@ int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, mag
 		ss->mutable_ep()->set_port(item.port);
 		ss->set_percentage(item.percentage);
 	}
+// 	// 之前的组件全部加入待关闭列表，这段代码放在返回路由表之后
+// 	for (auto it = ad->m_serviceList.begin(); it != ad->m_serviceList.end(); ++it)
+// 	{
+// 		ad->m_tobeStopedVec.push_back(it->first);
+// 
 	ad->unlock();
-
-	auto func = [&]()
-	{
-		sleep(2);
-		// 之前的组件全部加入待关闭列表，这段代码放在返回路由表之后
-		for (auto it = ad->m_serviceList.begin(); it != ad->m_serviceList.end(); ++it)
-		{
-			ad->m_tobeStopedVec.push_back(it->first);
-		}
-	};
-	new std::thread(func);
+	
+	
 // 	// 用两个组件进行测试 
 // 
 // 	ss = resp->add_routertable();

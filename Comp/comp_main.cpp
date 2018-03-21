@@ -93,6 +93,7 @@ int32_t RegisterComponent(string ip, uint16_t port)
 	if (ret == 0)
 	{
 		g_serviceId = rsp.serviceid();
+		printf("RegisterService succ, serviceId: %d\n", rsp.serviceid());
 	}
 	return ret;
 }
@@ -146,7 +147,7 @@ void ServiceHb(string ip, uint16_t port)
 				{
 					while (true)
 					{
-						sleep(1);
+						sleep(2);
 						if (g_reqQueue.empty())
 						{
 							exit(0);
@@ -158,7 +159,7 @@ void ServiceHb(string ip, uint16_t port)
 		}
 		else
 		{
-			printf("\n[DEBUG]: Service heartbeat received\n");
+			//printf("\n[DEBUG]: Service heartbeat received\n");
 		}
 	}
 	printf("\nNode heatbeat thread stopped...\n");

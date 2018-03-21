@@ -154,19 +154,34 @@ int NodeClient::StartComponent(const magna::StartComponentRequest &req, magna::S
     const phxrpc::Endpoint_t *ep = global_nodeclient_config_.GetRandom();
 
     if (ep != nullptr) {
-        phxrpc::BlockTcpStream socket;
-        bool open_ret = phxrpc::PhxrpcTcpUtils::Open(&socket, ep->ip, ep->port,
-                    global_nodeclient_config_.GetConnectTimeoutMS(), nullptr, 0,
-                    *(global_nodeclient_monitor_.get()));
-        if (open_ret) {
-            socket.SetTimeout(global_nodeclient_config_.GetSocketTimeoutMS());
+		phxrpc::BlockTcpStream socket;
+		bool open_ret = phxrpc::PhxrpcTcpUtils::Open(&socket, ep->ip, ep->port,
+			global_nodeclient_config_.GetConnectTimeoutMS(), nullptr, 0,
+			*(global_nodeclient_monitor_.get()));
+		if (open_ret) {
+			socket.SetTimeout(global_nodeclient_config_.GetSocketTimeoutMS());
 
-            NodeStub stub(socket, *(global_nodeclient_monitor_.get()));
-            return stub.StartComponent(req, resp);
-        }
+			NodeStub stub(socket, *(global_nodeclient_monitor_.get()));
+			return stub.StartComponent(req, resp);
+		}
     }
 
     return -1;
+}
+
+
+int NodeClient::StartComponent(const phxrpc::Endpoint_t & ep, const magna::StartComponentRequest &req, magna::StartComponentResponse *resp)
+{
+	phxrpc::BlockTcpStream socket;
+	bool open_ret = phxrpc::PhxrpcTcpUtils::Open(&socket, ep.ip, ep.port,
+		global_nodeclient_config_.GetConnectTimeoutMS(), nullptr, 0,
+		*(global_nodeclient_monitor_.get()));
+	if (open_ret) {
+		socket.SetTimeout(global_nodeclient_config_.GetSocketTimeoutMS());
+
+		NodeStub stub(socket, *(global_nodeclient_monitor_.get()));
+		return stub.StartComponent(req, resp);
+	}
 }
 
 int NodeClient::StopComponent(const magna::StopComponentRequest &req, magna::StopComponentResponse *resp) {

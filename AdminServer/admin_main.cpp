@@ -49,7 +49,7 @@ void ShowUsage(const char *program) {
     exit(0);
 }
 
-NodeClient * g_nodeProxy;
+
 bool g_hbShouldRun = true;
 extern phxrpc::ClientConfig global_nodeclient_config_;
 
@@ -92,17 +92,6 @@ void AdminHbFunc()
 	return;
 }
 
-
-void testNodeEcho()
-{
-	google::protobuf::StringValue req;
-	google::protobuf::StringValue resp;
-	req.set_value("Access NodeAgent Success");
-	int ret = g_nodeProxy->PhxEcho(req, &resp);
-	printf("NodeClient.PhxEcho return %d\n", ret);
-	printf("resp: {\n%s}\n", resp.DebugString().c_str());
-}
-
 int main(int argc, char **argv) {
     const char *config_file{nullptr};
     bool daemonize{false};
@@ -142,7 +131,6 @@ int main(int argc, char **argv) {
 	// 初始化全局变量
 	extern phxrpc::ClientConfig global_nodeclient_config_;
 	global_nodeclient_config_.Init(1000, 2000, "magna");
-	g_nodeProxy = new NodeClient;
 
 	// 读取各个组件的压测数据
 	AdminData * ad = AdminData::GetInstance();
@@ -156,7 +144,7 @@ int main(int argc, char **argv) {
 		while (true)
 		{
 			sleep(1);
-			if (ad->m_nodeList.size() > 1)
+			if (ad->m_nodeList.size() > 2)
 			{
 				ad->InitServiceTable();
 				break;
@@ -164,7 +152,17 @@ int main(int argc, char **argv) {
 		}
 		
 	};
+	auto updateRouterFunc = [&ad]()
+	{
+		while (true)
+		{
+			sleep(5);
+			ad->UpdateServiceTable();
+		}
+	};
+	
 	std::thread initRouter(initRouterFunc);
+	std::thread updateRouter(updateRouterFunc);
 
 	// 启动心跳线程
 	std::thread hb(AdminHbFunc);

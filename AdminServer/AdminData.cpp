@@ -4,7 +4,6 @@
 #include "../NodeAgent/node_client.h"
 
 AdminData * AdminData::m_instance = NULL;
-extern NodeClient * g_nodeProxy;
 AdminData::AdminData()
 {
 	m_serviceIdCount = 0;
@@ -51,7 +50,7 @@ bool localdata::InetAddress::operator<(const InetAddress & param)
 
 void AdminData::InitServiceTable()
 {
-	vector<string> compVec = {"Comp_1", "Comp_2"};
+	vector<string> compVec = {"Comp_1", "Comp_2", "Comp_3"};
 	uint32_t compIndex = 0;
 
 	for (auto it = m_nodeList.begin(); it != m_nodeList.end() && compIndex < compVec.size(); ++it, ++compIndex)
@@ -197,7 +196,12 @@ magna::StartComponentResponse AdminData::StartComp(localdata::InetAddress & node
 	magna::StartComponentRequest req;
 	magna::StartComponentResponse rsp;
 	req.set_path(nameToPath[compName]);
-	int ret = g_nodeProxy->StartComponent(req, &rsp);
+
+	phxrpc::Endpoint_t ep;
+	strcpy(ep.ip, nodeAddr.ip.c_str());
+	ep.port = nodeAddr.port;
+	NodeClient nc;
+	int ret = nc.StartComponent(ep, req, &rsp);
 	if (ret == 0)
 	{
 		printf("StartComponent\n\nresp: {\n%s}\n", rsp.DebugString().c_str());
@@ -236,8 +240,13 @@ double CalAffinity(vector<double> & vec1, vector<double> &vec2)
 
 int32_t AdminData::UpdateServiceTable()
 {
+	if (m_serviceList.empty())
+	{
+		return -1;
+	}
 	// 按名字累计每种服务的到达率
 	map<string, uint32_t> serviceLamda;
+	m_mutex.lock();
 	for (auto it = m_serviceList.begin(); it != m_serviceList.end(); it++)
 	{
 		localdata::ServiceInfo & serviceInfo = it->second;
@@ -250,6 +259,7 @@ int32_t AdminData::UpdateServiceTable()
 			serviceLamda[serviceInfo.name] += serviceInfo.lamda;
 		}
 	}
+	m_mutex.unlock();
 
 	// 计算最少所需的机器台数。
 	double cpuNeed = 0, diskNeed = 0;
@@ -262,6 +272,11 @@ int32_t AdminData::UpdateServiceTable()
 		diskNeed += curLamda * compStress.diskPerLamda;
 	}
 	uint32_t needMachineAmount = ceil((cpuNeed > diskNeed ? cpuNeed : diskNeed) / MAX_UTILIZATION);
+	if (needMachineAmount == 0)
+	{
+		// 此时仿真尚未开始
+		return -2;
+	}
 
 	// 构造结果数据结构
 	struct ScheduleItem
@@ -307,7 +322,7 @@ int32_t AdminData::UpdateServiceTable()
 		{
 			// 找到亲缘度最高的组件
 			double affinity = 0;
-			string serviceName = 0;
+			string serviceName = "";
 			for (auto it = leftServiceVec.begin(); it != leftServiceVec.end(); ++it)
 			{
 				localdata::CompStress & compStress = it->second;
@@ -391,7 +406,15 @@ int32_t AdminData::UpdateServiceTable()
 		{
 			localdata::RouterItem item;
 			item.compName = rstVec[i].name;
-			item.percentage = rstVec[i].lamda / serviceLamda[rstVec[i].name];
+			if (serviceLamda[rstVec[i].name] == 0)
+			{
+				item.percentage = 1;
+			}
+			else
+			{
+				item.percentage = rstVec[i].lamda / serviceLamda[rstVec[i].name];
+			}
+			
 
 			// 启动组件，拿到IP和端口
 			MachineLoad & machine = machineVec[rstVec[i].machineId];
@@ -424,3 +447,58 @@ int32_t AdminData::UpdateServiceTable()
 	return -1;
 }
 
+// 按名字累计每种服务的到达率
+void GetServiceLamda(map<string, uint32_t> & serviceLamda)
+{
+	AdminData * ad = AdminData::GetInstance();
+	ad->lock();
+	for (auto it = ad->m_serviceList.begin(); it != ad->m_serviceList.end(); it++)
+	{
+		localdata::ServiceInfo & serviceInfo = it->second;
+		if (serviceLamda.find(serviceInfo.name) == serviceLamda.end())
+		{
+			serviceLamda[serviceInfo.name] = serviceInfo.lamda;
+		}
+		else
+		{
+			serviceLamda[serviceInfo.name] += serviceInfo.lamda;
+		}
+	}
+	ad->unlock();
+}
+
+// 计算需要的总资源
+void GetTotalNeedResource(map<string, uint32_t> & serviceLamda, double & cpuNeed, double & diskNeed)
+{
+	for (auto it = serviceLamda.begin(); it != serviceLamda.end(); it++)
+	{
+		string serviceName = it->first;
+		localdata::CompStress & compStress = AdminData::GetInstance()->m_stressMap[serviceName];
+		uint32_t curLamda = it->second;
+		cpuNeed += curLamda * compStress.cpuPerLamda;
+		diskNeed += curLamda * compStress.diskPerLamda;
+	}
+}
+
+int32_t AdminData::UpdateServiceTable()
+{
+	if (m_serviceList.empty())
+	{
+		return -1;
+	}
+	// 按名字累计每种服务的到达率
+	map<string, uint32_t> serviceLamda;
+	GetServiceLamda(serviceLamda);
+
+	// 计算所需的总资源以及机器台数。
+	double cpuNeed = 0, diskNeed = 0;
+	GetTotalNeedResource(serviceLamda, cpuNeed, diskNeed);
+	uint32_t needMachineAmount = ceil((cpuNeed > diskNeed ? cpuNeed : diskNeed) / MAX_UTILIZATION);
+	if (needMachineAmount == 0)
+	{
+		// 此时仿真尚未开始
+		return -2;
+	}
+
+
+}

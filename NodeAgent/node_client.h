@@ -24,7 +24,9 @@ class NodeClient {
     int PhxMqttDisconnect(const phxrpc::MqttDisconnectPb &req);
     int PhxEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
     int PhxBatchEcho(const google::protobuf::StringValue &req, google::protobuf::StringValue *resp);
-    int StartComponent(const magna::StartComponentRequest &req, magna::StartComponentResponse *resp);
+
+	int StartComponent(const magna::StartComponentRequest &req, magna::StartComponentResponse *resp);
+	int StartComponent(const phxrpc::Endpoint_t & ep, const magna::StartComponentRequest &req, magna::StartComponentResponse *resp);
     int StopComponent(const magna::StopComponentRequest &req, magna::StopComponentResponse *resp);
 
 };

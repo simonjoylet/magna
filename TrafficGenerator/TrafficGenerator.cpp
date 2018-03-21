@@ -91,18 +91,34 @@ int main()
 	// 测试读取压测数据文件
 	//ReadStressFile();
 
-
-	vector<string> services = { "Comp_2"};
+	vector<string> services = { "Comp_1", "Comp_1", "Comp_1", 
+		"Comp_2", 
+		"Comp_3", "Comp_3", "Comp_3", "Comp_3", "Comp_3", "Comp_3" };
 	vector<uint32_t> weights = { 1, 2, 3 };
-	const char * filePathTemplate = "./Comp_2_%d.dat";
-	const int period = 10;
-	for (int i = 1; i <= 15; ++i)
-	{
-		char filePath[32] = {};
-		int lamda = 10 * i;
-		sprintf(filePath, filePathTemplate, 10 * i);
-		GenerateTraffic(lamda, lamda * period, services, weights, filePath);
-	}
+	const char * filePath1 = "./simu1.dat";
+	const char * filePath2 = "./simu2.dat";
+	uint32_t lamda1 = 100;
+	uint32_t lamda2 = 200;
+	uint32_t period = 10;
+	GenerateTraffic(lamda1, lamda1 * period, services, weights, filePath1);
+	GenerateTraffic(lamda2, lamda2 * period, services, weights, filePath2);
+
+
+
+
+
+// 	// 压测数据生成代码
+// 	vector<string> services = { "Comp_2"};
+// 	vector<uint32_t> weights = { 1, 2, 3 };
+// 	const char * filePathTemplate = "./Comp_2_%d.dat";
+// 	const int period = 10;
+// 	for (int i = 1; i <= 15; ++i)
+// 	{
+// 		char filePath[32] = {};
+// 		int lamda = 10 * i;
+// 		sprintf(filePath, filePathTemplate, 10 * i);
+// 		GenerateTraffic(lamda, lamda * period, services, weights, filePath);
+// 	}
 	
 	
 	// 测试读入的数据和写入的数据是否吻合。

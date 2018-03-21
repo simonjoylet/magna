@@ -55,7 +55,8 @@ int UpdateServiceTable()
 			g_serviceTable[name].AddService(ep, percentage);
 		}
 		g_routerMutex.unlock();
-		sleep(10);
+		
+		sleep(1);
 	}
 	
 	
@@ -123,7 +124,43 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 	return 0;
 }
 
-int SimuAll()
+int SaveLogData(string filePath)
+{
+	FILE * rstFile = fopen(filePath.c_str(), "wb");
+	if (rstFile == NULL)
+	{
+		printf("File open failed, path: %s\n", filePath.c_str());
+		return -1;
+	}
+
+	// 保存负载数据
+	g_loadLogDataMutex.lock();
+	uint32_t loadLogCount = g_loadLogList.size();
+	fwrite(&loadLogCount, sizeof(loadLogCount), 1, rstFile);
+	for (size_t i = 0; i < loadLogCount; i++)
+	{
+		LoadLog & log = g_loadLogList[i];
+		fwrite(&log, sizeof(LoadLog), 1, rstFile);
+	}
+	g_loadLogDataMutex.unlock();
+
+
+	// 保存请求数据
+	g_rstDataMutex.lock();
+	uint32_t rstDataSize = g_rstData.size();
+	fwrite(&rstDataSize, sizeof(rstDataSize), 1, rstFile);
+	for (map<uint32_t, ReqLog>::iterator it = g_rstData.begin(); it != g_rstData.end(); ++it)
+	{
+		ReqLog * log = &it->second;
+		fwrite(log, sizeof(ReqLog), 1, rstFile);
+	}
+	g_rstDataMutex.unlock();
+
+	fclose(rstFile);
+	return 0;
+}
+
+int ReadySimu()
 {
 	AdminClient::Init("../AdminServer/admin_client.conf");
 	CompClient::Init("../Comp/comp_client.conf");
@@ -136,24 +173,49 @@ int SimuAll()
 		cout << "AdminServer not available\n";
 		return -1;
 	}
-
-	// 读入测试流量集
-	string dataFile = "../TrafficGenerator/test.dat";
-	vector<AppReq> traffic;
-	if (!ReadTrafficFile(dataFile, traffic))
+	// 等待路由表初始化
+	while (true)
 	{
-		cout << "Traffic file read error\n";
-		return -2;
+		sleep(1);
+		if (!g_serviceTable.empty())
+		{
+			break;
+		}
 	}
-
-	// 向AdminServer发出服务请求，并记录开始和截止的时间戳
-	map<int32_t, int32_t> retMap;
-	StartSimu(traffic, g_rstData, retMap);
-
-
 	return 0;
 }
+int SimuAll(map<uint32_t, string> & trafficFiles)
+{
+	if (ReadySimu() < 0)
+	{
+		return -1;
+	}
 
+	// 开始仿真
+	map<int32_t, int32_t> retMap;
+	for (map<uint32_t, string>::iterator it = trafficFiles.begin(); it != trafficFiles.end(); it++)
+	{
+		g_sendLamda = it->first;
+		// 读入测试流量集
+		string dataFile = it->second;
+		vector<AppReq> traffic;
+		if (!ReadTrafficFile(dataFile, traffic))
+		{
+			cout << "Traffic file read error\n";
+			return -2;
+		}
+
+		// 开始仿真
+		StartSimu(traffic, g_rstData, retMap);
+	}
+
+	//10秒钟后开始存储数据
+	sleep(10);
+
+	string rstFileName = "simu.stress";
+	int ret = SaveLogData(rstFileName);
+	return 0;
+}
 
 int Stress(string compName, const phxrpc::Endpoint_t & ep, map<int, string> & trafficFiles)
 {
@@ -187,36 +249,6 @@ int Stress(string compName, const phxrpc::Endpoint_t & ep, map<int, string> & tr
 	//10秒钟后开始存储数据
 	sleep(10);
 	string rstFileName = string(compName) + string("_") + string(ep.ip) + string(".stress");
-	FILE * rstFile = fopen(rstFileName.c_str(), "wb");
-	if (rstFile == NULL)
-	{
-		printf("File open failed, path: %s\n", rstFileName.c_str());
-		return -1;
-	}
-
-	// 保存负载数据
-	g_loadLogDataMutex.lock();
-	uint32_t loadLogCount = g_loadLogList.size();
-	fwrite(&loadLogCount, sizeof(loadLogCount), 1, rstFile);
-	for (size_t i = 0; i < loadLogCount; i++)
-	{
-		LoadLog & log = g_loadLogList[i];
-		fwrite(&log, sizeof(LoadLog), 1, rstFile);
-	}
-	g_loadLogDataMutex.unlock();
-
-
-	// 保存请求数据
-	g_rstDataMutex.lock();
-	uint32_t rstDataSize = g_rstData.size();
-	fwrite(&rstDataSize, sizeof(rstDataSize), 1, rstFile);
-	for (map<uint32_t, ReqLog>::iterator it = g_rstData.begin(); it != g_rstData.end(); ++it)
-	{
-		ReqLog * log = &it->second;
-		fwrite(log, sizeof(ReqLog), 1, rstFile);
-	}
-	g_rstDataMutex.unlock();
-
-	fclose(rstFile);
+	int ret = SaveLogData(rstFileName);
 	return 0;
 }

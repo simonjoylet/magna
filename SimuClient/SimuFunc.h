@@ -39,7 +39,7 @@ int UpdateServiceTable();
 
 int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, map<int32_t, int32_t> & retMap);
 
-int SimuAll();
+int SimuAll(map<uint32_t, string> & trafficFiles);
 
 int Stress(string compName, const phxrpc::Endpoint_t & ep, map<int, string> & trafficFiles);
 

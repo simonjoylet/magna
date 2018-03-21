@@ -96,7 +96,14 @@ int main(int argc, char **argv) {
 	// 启动路由表更新
 	std::thread routerTh(UpdateServiceTable);
 	// 模拟代码
-	std::thread simuTh(SimuAll);
+	map<uint32_t, string> trafficFiles;
+	trafficFiles.insert(make_pair(100, "../TrafficGenerator/simu1.dat"));
+	trafficFiles.insert(make_pair(200, "../TrafficGenerator/simu2.dat"));
+	auto func = [&trafficFiles]()
+	{
+		SimuAll(trafficFiles);
+	};
+	std::thread simuTh(func);
 
 // 	// 压测代码
 // 	phxrpc::Endpoint_t ep;
