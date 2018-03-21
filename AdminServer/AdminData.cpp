@@ -170,6 +170,12 @@ int32_t AdminData::ReadStressData(string compName, string filePath)
 	return 0;
 }
 
+// 计算单位CPU的其他资源占用，求差的平方，数值越大，说明资源互补性越高，亲缘度越高。
+double CalAffinity(vector<double> & vec1, vector<double> &vec2)
+{
+
+}
+
 int32_t AdminData::UpdateServiceTable()
 {
 	// 按名字累计每种服务的到达率
@@ -199,17 +205,122 @@ int32_t AdminData::UpdateServiceTable()
 	}
 	uint32_t needMachineAmount = ceil((cpuNeed > diskNeed ? cpuNeed : diskNeed) / MAX_UTILIZATION);
 
+	// 构造结果数据结构
+	struct ScheduleItem
+	{
+		string name;
+		uint32_t machineId;
+		uint32_t lamda;
+	};
+	vector<ScheduleItem> rstVec;
+
 	// 如果够用，尽量在当前路由表的基础上做修改，追求负载均衡。
 	if (needMachineAmount <= m_nodeList.size())
 	{
-		//计算需要启动的各类组件的个数
-		map<string, uint32_t> serviceAmountMap;
-		for (auto it = serviceLamda.begin(); it != serviceLamda.end(); it++)
+		// 计算各节点最均衡的负载值
+		double cpuOpt = cpuNeed / needMachineAmount;
+		double diskOpt = diskNeed / needMachineAmount;
+
+		// 用于计算亲缘性的负载
+		double cpuAffinity = MAX_UTILIZATION - cpuOpt;
+		double diskAffinity = MAX_UTILIZATION - diskOpt;
+
+		// 根据组件亲缘度，按照贪心策略进行资源分配。
+		map<string, localdata::CompStress> leftServiceVec = m_stressMap;
+
+		// 构建机器数组
+		struct MachineLoad 
 		{
+			double cpuUsed;
+			double diskUsed;
+			MachineLoad() : cpuUsed(0), diskUsed(0){}
+		};
+		vector<MachineLoad> machineVec(needMachineAmount);
+		uint32_t curMachineId = 0;
+		// 按组件分配资源
+		while (!leftServiceVec.empty())
+		{
+			// 找到亲缘度最高的组件
+			double affinity = 0;
+			string serviceName = 0;
+			for (auto it = leftServiceVec.begin(); it != leftServiceVec.end(); ++it)
+			{
+				localdata::CompStress & compStress = it->second;
+				vector<double> vec1 = { cpuAffinity, diskAffinity };
+				vector<double> vec2 = { compStress.cpuPerLamda, compStress.diskPerLamda };
+				double curAffinity = CalAffinity(vec1, vec2);
+				if (curAffinity > affinity)
+				{
+					affinity = curAffinity;
+					serviceName = it->first;
+				}
+			}
 
+			// 对该组件进行资源分配
+			localdata::CompStress & foundService = leftServiceVec[serviceName];
+			double lamdaCpu = cpuOpt / foundService.cpuPerLamda;
+			double lamdaDisk = diskOpt / foundService.diskPerLamda;
+			double lamdaTime = 1000 / foundService.processTime;
+			double lamdaOffer = min(min(lamdaCpu, lamdaDisk), lamdaTime); // 以较小值作为能提供的lamda值
+						
+			// 保存分配表
+			if (lamdaOffer >= serviceLamda[serviceName])
+			{
+				lamdaOffer = serviceLamda[serviceName];
+				ScheduleItem item;
+				item.name = serviceName;
+				item.lamda = lamdaOffer;
+				item.machineId = curMachineId;
+				rstVec.push_back(item);
+				leftServiceVec.erase(serviceName);
+			}
+			else
+			{
+				ScheduleItem item;
+				item.name = serviceName;
+				item.lamda = lamdaOffer;
+				item.machineId = curMachineId;
+				rstVec.push_back(item);
+				serviceLamda[serviceName] -= lamdaOffer;
+			}
+
+			// 更新节点资源占用，资源不足时更换下一个节点
+			double cpuOffer = lamdaOffer * foundService.cpuPerLamda;
+			double diskOffer = lamdaOffer * foundService.diskPerLamda;
+			machineVec[curMachineId].cpuUsed += cpuOffer;
+			machineVec[curMachineId].diskUsed += diskOffer;
+
+			static const double relax = 0.1; // 资源分配的松弛量，避免强行分配资源
+			double cpuRelax = cpuOpt * relax;
+			double diskRelax = diskOpt * relax;
+			if (cpuAffinity >= MAX_UTILIZATION - cpuRelax || diskAffinity >= MAX_UTILIZATION - diskRelax)
+			{
+				// 该节点资源用完，换下一个节点。
+				curMachineId = (curMachineId + 1) % needMachineAmount;
+				MachineLoad & curMachine = machineVec[curMachineId];
+				if (curMachine.cpuUsed >= cpuOpt || curMachine.diskUsed >= diskOpt)
+				{
+					// 如果新节点的负载已经超过了最优负载，那直接使用当前负载作为计算亲缘性的负载
+					cpuAffinity = curMachine.cpuUsed;
+					diskAffinity = curMachine.diskUsed;
+				}
+				else
+				{
+					cpuAffinity = MAX_UTILIZATION - cpuOpt + curMachine.cpuUsed;
+					diskAffinity = MAX_UTILIZATION - diskOpt + curMachine.diskUsed;
+				}
+
+			}
+			else
+			{
+				// 节点资源未用完时，更新用于计算亲缘度的负载
+				cpuAffinity += cpuOffer;
+				diskAffinity += diskOffer;
+			}
 		}
+		
 
-		// 计算各类组件在哪启动，流量占比
+		// 计算各类组件在哪启动，流量占比, todo
 
 	}
 	// 如果不够用，按照流量价值进行路由表计算。
