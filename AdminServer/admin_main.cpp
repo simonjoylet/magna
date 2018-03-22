@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
 	{
 		while (true)
 		{
-			sleep(2);
+			sleep(1);
 			ad->UpdateServiceTable();
 		}
 	};

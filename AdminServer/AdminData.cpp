@@ -539,14 +539,20 @@ int32_t AdminData::UpdateServiceTable()
 	// 按名字累计每种服务的到达率
 	map<string, uint32_t> serviceLamda;
 	GetServiceLamda(serviceLamda);
+	for (auto it = serviceLamda.begin(); it != serviceLamda.end(); ++it)
+	{
+		printf("%s lamda: %d\n", it->first.c_str(), it->second);
+	}
 
 	// 计算所需的总资源以及机器台数。
 	double cpuNeed = 0, diskNeed = 0;
 	GetTotalNeedResource(serviceLamda, cpuNeed, diskNeed);
 	uint32_t needMachineAmount = ceil((cpuNeed > diskNeed ? cpuNeed : diskNeed) / MAX_UTILIZATION);
+	printf("cpuNeed: %.2f, diskNeed: %.2f\n", cpuNeed, diskNeed);
 	if (needMachineAmount == 0)
 	{
 		// 此时仿真尚未开始
+		printf("needMachineAmount is 0\n");
 		return -2;
 	}
 

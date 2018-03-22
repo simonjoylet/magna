@@ -62,7 +62,7 @@ list<magna::AppRequest> g_reqQueue;
 map<uint32_t, ReqWaitInfo> g_waitInfoMap;
 SimuClient * g_simuProxy;
 
-static const uint32_t ARRIVE_ROUND = 50; //过去50个请求计算出的到达率，不足50个时，到达率为0
+uint32_t ARRIVE_ROUND = 10; //过去50个请求计算出的到达率，不足50个时，到达率为0
 list<uint64_t> g_arriveListForLamda;
 
 // 测试AdminServer是否可用
@@ -167,7 +167,7 @@ void ServiceHb(string ip, uint16_t port)
 
 uint32_t GetLamda()
 {
-	if (g_arriveListForLamda.size() < 50)
+	if (g_arriveListForLamda.size() < ARRIVE_ROUND)
 	{
 		return 0;
 	}
