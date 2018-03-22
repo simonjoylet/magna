@@ -48,15 +48,16 @@ bool localdata::InetAddress::operator<(const InetAddress & param)
 	}
 }
 
-void AdminData::InitServiceTable()
+void StartOneCompPerNode(vector<string> compVec)
 {
-	vector<string> compVec = {"Comp_1", "Comp_2", "Comp_3"};
+	AdminData * ad = AdminData::GetInstance();
 	uint32_t compIndex = 0;
-
-	for (auto it = m_nodeList.begin(); it != m_nodeList.end() && compIndex < compVec.size(); ++it, ++compIndex)
+	// 每个机器上分别启动一个组件
+	ad->lock();
+	for (auto it = ad->m_nodeList.begin(); it != ad->m_nodeList.end() && compIndex < compVec.size(); ++it, ++compIndex)
 	{
 		string compName = compVec[compIndex];
-		magna::StartComponentResponse rsp = StartComp(it->second.addr, compName);
+		magna::StartComponentResponse rsp = ad->StartComp(it->second.addr, compName);
 		localdata::RouterItem item;
 		item.compName = compName;
 		item.percentage = 1;
@@ -65,13 +66,51 @@ void AdminData::InitServiceTable()
 			item.ip = rsp.ip();
 			item.port = rsp.port();
 			item.pid = rsp.pid();
-			m_router.push_back(item);
+			ad->m_router.push_back(item);
 		}
 		else
 		{
 			printf("start component failed\n");
 		}
-	}	
+	}
+	ad->unlock();
+}
+
+
+void StartCompGroupPerNode(vector<string> compVec)
+{
+	AdminData * ad = AdminData::GetInstance();
+	// 每个机器上分别启动一个组件
+	ad->lock();
+	for (auto it = ad->m_nodeList.begin(); it != ad->m_nodeList.end(); ++it)
+	{
+		for (uint32_t compIndex = 0; compIndex < compVec.size(); ++compIndex)
+		{
+			string compName = compVec[compIndex];
+			magna::StartComponentResponse rsp = ad->StartComp(it->second.addr, compName);
+			localdata::RouterItem item;
+			item.compName = compName;
+			item.percentage = 1 / ad->m_nodeList.size();
+			if (rsp.success())
+			{
+				item.ip = rsp.ip();
+				item.port = rsp.port();
+				item.pid = rsp.pid();
+				ad->m_router.push_back(item);
+			}
+			else
+			{
+				printf("start component failed\n");
+			}
+		}		
+	}
+	ad->unlock();
+}
+
+void AdminData::InitServiceTable()
+{
+	vector<string> compVec = {"Comp_1", "Comp_2", "Comp_3"};
+	StartCompGroupPerNode(compVec);
 }
 
 
@@ -237,7 +276,7 @@ double CalAffinity(vector<double> & vec1, vector<double> &vec2)
 	}
 	return affinity;
 }
-
+/*
 int32_t AdminData::UpdateServiceTable()
 {
 	if (m_serviceList.empty())
@@ -446,6 +485,7 @@ int32_t AdminData::UpdateServiceTable()
 	
 	return -1;
 }
+*/
 
 // 按名字累计每种服务的到达率
 void GetServiceLamda(map<string, uint32_t> & serviceLamda)
@@ -480,6 +520,16 @@ void GetTotalNeedResource(map<string, uint32_t> & serviceLamda, double & cpuNeed
 	}
 }
 
+void GetCurrentWorkingNodes(map<string, localdata::NodeInfo> & curWorkingNodes)
+{
+	AdminData * ad = AdminData::GetInstance();
+	for (auto it = ad->m_router.begin(); it != ad->m_router.end(); it++)
+	{
+		localdata::RouterItem & item = *it;
+		curWorkingNodes[item.ip] = ad->m_nodeList[item.ip];
+	}
+}
+
 int32_t AdminData::UpdateServiceTable()
 {
 	if (m_serviceList.empty())
@@ -500,5 +550,66 @@ int32_t AdminData::UpdateServiceTable()
 		return -2;
 	}
 
+	// 找到当前工作节点
+	map<string, localdata::NodeInfo> curWorkingNodes;
+	GetCurrentWorkingNodes(curWorkingNodes);
+	
+	int32_t ret = 0;
+	// 判断是否需要扩容或者缩容
+	if (needMachineAmount > curWorkingNodes.size())
+	{
+		// 此时需要扩容，下面执行扩容操作，即找到一个节点加入当前工作节点
+		auto tmpNodeList = m_nodeList;
+		for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
+		{
+			tmpNodeList.erase(it->first);
+		}
+		uint32_t expandNumber = needMachineAmount - curWorkingNodes.size();
+		auto nodeIt = tmpNodeList.begin();
+		for (uint32_t i = 0; i < expandNumber && nodeIt != tmpNodeList.end(); ++i, ++nodeIt)
+		{
+			curWorkingNodes[nodeIt->first] = nodeIt->second;
+		}		
+	}
+	else if (needMachineAmount < curWorkingNodes.size())
+	{
+		// 此时需要缩容，随便移除一个节点，反正均分流量
+		uint32_t shrinkNumber = curWorkingNodes.size() - needMachineAmount;
+		auto eraseIt = curWorkingNodes.begin();
+		for (uint32_t i = 0; i < shrinkNumber; ++i)
+		{
+			curWorkingNodes.erase(eraseIt++);
+		}
 
+	}
+	// 选定工作节点之后，要做的就是内部调整流量
+	vector<localdata::RouterItem> curRouter;
+	for (auto it = m_serviceList.begin(); it != m_serviceList.end(); ++it)
+	{
+		// 找到在当前工作节点中的组件，均分流量，加入路由表
+		string curIp = it->second.addr.ip;
+		if (curWorkingNodes.find(curIp) == curWorkingNodes.end())
+		{
+			continue;
+		}
+		localdata::RouterItem item;
+		item.compName = it->second.name;
+		item.ip = it->second.addr.ip;
+		item.port = it->second.addr.port;
+		item.percentage = 1.0 / needMachineAmount;
+		curRouter.push_back(item);
+	}
+
+	lock();
+	m_router = curRouter;
+	unlock();
+
+	printf("working nodes count: %d\n", curWorkingNodes.size());
+	uint32_t printIndex = 0;
+	for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
+	{
+		printf("working node %d: %s\n", ++printIndex, it->first.c_str());
+	}
+	printf("\n");
+	return ret;
 }

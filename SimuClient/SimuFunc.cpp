@@ -40,6 +40,7 @@ int UpdateServiceTable()
 		if (ret != 0)
 		{
 			printf("Get service table failed, ret: %d\n", ret);
+			sleep(1);
 			continue;
 		}
 		g_routerMutex.lock();
@@ -55,6 +56,17 @@ int UpdateServiceTable()
 			g_serviceTable[name].AddService(ep, percentage);
 		}
 		g_routerMutex.unlock();
+
+		// 打印路由表
+// 		for (auto it = g_serviceTable.begin(); it != g_serviceTable.end(); ++it)
+// 		{
+// 			printf("%s\n", it->first.c_str());
+// 			auto serviceList = it->second.m_serviceList;
+// 			for (uint32_t i = 0; i < serviceList.size(); ++i)
+// 			{
+// 				printf("%s %d, percent: %f\n", serviceList[i].ep.ip, serviceList[i].ep.port, serviceList[i].cp);
+// 			}
+// 		}
 		
 		sleep(1);
 	}

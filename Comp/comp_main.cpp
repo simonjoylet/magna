@@ -172,7 +172,7 @@ uint32_t GetLamda()
 		return 0;
 	}
 	uint32_t lamda = 1000 * ARRIVE_ROUND / (g_arriveListForLamda.back() - g_arriveListForLamda.front());
-	printf("lamda: %d, count queue size: %d\n", lamda, g_arriveListForLamda.size());
+	printf("lamda: %d, queue size: %d\n", lamda, g_reqQueue.size());
 	return lamda;
 }
 

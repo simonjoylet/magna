@@ -15,7 +15,7 @@ public:
 	phxrpc::Endpoint_t GetService() const;
 	bool AddService(const phxrpc::Endpoint_t & ep, double percentage);
 	
-private:
+
 	struct ServiceCP
 	{
 		phxrpc::Endpoint_t ep;

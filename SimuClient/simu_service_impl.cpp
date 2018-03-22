@@ -67,7 +67,7 @@ int SimuServiceImpl::ReportLoad(const magna::ReportLoadRequest &req, magna::Repo
 	g_loadLogDataMutex.lock();
 	g_loadLogList.push_back(log);
 	g_loadLogDataMutex.unlock();
-	printf("%s: cpuLoad: %.2f, diskLoad: %.2f\n", req.ip().c_str(), req.cpuload(), req.diskload());
+	// printf("%s: cpuLoad: %.2f, diskLoad: %.2f\n", req.ip().c_str(), req.cpuload(), req.diskload());
 	resp->set_ack(true);
     return 0;
 }
