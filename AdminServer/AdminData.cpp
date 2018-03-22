@@ -111,6 +111,7 @@ void AdminData::InitServiceTable()
 {
 	vector<string> compVec = {"Comp_1", "Comp_2", "Comp_3"};
 	StartCompGroupPerNode(compVec);
+	//StartOneCompPerNode(compVec);//测试传统模式
 }
 
 
@@ -532,6 +533,7 @@ void GetCurrentWorkingNodes(map<string, localdata::NodeInfo> & curWorkingNodes)
 
 int32_t AdminData::UpdateServiceTable()
 {
+	//return 0;// 测试传统模式
 	if (m_serviceList.empty())
 	{
 		return -1;
