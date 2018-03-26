@@ -612,12 +612,12 @@ int32_t AdminData::UpdateServiceTable()
 	m_router = curRouter;
 	unlock();
 
-	printf("working nodes count: %d\n", curWorkingNodes.size());
-	uint32_t printIndex = 0;
-	for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
-	{
-		printf("working node %d: %s\n", ++printIndex, it->first.c_str());
-	}
-	printf("\n");
+	printf("nodes need amount: %d, working nodes count: %d\n", needMachineAmount, curWorkingNodes.size());
+// 	uint32_t printIndex = 0;
+// 	for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
+// 	{
+// 		printf("working node %d: %s\n", ++printIndex, it->first.c_str());
+// 	}
+// 	printf("\n");
 	return ret;
 }

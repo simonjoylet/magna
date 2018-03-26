@@ -17,12 +17,29 @@ void timer_notify_cb(union sigval val)
 {
 	++count;
 }
-
+#include <list>
+#include <iostream>
+using namespace std;
 int main(void)
 {
-	pid_t pid = vfork();
-	execl("/home/comp1", "/home/comp1", "-c", "/home/simon/magna/NodeAgent/20001.conf", NULL);
-
+	list<int> mylist;
+	mylist.push_back(4);
+	mylist.push_back(4);
+	mylist.push_back(2);
+	int ele = 3;
+	for (list<int>::iterator it = mylist.begin(); it != mylist.end(); ++it)
+	{
+		if (*it < ele)
+		{
+			mylist.insert(it, ele);
+			break;
+		}
+	}
+	for (list<int>::iterator it = mylist.begin(); it != mylist.end(); ++it)
+	{
+		cout << *it << " ";
+	}
+	
 // 	/* Variable Definition */
 // 	timer_t id;
 // 	struct timespec spec;

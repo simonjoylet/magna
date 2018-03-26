@@ -51,6 +51,20 @@ int GenerateTraffic(
 	return 0;
 }
 #include "../SimuClient/ReqAnalytics.h"
+const vector<pair<uint32_t, uint32_t>> g_satisfactionMap = { { 500, 4 }, { 1000, 2 } };
+double GetSatisfaction(double totalTime, uint32_t weight)
+{
+	if (totalTime <= g_satisfactionMap[0].first)
+	{
+		return g_satisfactionMap[0].second * weight;
+	}
+	else if (totalTime <= g_satisfactionMap[1].first)
+	{
+		return g_satisfactionMap[1].second * weight;
+	}
+	return 0;
+}
+
 int ReadStressFile(string fileName)
 {
 	FILE * stressFile = fopen(fileName.c_str(), "rb");
@@ -75,106 +89,54 @@ int ReadStressFile(string fileName)
 	// 保存请求数据
 	vector<ReqLog> reqLogList;
 	uint32_t reqLogCount = 0;
-	vector<ReqLog> comp1, comp2, comp3;
 	fread(&reqLogCount, sizeof(reqLogCount), 1, stressFile);
-	for (size_t i = 0; i < 1000; ++i)
-	{
-		ReqLog log;
-		fread(&log, sizeof(ReqLog), 1, stressFile);
-		reqLogList.push_back(log);
-		if (strcmp(log.serviceName, "Comp_1") == 0)
-		{
-			comp1.push_back(log);
-		}
-		if (strcmp(log.serviceName, "Comp_2") == 0)
-		{
-			comp2.push_back(log);
-		}
-		if (strcmp(log.serviceName, "Comp_3") == 0)
-		{
-			comp3.push_back(log);
-		}
-	}
-	
-	double answerTime;
-	double queueTime;
 	// 分析第一阶段
-	answerTime = 0;
-	queueTime = 0;
-	for (uint32_t i = 0; i < comp1.size(); ++i)
-	{
-		answerTime += (comp1[i].localEnd - comp1[i].localBegin);
-		queueTime += comp1[i].queueTime;
-	}
-	printf("phase1 comp1 ---- answerTime: %.2f, queueTime: %.2f\n", answerTime / comp1.size(), queueTime / comp1.size());
 
-
-	answerTime = 0;
-	queueTime = 0;
-	for (uint32_t i = 0; i < comp2.size(); ++i)
+	for (uint32_t phaseIndex = 0; phaseIndex < 3; ++phaseIndex)
 	{
-		answerTime += (comp2[i].localEnd - comp2[i].localBegin);
-		queueTime += comp2[i].queueTime;
-	}
-	printf("phase1 comp2 ---- answerTime: %.2f, queueTime: %.2f\n", answerTime / comp2.size(), queueTime / comp2.size());
-
-	answerTime = 0;
-	queueTime = 0;
-	for (uint32_t i = 0; i < comp3.size(); ++i)
-	{
-		answerTime += (comp3[i].localEnd - comp3[i].localBegin);
-		queueTime += comp3[i].queueTime;
-	}
-	printf("phase1 comp3 ---- answerTime: %.2f, queueTime: %.2f\n", answerTime / comp3.size(), queueTime / comp3.size());
-
-	// 分析第二阶段
-	comp1.clear(); comp2.clear(); comp3.clear();
-	for (size_t i = 1000; i < 3000; ++i)
-	{
-		ReqLog log;
-		fread(&log, sizeof(ReqLog), 1, stressFile);
-		reqLogList.push_back(log);
-		if (strcmp(log.serviceName, "Comp_1") == 0)
+		vector<vector<ReqLog>> comps(3);
+		for (size_t i = 0; i < (phaseIndex + 1) * 1000; ++i)
 		{
-			comp1.push_back(log);
+			ReqLog log;
+			fread(&log, sizeof(ReqLog), 1, stressFile);
+			reqLogList.push_back(log);
+			if (strcmp(log.serviceName, "Comp_1") == 0)
+			{
+				comps[0].push_back(log);
+			}
+			if (strcmp(log.serviceName, "Comp_2") == 0)
+			{
+				comps[1].push_back(log);
+			}
+			if (strcmp(log.serviceName, "Comp_3") == 0)
+			{
+				comps[2].push_back(log);
+			}
 		}
-		if (strcmp(log.serviceName, "Comp_2") == 0)
+
+		for (uint32_t compIndex = 0; compIndex < comps.size(); ++compIndex)
 		{
-			comp2.push_back(log);
-		}
-		if (strcmp(log.serviceName, "Comp_3") == 0)
-		{
-			comp3.push_back(log);
+			vector<ReqLog> & comp = comps[compIndex];
+			double answerTime = 0;
+			double queueTime = 0; 
+			double dropCount = 0;
+			uint32_t satisfaction = 0;
+			for (uint32_t i = 0; i < comp.size(); ++i)
+			{
+				if (comp[i].localEnd == 0)
+				{ 
+					++dropCount;
+					continue; 
+				}
+				uint32_t totalTime = (comp[i].localEnd - comp[i].localBegin);
+				answerTime += totalTime;
+				queueTime += comp[i].queueTime;
+				satisfaction += GetSatisfaction(totalTime, comp[i].clientWeight);
+			}
+			printf("phase%d comp%d ---- answerTime: %.2f, queueTime: %.2f, drop rate: %.4f, satisfaction: %d\n", 
+				phaseIndex+1, compIndex + 1, answerTime / comp.size(), queueTime / comp.size(), dropCount / comp.size(), satisfaction);
 		}
 	}
-	answerTime = 0;
-	queueTime = 0;
-	for (uint32_t i = 0; i < comp1.size(); ++i)
-	{
-		answerTime += (comp1[i].localEnd - comp1[i].localBegin);
-		queueTime += comp1[i].queueTime;
-	}
-	printf("phase2 comp1 ---- answerTime: %.2f, queueTime: %.2f\n", answerTime / comp1.size(), queueTime / comp1.size());
-
-
-	answerTime = 0;
-	queueTime = 0;
-	for (uint32_t i = 0; i < comp2.size(); ++i)
-	{
-		answerTime += (comp2[i].localEnd - comp2[i].localBegin);
-		queueTime += comp2[i].queueTime;
-	}
-	printf("phase2 comp2 ---- answerTime: %.2f, queueTime: %.2f\n", answerTime / comp2.size(), queueTime / comp2.size());
-
-	answerTime = 0;
-	queueTime = 0;
-	for (uint32_t i = 0; i < comp3.size(); ++i)
-	{
-		answerTime += (comp3[i].localEnd - comp3[i].localBegin);
-		queueTime += comp3[i].queueTime;
-	}
-	printf("phase2 comp3 ---- answerTime: %.2f, queueTime: %.2f\n", answerTime / comp3.size(), queueTime / comp3.size());
-
 
 	fclose(stressFile);
 }
@@ -182,9 +144,23 @@ int ReadStressFile(string fileName)
 int main()
 {
 	// 测试读取压测数据文件
-	ReadStressFile("simu.stress");
-	cout << endl;
-	ReadStressFile("simu_tradition.stress");
+	cout << "-----------tradition & fcfs-------------" << endl;
+	ReadStressFile("simu_tradition_fcfs.stress");
+
+	cout << "-----------tradition & cuttail-------------" << endl;
+	ReadStressFile("simu_tradition_cuttail.stress");
+
+	cout << "-----------tradition & minloss-------------" << endl;
+	ReadStressFile("simu_tradition_minloss.stress");
+
+	cout << "-----------tradition & pq-------------" << endl;
+	ReadStressFile("simu_tradition_pq.stress");
+
+	cout << "-----------tradition & pqminloss-------------" << endl;
+	ReadStressFile("simu_tradition_pqminloss.stress");
+
+	cout << "-----------magna & pqminloss-------------" << endl;
+	ReadStressFile("simu_magna.stress");
 
 // 	vector<string> services = { "Comp_1", "Comp_1", "Comp_1", 
 // 		"Comp_2", 
@@ -192,11 +168,14 @@ int main()
 // 	vector<uint32_t> weights = { 1, 2, 3 };
 // 	const char * filePath1 = "./simu1.dat";
 // 	const char * filePath2 = "./simu2.dat";
+// 	const char * filePath3 = "./simu3.dat";
 // 	uint32_t lamda1 = 100;
 // 	uint32_t lamda2 = 200;
+// 	uint32_t lamda3 = 300;
 // 	uint32_t period = 10;
 // 	GenerateTraffic(lamda1, lamda1 * period, services, weights, filePath1);
 // 	GenerateTraffic(lamda2, lamda2 * period, services, weights, filePath2);
+// 	GenerateTraffic(lamda3, lamda3 * period, services, weights, filePath3);
 
 
 

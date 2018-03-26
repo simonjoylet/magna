@@ -2,12 +2,13 @@
 #include "InnerHandle.h"
 #include <iostream>
 std::string g_compName = "Comp_2";
+const double COMP_PROCESS_TIME = 27.279;
 extern map<uint32_t, ReqWaitInfo> g_waitInfoMap;
 
 int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 	static uint32_t count = 0;
 	uint64_t ts = phxrpc::Timer::GetSteadyClockMS();
-	printf("%d req received. id = %d, servicename = %s, clienttype = %d, ", ++count, req.id(), req.servicename().c_str(), req.clienttype());
+	//printf("%d req received. id = %d, servicename = %s, clienttype = %d, ", ++count, req.id(), req.servicename().c_str(), req.clienttype());
 	const char * fileName = "tmp.dat";
 	FILE * f = fopen(fileName, "wb");
 	if (f == NULL)
@@ -39,7 +40,7 @@ int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 	retReq.set_processtime(processTime);
 
 	int ret = g_simuProxy->GetRet(retReq, &retRsp);
-	printf("time used: %dms, return %s\n", processTime, ret == 0 ? "succ" : "fail");
+	//printf("time used: %dms, return %s\n", processTime, ret == 0 ? "succ" : "fail");
 
 	return 0;
 }

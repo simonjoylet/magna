@@ -93,15 +93,22 @@ int main(int argc, char **argv) {
     service_args.config = &config;
     phxrpc::HshaServer server(config.GetHshaServerConfig(), Dispatch, &service_args);
 
+
+	// 准备
+	AdminClient::Init("../AdminServer/admin_client.conf");
+	CompClient::Init("../Comp/comp_client.conf");
+	g_adminProxy = new AdminClient;
+
 	// 启动路由表更新
 	std::thread routerTh(UpdateServiceTable);
 	// 模拟代码
 	map<uint32_t, string> trafficFiles;
 	trafficFiles.insert(make_pair(100, "../TrafficGenerator/simu1.dat"));
 	trafficFiles.insert(make_pair(200, "../TrafficGenerator/simu2.dat"));
+	trafficFiles.insert(make_pair(300, "../TrafficGenerator/simu3.dat"));
 	auto func = [&trafficFiles]()
 	{
-		SimuAll(trafficFiles);
+		SimuAll(trafficFiles, "simu_magna.stress");
 	};
 	std::thread simuTh(func);
 

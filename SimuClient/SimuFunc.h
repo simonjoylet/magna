@@ -37,9 +37,11 @@ bool ReadTrafficFile(string filePath, vector<AppReq> & traffic);
 
 int UpdateServiceTable();
 
+int ReadySimu();
+
 int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, map<int32_t, int32_t> & retMap);
 
-int SimuAll(map<uint32_t, string> & trafficFiles);
+int SimuAll(map<uint32_t, string> & trafficFiles, string logFileName);
 
 int Stress(string compName, const phxrpc::Endpoint_t & ep, map<int, string> & trafficFiles);
 

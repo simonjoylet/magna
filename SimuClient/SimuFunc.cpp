@@ -174,11 +174,6 @@ int SaveLogData(string filePath)
 
 int ReadySimu()
 {
-	AdminClient::Init("../AdminServer/admin_client.conf");
-	CompClient::Init("../Comp/comp_client.conf");
-
-	g_adminProxy = new AdminClient;
-
 	// 测试是否可以访问AdminServer
 	if (!TestAccessAdminServer())
 	{
@@ -196,7 +191,7 @@ int ReadySimu()
 	}
 	return 0;
 }
-int SimuAll(map<uint32_t, string> & trafficFiles)
+int SimuAll(map<uint32_t, string> & trafficFiles, string logFileName)
 {
 	if (ReadySimu() < 0)
 	{
@@ -224,8 +219,7 @@ int SimuAll(map<uint32_t, string> & trafficFiles)
 	//10秒钟后开始存储数据
 	sleep(10);
 
-	string rstFileName = "simu.stress";
-	int ret = SaveLogData(rstFileName);
+	int ret = SaveLogData(logFileName);
 	return 0;
 }
 
