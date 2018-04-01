@@ -104,6 +104,9 @@ public:
 	magna::StartComponentResponse StartComp(localdata::InetAddress & nodeAddr, string compName);
 
 	int32_t GetNewServiceId();
+
+	int32_t SaveCompFeature(string filePath);
+	int32_t ReadCompFeature(string filePath);
 	
 	void lock() { m_mutex.lock(); }
 	void unlock() { m_mutex.unlock(); }

@@ -31,7 +31,11 @@ struct LoadLog
 	uint32_t sendLamda; // 当前的发送lamda
 	double cpuLoad;
 	double diskLoad;
-	LoadLog() : sendId(0), sendLamda(0), cpuLoad(0), diskLoad(0){}
+	//char ip[32];
+	LoadLog() : sendId(0), sendLamda(0), cpuLoad(0), diskLoad(0)
+	{
+		//memset(ip, 0, sizeof(ip));
+	}
 };
 
 #endif//REQ_ANALYTICS_H

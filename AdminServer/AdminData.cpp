@@ -26,6 +26,74 @@ int32_t AdminData::GetNewServiceId()
 	return rst;
 }
 
+struct CompFeature
+{
+	char compName[32];
+	double processTime;
+	double cpuPerLamda;
+	double diskPerLamda;
+	CompFeature() :processTime(0), cpuPerLamda(0), diskPerLamda(0)
+	{
+		memset(compName, 0, sizeof(compName));
+	}
+};
+
+int32_t AdminData::SaveCompFeature(string filePath)
+{
+	FILE * featureFile = fopen(filePath.c_str(), "wb");
+	if (featureFile == NULL)
+	{
+		printf("File open failed, path: %s\n", filePath.c_str());
+		return -1;
+	}
+	vector<CompFeature> featureVec;
+	for (auto it = m_stressMap.begin(); it != m_stressMap.end(); ++it)
+	{
+		CompFeature feature;
+		strcpy(feature.compName, it->first.c_str());
+		feature.processTime = it->second.processTime;
+		feature.cpuPerLamda = it->second.cpuPerLamda;
+		feature.diskPerLamda = it->second.diskPerLamda;
+		featureVec.push_back(feature);
+	}
+
+	uint32_t compNum = featureVec.size();
+	fwrite(&compNum, sizeof(compNum), 1, featureFile);
+	for (uint32_t i = 0; i < featureVec.size(); ++i)
+	{
+		CompFeature feature = featureVec[i];
+		fwrite(&feature, sizeof(feature), 1, featureFile);
+	}
+	fclose(featureFile);
+	return 0;
+}
+
+int32_t AdminData::ReadCompFeature(string filePath)
+{
+	FILE * featureFile = fopen(filePath.c_str(), "rb");
+	if (featureFile == NULL)
+	{
+		printf("File open failed, path: %s\n", filePath.c_str());
+		return -1;
+	}
+	uint32_t compNum = 0;
+	fread(&compNum, sizeof(compNum), 1, featureFile);
+	m_stressMap.clear();
+	for (uint32_t i = 0; i < compNum; ++i)
+	{
+		CompFeature feature;
+		fread(&feature, sizeof(feature), 1, featureFile);
+		string compName = feature.compName;
+		m_stressMap[compName].cpuPerLamda = feature.cpuPerLamda;
+		m_stressMap[compName].diskPerLamda = feature.diskPerLamda;
+		m_stressMap[compName].processTime = feature.processTime;
+		m_stressMap[compName].name = feature.compName;
+	}
+
+	fclose(featureFile);
+	return 0;
+}
+
 localdata::InetAddress::InetAddress(string _ip, uint16_t _port)
 {
 	ip = _ip;
@@ -541,16 +609,16 @@ int32_t AdminData::UpdateServiceTable()
 	// 按名字累计每种服务的到达率
 	map<string, uint32_t> serviceLamda;
 	GetServiceLamda(serviceLamda);
-	for (auto it = serviceLamda.begin(); it != serviceLamda.end(); ++it)
-	{
-		printf("%s lamda: %d\n", it->first.c_str(), it->second);
-	}
+// 	for (auto it = serviceLamda.begin(); it != serviceLamda.end(); ++it)
+// 	{
+// 		printf("%s lamda: %d\n", it->first.c_str(), it->second);
+// 	}
 
 	// 计算所需的总资源以及机器台数。
 	double cpuNeed = 0, diskNeed = 0;
 	GetTotalNeedResource(serviceLamda, cpuNeed, diskNeed);
 	uint32_t needMachineAmount = ceil((cpuNeed > diskNeed ? cpuNeed : diskNeed) / MAX_UTILIZATION);
-	printf("cpuNeed: %.2f, diskNeed: %.2f\n", cpuNeed, diskNeed);
+	printf("cpuNeed: %.2f, diskNeed: %.2f", cpuNeed, diskNeed);
 	if (needMachineAmount == 0)
 	{
 		// 此时仿真尚未开始
@@ -604,7 +672,7 @@ int32_t AdminData::UpdateServiceTable()
 		item.compName = it->second.name;
 		item.ip = it->second.addr.ip;
 		item.port = it->second.addr.port;
-		item.percentage = 1.0 / needMachineAmount;
+		item.percentage = 1.0 / curWorkingNodes.size();
 		curRouter.push_back(item);
 	}
 

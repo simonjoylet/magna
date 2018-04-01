@@ -64,6 +64,7 @@ int SimuServiceImpl::ReportLoad(const magna::ReportLoadRequest &req, magna::Repo
 	log.sendLamda = g_sendLamda;
 	log.cpuLoad = req.cpuload();
 	log.diskLoad = req.diskload();
+	//strcpy(log.ip, req.ip().c_str());
 	g_loadLogDataMutex.lock();
 	g_loadLogList.push_back(log);
 	g_loadLogDataMutex.unlock();
