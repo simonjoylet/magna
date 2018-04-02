@@ -110,7 +110,7 @@ int StartSimu(const vector<AppReq> & traffic, map<uint32_t, ReqLog> & rstData, m
 
 		CompClient cc;
 
-		cout << "sendcount: " << ++g_sendCount << endl;
+		//cout << "sendcount: " << ++g_sendCount << endl;
 		int32_t ret = cc.Handle(selector.GetService(), simuReq, &simuRsp);
 		if (ret == 0)
 		{

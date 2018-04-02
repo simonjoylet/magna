@@ -3,7 +3,7 @@
 #include <iostream>
 #include <math.h>
 std::string g_compName = "Comp_1";
-const double COMP_PROCESS_TIME = 23.324;
+double COMP_PROCESS_TIME = 23.324;
 extern map<uint32_t, ReqWaitInfo> g_waitInfoMap;
 int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 	//usleep(5000);

@@ -155,9 +155,9 @@ int main()
 // 
 // 	cout << "-----------tradition & pq-------------" << endl;
 // 	ReadStressFile("simu_tradition_pq.stress");
-// 
-// 	cout << "-----------tradition & pqminloss-------------" << endl;
-// 	ReadStressFile("simu_tradition_pqminloss.stress");
+
+	cout << "-----------tradition & pqminloss-------------" << endl;
+	ReadStressFile("simu_tradition_pqminloss.stress");
 
 	cout << "-----------magna & pqminloss-------------" << endl;
 	ReadStressFile("simu_magna.stress");

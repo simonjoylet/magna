@@ -53,7 +53,7 @@ int SimuServiceImpl::GetRet(const magna::RetRequest &req, magna::RetResponse *re
 	log.localEnd = phxrpc::Timer::GetSteadyClockMS();
 	g_rstDataMutex.unlock();
 	static int32_t retCount = 0;
-	printf("return count: %d, id: %d\n", ++retCount, id);
+	//printf("return count: %d, id: %d\n", ++retCount, id);
 
     return 0;
 }

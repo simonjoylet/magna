@@ -134,13 +134,13 @@ int main(int argc, char **argv) {
 
 	// 读取各个组件的压测数据
 	AdminData * ad = AdminData::GetInstance();
-// 	ad->ReadStressData("Comp_1", "../SimuClient/Comp_1_223.3.87.60.stress");
-// 	ad->ReadStressData("Comp_2", "../SimuClient/Comp_2_223.3.87.60.stress");
-// 	ad->ReadStressData("Comp_3", "../SimuClient/Comp_3_223.3.87.60.stress");
-	//ad->SaveCompFeature(featureFile);
-
-	string featureFile = "test.feature";
-	ad->ReadCompFeature(featureFile);
+	ad->ReadStressData("Comp_1", "../SimuClient/Comp_1_223.3.87.60.stress");
+	ad->ReadStressData("Comp_2", "../SimuClient/Comp_2_223.3.87.60.stress");
+	ad->ReadStressData("Comp_3", "../SimuClient/Comp_3_223.3.87.60.stress");
+// 	//ad->SaveCompFeature(featureFile);
+// 
+// 	string featureFile = "test.feature";
+// 	ad->ReadCompFeature(featureFile);
 	// 初始化路由表
 	auto initRouterFunc = [&ad]()
 	{

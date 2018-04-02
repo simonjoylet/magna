@@ -601,7 +601,7 @@ void GetCurrentWorkingNodes(map<string, localdata::NodeInfo> & curWorkingNodes)
 
 int32_t AdminData::UpdateServiceTable()
 {
-	//return 0;// 测试传统模式
+	
 	if (m_serviceList.empty())
 	{
 		return -1;
@@ -618,7 +618,6 @@ int32_t AdminData::UpdateServiceTable()
 	double cpuNeed = 0, diskNeed = 0;
 	GetTotalNeedResource(serviceLamda, cpuNeed, diskNeed);
 	uint32_t needMachineAmount = ceil((cpuNeed > diskNeed ? cpuNeed : diskNeed) / MAX_UTILIZATION);
-	printf("cpuNeed: %.2f, diskNeed: %.2f", cpuNeed, diskNeed);
 	if (needMachineAmount == 0)
 	{
 		// 此时仿真尚未开始
@@ -629,7 +628,18 @@ int32_t AdminData::UpdateServiceTable()
 	// 找到当前工作节点
 	map<string, localdata::NodeInfo> curWorkingNodes;
 	GetCurrentWorkingNodes(curWorkingNodes);
-	
+
+	printf("cpuNeed: %.2f, diskNeed: %.2f, working nodes count: %d, ", cpuNeed, diskNeed, curWorkingNodes.size());
+
+	// 打印当前工作节点的负载
+	for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
+	{
+		localdata::NodeInfo & ni = it->second;
+		printf("%s, cpuLoad: %.2f, diskLoad: %.2f, ", it->first.c_str(), ni.cpuload, ni.diskload);
+	}
+	printf("\n");
+
+	//return 0;// 测试传统模式
 	int32_t ret = 0;
 	// 判断是否需要扩容或者缩容
 	if (needMachineAmount > curWorkingNodes.size())
@@ -680,7 +690,7 @@ int32_t AdminData::UpdateServiceTable()
 	m_router = curRouter;
 	unlock();
 
-	printf("nodes need amount: %d, working nodes count: %d\n", needMachineAmount, curWorkingNodes.size());
+	//printf("nodes need amount: %d, working nodes count: %d\n", needMachineAmount, curWorkingNodes.size());
 // 	uint32_t printIndex = 0;
 // 	for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
 // 	{

@@ -2,7 +2,7 @@
 #include "InnerHandle.h"
 #include <iostream>
 std::string g_compName = "Comp_2";
-const double COMP_PROCESS_TIME = 27.279;
+double COMP_PROCESS_TIME = 27.279;
 extern map<uint32_t, ReqWaitInfo> g_waitInfoMap;
 
 int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {

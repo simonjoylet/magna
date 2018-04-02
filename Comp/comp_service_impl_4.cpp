@@ -4,7 +4,7 @@
 #include <iostream>
 #include <math.h>
 std::string g_compName = "Comp_4";
-const double COMP_PROCESS_TIME = 23.324;
+double COMP_PROCESS_TIME = 23.324;
 int InnerHandle(const magna::AppRequest &req, magna::AppResponse *resp) {
 	return -1;
 }
