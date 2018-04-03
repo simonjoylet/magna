@@ -163,6 +163,7 @@ int AdminServiceImpl::ServiceHeatbeat(const magna::ServiceHeartbeatRequest &req,
 int AdminServiceImpl::GetServiceTable(const magna::ServiceTableRequest &req, magna::ServiceTableResponse *resp) {
 	
 	AdminData * ad = AdminData::GetInstance();
+	ad->UpdateServiceTable();
 	ad->lock();
 	vector<localdata::RouterItem> & router = ad->m_router;
 	magna::ServiceScale * ss = NULL;

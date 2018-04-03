@@ -150,8 +150,10 @@ void StartCompGroupPerNode(vector<string> compVec)
 	AdminData * ad = AdminData::GetInstance();
 	// 每个机器上分别启动一个组件
 	ad->lock();
+	uint32_t nodeIndex = 0;
 	for (auto it = ad->m_nodeList.begin(); it != ad->m_nodeList.end(); ++it)
 	{
+		++nodeIndex;
 		for (uint32_t compIndex = 0; compIndex < compVec.size(); ++compIndex)
 		{
 			string compName = compVec[compIndex];
@@ -161,6 +163,10 @@ void StartCompGroupPerNode(vector<string> compVec)
 			item.percentage = 1 / ad->m_nodeList.size();
 			if (rsp.success())
 			{
+				if (nodeIndex != 3)
+				{
+					continue;
+				}
 				item.ip = rsp.ip();
 				item.port = rsp.port();
 				item.pid = rsp.pid();
@@ -170,7 +176,7 @@ void StartCompGroupPerNode(vector<string> compVec)
 			{
 				printf("start component failed\n");
 			}
-		}		
+		}
 	}
 	ad->unlock();
 }
@@ -630,14 +636,22 @@ int32_t AdminData::UpdateServiceTable()
 	GetCurrentWorkingNodes(curWorkingNodes);
 
 	printf("cpuNeed: %.2f, diskNeed: %.2f, working nodes count: %d, ", cpuNeed, diskNeed, curWorkingNodes.size());
-
-	// 打印当前工作节点的负载
-	for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
+	// 打印所有节点的负载
+	lock();
+	for (auto it = m_nodeList.begin(); it != m_nodeList.end(); ++it)
 	{
 		localdata::NodeInfo & ni = it->second;
 		printf("%s, cpuLoad: %.2f, diskLoad: %.2f, ", it->first.c_str(), ni.cpuload, ni.diskload);
 	}
 	printf("\n");
+	unlock();
+// 	// 打印当前工作节点的负载
+// 	for (auto it = curWorkingNodes.begin(); it != curWorkingNodes.end(); ++it)
+// 	{
+// 		localdata::NodeInfo & ni = it->second;
+// 		printf("%s, cpuLoad: %.2f, diskLoad: %.2f, ", it->first.c_str(), ni.cpuload, ni.diskload);
+// 	}
+// 	printf("\n");
 
 	//return 0;// 测试传统模式
 	int32_t ret = 0;
@@ -651,10 +665,12 @@ int32_t AdminData::UpdateServiceTable()
 			tmpNodeList.erase(it->first);
 		}
 		uint32_t expandNumber = needMachineAmount - curWorkingNodes.size();
-		auto nodeIt = tmpNodeList.begin();
-		for (uint32_t i = 0; i < expandNumber && nodeIt != tmpNodeList.end(); ++i, ++nodeIt)
+		auto nodeIt = tmpNodeList.end();
+		for (uint32_t i = 0; i < expandNumber && nodeIt != tmpNodeList.begin(); ++i, --nodeIt)
 		{
-			curWorkingNodes[nodeIt->first] = nodeIt->second;
+			auto tmpIt = nodeIt;
+			--tmpIt;
+			curWorkingNodes[tmpIt->first] = tmpIt->second;
 		}		
 	}
 	else if (needMachineAmount < curWorkingNodes.size())

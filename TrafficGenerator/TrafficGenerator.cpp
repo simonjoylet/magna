@@ -91,7 +91,7 @@ int ReadStressFile(string fileName)
 	uint32_t reqLogCount = 0;
 	fread(&reqLogCount, sizeof(reqLogCount), 1, stressFile);
 	// 分析第一阶段
-
+	
 	for (uint32_t phaseIndex = 0; phaseIndex < 3; ++phaseIndex)
 	{
 		vector<vector<ReqLog>> comps(3);
@@ -113,7 +113,8 @@ int ReadStressFile(string fileName)
 				comps[2].push_back(log);
 			}
 		}
-
+		uint64_t timeused = reqLogList[reqLogList.size() - 1].localBegin - reqLogList[reqLogList.size() - (phaseIndex + 1) * 1000].localBegin;
+		printf("phase %d: qps: %.2f, time: %dms\n", phaseIndex + 1, 1000.0 * (phaseIndex + 1) * 1000 / timeused, timeused);
 		for (uint32_t compIndex = 0; compIndex < comps.size(); ++compIndex)
 		{
 			vector<ReqLog> & comp = comps[compIndex];
@@ -144,17 +145,17 @@ int ReadStressFile(string fileName)
 int main()
 {
 	// 测试读取压测数据文件
-// 	cout << "-----------tradition & fcfs-------------" << endl;
-// 	ReadStressFile("simu_tradition_fcfs.stress");
-// 
-// 	cout << "-----------tradition & cuttail-------------" << endl;
-// 	ReadStressFile("simu_tradition_cuttail.stress");
-// 
+	cout << "-----------tradition & fcfs-------------" << endl;
+	ReadStressFile("simu_tradition_fcfs.stress");
+
+	cout << "-----------tradition & cuttail-------------" << endl;
+	ReadStressFile("simu_tradition_cuttail.stress");
+
 // 	cout << "-----------tradition & minloss-------------" << endl;
 // 	ReadStressFile("simu_tradition_minloss.stress");
-// 
-// 	cout << "-----------tradition & pq-------------" << endl;
-// 	ReadStressFile("simu_tradition_pq.stress");
+
+	cout << "-----------tradition & pq-------------" << endl;
+	ReadStressFile("simu_tradition_pq.stress");
 
 	cout << "-----------tradition & pqminloss-------------" << endl;
 	ReadStressFile("simu_tradition_pqminloss.stress");

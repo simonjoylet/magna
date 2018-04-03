@@ -155,17 +155,17 @@ int main(int argc, char **argv) {
 		}
 		
 	};
-	auto updateRouterFunc = [&ad]()
-	{
-		while (true)
-		{
-			sleep(1);
-			ad->UpdateServiceTable();
-		}
-	};
-	
 	std::thread initRouter(initRouterFunc);
-	std::thread updateRouter(updateRouterFunc);
+// 	auto updateRouterFunc = [&ad]()
+// 	{
+// 		while (true)
+// 		{
+// 			sleep(1);
+// 			ad->UpdateServiceTable();
+// 		}
+// 	};
+// 	
+// 	std::thread updateRouter(updateRouterFunc);
 
 	// 启动心跳线程
 	std::thread hb(AdminHbFunc);
