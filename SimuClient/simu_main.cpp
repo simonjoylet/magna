@@ -99,37 +99,37 @@ int main(int argc, char **argv) {
 	CompClient::Init("../Comp/comp_client.conf");
 	g_adminProxy = new AdminClient;
 
-	// 启动路由表更新
-	std::thread routerTh(UpdateServiceTable);
-	// 模拟代码
-	map<uint32_t, string> trafficFiles;
-	trafficFiles.insert(make_pair(100, "../TrafficGenerator/simu1.dat"));
-	trafficFiles.insert(make_pair(200, "../TrafficGenerator/simu2.dat"));
-	trafficFiles.insert(make_pair(300, "../TrafficGenerator/simu3.dat"));
-	auto func = [&trafficFiles]()
-	{
-		SimuAll(trafficFiles, "simu_magna.stress");
-	};
-	std::thread simuTh(func);
-
-// 	// 压测代码
-// 	phxrpc::Endpoint_t ep;
-// 	strcpy(ep.ip, "223.3.87.60");
-// 	ep.port = 20002;
-// 	map<int, string> trafficFiles;
-// 	const char * filePathTemplate = "../TrafficGenerator/Comp_2_%d.dat";
-// 	for (int i = 1; i <= 6; ++i)
+// 	// 启动路由表更新
+// 	std::thread routerTh(UpdateServiceTable);
+// 	// 模拟代码
+// 	map<uint32_t, string> trafficFiles;
+// 	trafficFiles.insert(make_pair(100, "../TrafficGenerator/simu1.dat"));
+// 	trafficFiles.insert(make_pair(200, "../TrafficGenerator/simu2.dat"));
+// 	trafficFiles.insert(make_pair(300, "../TrafficGenerator/simu3.dat"));
+// 	auto func = [&trafficFiles]()
 // 	{
-// 		int lamda = 10 * i;
-// 		char filePath[64] = {};
-// 		sprintf(filePath, filePathTemplate, lamda);
-// 		trafficFiles.insert(make_pair(lamda, filePath));
-// 	}
-// 	auto tmpfun = [&]()
-// 	{
-// 		Stress("Comp_2", ep, trafficFiles);
+// 		SimuAll(trafficFiles, "simu_magna.stress");
 // 	};
-// 	std::thread stressTh(tmpfun);
+// 	std::thread simuTh(func);
+
+	// 压测代码
+	phxrpc::Endpoint_t ep;
+	strcpy(ep.ip, "223.3.87.60");
+	ep.port = 23307;
+	map<int, string> trafficFiles;
+	const char * filePathTemplate = "../TrafficGenerator/Comp_1_%d.dat";
+	for (int i = 1; i <= 10; ++i)
+	{
+		int lamda = 10 * i;
+		char filePath[64] = {};
+		sprintf(filePath, filePathTemplate, lamda);
+		trafficFiles.insert(make_pair(lamda, filePath));
+	}
+	auto tmpfun = [&]()
+	{
+		Stress("Comp_1", ep, trafficFiles);
+	};
+	std::thread stressTh(tmpfun);
 
     server.RunForever();
 
