@@ -17,9 +17,12 @@ const string dataFile = "test.data";
 const uint32_t n = 20;				//组件数量
 const uint32_t m = 5;				//资源纬度
 const uint32_t l = 4;				//最大分组规模
+// const uint32_t n = 3;				//组件数量
+// const uint32_t m = 2;				//资源纬度
+// const uint32_t l = 3;				//最大分组规模
 const uint32_t popSize = 50;		//种群大小
 const double crossRate = 0.6;		//交叉率
-const double mutateRate = 0.1;		//变异率
+const double mutateRate = 0.3;		//变异率
 const double surviveRate = 0.3;		//生存比例
 
 vector<vector<double>> data;
@@ -373,6 +376,12 @@ int main()
 
 	// 读取实验数据
 	ReadData(dataFile, data);
+// 	vector<double> comp1 = { 0.5847, 0 };
+// 	vector<double> comp2 = { 0.2028, 0.2369 };
+// 	vector<double> comp3 = { 0.051, 0 };
+// 	data.push_back(comp1);
+// 	data.push_back(comp2);
+// 	data.push_back(comp3);
 
 	// 构造初始种群
 	vector<Entity> pop;
@@ -388,7 +397,7 @@ int main()
 		printf("gen: %d, best: %.4f\n", genCount, bestValue);
 
 		// 判断迭代终止条件
-		if (genCount > 1000)
+		if (genCount > 2000)
 		{
 			break;
 		}
@@ -417,7 +426,7 @@ int main()
 		pop = nextPop;
 	}
 
-	getchar();
+	//getchar();
 	return 0;
 }
 
