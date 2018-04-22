@@ -10,21 +10,23 @@
 #include <string>
 #include <map>
 #include <set>
+#include <fstream>
 using namespace std;
 
 // 设置关键参数
 const string dataFile = "test.data";
-const uint32_t n = 20;				//组件数量
-const uint32_t m = 5;				//资源纬度
-const uint32_t l = 4;				//最大分组规模
+uint32_t n = 20;				//组件数量
+uint32_t m = 5;				//资源纬度
+uint32_t l = 4;				//最大分组规模
 // const uint32_t n = 3;				//组件数量
 // const uint32_t m = 2;				//资源纬度
 // const uint32_t l = 3;				//最大分组规模
-const uint32_t popSize = 50;		//种群大小
+const uint32_t popSize = n*l;		//种群大小
 const double crossRate = 0.6;		//交叉率
 const double mutateRate = 0.3;		//变异率
 const double surviveRate = 0.3;		//生存比例
-
+const double eliteRate = 0.3;
+const uint32_t iterMutiple = 20;
 vector<vector<double>> data;
 
 void InitRand()
@@ -41,6 +43,7 @@ double RandDouble()
 
 int GenereteTestData(uint32_t n, uint32_t m, string fileName)
 {
+	data.clear();
 	// 生成流量比例
 	vector<uint32_t> randVec;
 	for (uint32_t i = 0; i < n; ++i)
@@ -56,26 +59,29 @@ int GenereteTestData(uint32_t n, uint32_t m, string fileName)
 	}
 
 	// 生成测试数据并写入文件
-	FILE * f = fopen(fileName.c_str(), "wb");
-	fwrite(&n, sizeof(n), 1, f);
-	fwrite(&m, sizeof(m), 1, f);
+// 	FILE * f = fopen(fileName.c_str(), "wb");
+// 	fwrite(&n, sizeof(n), 1, f);
+// 	fwrite(&m, sizeof(m), 1, f);
 	for (uint32_t i = 0; i < n; ++i)
 	{
-
+		vector<double> resVec;
 		for (uint32_t j = 0; j < m; ++j)
 		{
 			double tmp = RandDouble(); // 生成[0,1]之间的随机数
 			tmp *= flowVec[i];// 乘上流量比例
-			fwrite(&tmp, sizeof(tmp), 1, f);
+//			fwrite(&tmp, sizeof(tmp), 1, f);
+			resVec.push_back(tmp);
 		}
+		data.push_back(resVec);
 	}
-	fclose(f);
+//	fclose(f);
 
 	return 0;
 }
 
 int ReadData(string fileName, vector<vector<double>> & data)
 {
+	data.clear();
 	FILE * f = fopen(fileName.c_str(), "rb");
 	uint32_t n = 0, m = 0;
 	fread(&n, sizeof(n), 1, f);
@@ -214,6 +220,7 @@ double GetBalance(const Entity & e)
 
 double PopSelect(vector<Entity> & pop, Entity & bestEntity)
 {
+	// 计算平衡度并排序
 	vector<pair<double, Entity>> balanceVec;
 	for (uint32_t i = 0; i < popSize; ++i)
 	{
@@ -225,15 +232,30 @@ double PopSelect(vector<Entity> & pop, Entity & bestEntity)
 	bestEntity = balanceVec.begin()->second;
 	double bestBalance = balanceVec.begin()->first;
 
+	// 先用精英制选择
 	vector<Entity> nextPop;
 	uint32_t survive = popSize * surviveRate;
-	for (uint32_t i = 0; i < survive; ++i)
+	uint32_t elite = survive * eliteRate;
+	for (uint32_t i = 0; i < elite; ++i)
 	{
 		nextPop.push_back(balanceVec[i].second);
 	}
-	
-	pop = nextPop;
+	balanceVec.erase(balanceVec.begin(), balanceVec.begin() + elite);
 
+	// 再用轮盘赌选择剩下的
+	uint32_t selectSurvive = popSize * surviveRate * (1-eliteRate);
+	while (nextPop.size() < survive)
+	{
+		static uint32_t i = 0;
+		i = (++i) % balanceVec.size();
+		if (RandDouble() < (1.0 / (i+2)))
+		{
+			nextPop.push_back(balanceVec[i].second);
+		}
+	}
+
+	// 返回新种群
+	pop = nextPop;
 	return bestBalance;
 }
 
@@ -289,6 +311,7 @@ int32_t GetEmptyChrom(Entity & e)
 	}
 	return -1;
 }
+
 Entity PopCross(vector<Entity> & pop)
 {
 	// 把a中最好的一条染色体交换给b // todo：可以考虑更加合理的交换方式
@@ -344,89 +367,151 @@ Entity PopMutate(vector<Entity> & pop)
 {
 	// 随机找到一个个体
 	Entity e = pop[rand() % pop.size()];
-
-	// 随机交换其中一个非0元素的位置
-	uint32_t chromIndex = 0;
-	uint32_t geneIndex = 0;
-	uint32_t element = 0;
-	while (1)
+	for (uint32_t i = 0; i < 1+rand()%l; ++i)
 	{
-		chromIndex = rand() % n;
-		geneIndex = rand() % l;
-		element = e[chromIndex][geneIndex];
-		if (element != 0)
+		// 随机交换其中一个非0元素的位置
+		uint32_t chromIndex = 0;
+		uint32_t geneIndex = 0;
+		uint32_t element = 0;
+		while (1)
 		{
-			break;
+			chromIndex = rand() % n;
+			geneIndex = rand() % l;
+			element = e[chromIndex][geneIndex];
+			if (element != 0)
+			{
+				break;
+			}
 		}
+
+		uint32_t randChromIndex = rand() % n;
+		uint32_t randGeneIndex = rand() % l;
+
+		e[chromIndex][geneIndex] = e[randChromIndex][randGeneIndex];
+		e[randChromIndex][randGeneIndex] = element;
 	}
-
-	uint32_t randChromIndex = rand() % n;
-	uint32_t randGeneIndex = rand() % l;
-
-	e[chromIndex][geneIndex] = e[randChromIndex][randGeneIndex];
-	e[randChromIndex][randGeneIndex] = element;
-
+	
 	return e;
 }
 
-int main()
+void PrintEntity(Entity & e)
+{
+	for (uint32_t i = 0; i < n; ++i)
+	{
+		Chrom & tmpChrom = e[i];
+		if (accumulate(tmpChrom.begin(),tmpChrom.end(),0) == 0)
+		{
+			continue;
+		}
+		printf("\t");
+		for (uint32_t j = 0; j < l; ++j)
+		{
+			if (tmpChrom[j]==0)
+			{
+				continue;
+			}
+			cout << tmpChrom[j] << ",";
+		}
+		printf("\n");
+	}
+}
+
+double BestBalance()
+{
+	vector<double> sumRes(m);
+	for (uint32_t j = 0; j < m; ++j)
+	{
+		for (uint32_t i = 0; i < n; ++i)
+		{
+			sumRes[j] += data[i][j];
+		}
+	}
+	double optimal = GetCod(sumRes);
+	return optimal;
+}
+
+int main(int argc, char **argv)
 {
 	InitRand();
-	//GenereteTestData(n, m, dataFile);
+	n = atoi(argv[1]);
+	m = atoi(argv[2]);
+	l = atoi(argv[3]);
+	printf("m: %d, n: %d, l: %d\n", n, m, l);
+	uint32_t simuTimes = 100;
+	double sumRatio = 0;
+	for (uint32_t i = 0; i < simuTimes; ++i)
+	{
+		GenereteTestData(n, m, dataFile);
 
-	// 读取实验数据
-	ReadData(dataFile, data);
-// 	vector<double> comp1 = { 0.5847, 0 };
-// 	vector<double> comp2 = { 0.2028, 0.2369 };
-// 	vector<double> comp3 = { 0.051, 0 };
-// 	data.push_back(comp1);
-// 	data.push_back(comp2);
-// 	data.push_back(comp3);
+		// 读取实验数据
+		//ReadData(dataFile, data);
+		// 	vector<double> comp1 = { 0.5847, 0 };
+		// 	vector<double> comp2 = { 0.2028, 0.2369 };
+		// 	vector<double> comp3 = { 0.051, 0 };
+		// 	data.push_back(comp1);
+		// 	data.push_back(comp2);
+		// 	data.push_back(comp3);
+		BestBalance();
+		// 构造初始种群
+		vector<Entity> pop;
+		InitPop(pop);
 
-	// 构造初始种群
-	vector<Entity> pop;
-	InitPop(pop);
-	
-	// 迭代
-	Entity bestEntity;
-	unsigned int genCount = 0;
-	while (++genCount)
-	{		
-		// 选择
-		double bestValue = PopSelect(pop, bestEntity);
-		printf("gen: %d, best: %.4f\n", genCount, bestValue);
-
-		// 判断迭代终止条件
-		if (genCount > 2000)
+		// 迭代
+		Entity bestEntity;
+		double bestValue = 0;
+		unsigned int genCount = 0;
+		while (++genCount)
 		{
-			break;
-		}
-
-		// 构建下一代种群
-		vector<Entity> nextPop = pop;
-		while (nextPop.size() < popSize)
-		{
-			// 交叉
-			if (RandDouble() < crossRate)
-			{
-				nextPop.push_back(PopCross(pop));
-			}
-			if (nextPop.size() == popSize)
+			// 选择
+			bestValue = PopSelect(pop, bestEntity);
+			//printf("gen: %d, best: %.4f\n", genCount, bestValue);
+			//PrintEntity(bestEntity);
+			// 判断迭代终止条件
+			if (genCount > n*l*iterMutiple)
 			{
 				break;
 			}
 
-			// 变异
-			if (RandDouble() < mutateRate)
+			// 构建下一代种群
+			vector<Entity> nextPop = pop;
+			while (nextPop.size() < popSize)
 			{
-				nextPop.push_back(PopMutate(pop));
+				// 交叉
+				if (RandDouble() < crossRate)
+				{
+					nextPop.push_back(PopCross(pop));
+				}
+				if (nextPop.size() == popSize)
+				{
+					break;
+				}
+
+				// 变异
+				if (RandDouble() < mutateRate)
+				{
+					nextPop.push_back(PopMutate(pop));
+				}
 			}
+
+			pop = nextPop;
 		}
 
-		pop = nextPop;
+		double optimal = BestBalance();
+		double ratio = bestValue / optimal;
+		sumRatio += ratio;
+		printf("experiment:%d, optimal: %.4f, ratio: %.4f\n",i+1, optimal, ratio);
 	}
+	double averageRatio = sumRatio / simuTimes;
+	printf("\n\naverage ratio: %.4f\n", averageRatio);
 
-	//getchar();
+	// 将结果写入文件
+	char rstFileName[32] = {};
+	sprintf(rstFileName, "%d_%d_%d.txt", n, m, l);
+	fstream rstFile(rstFileName, ios::out);
+	rstFile << averageRatio;
+	rstFile.close();
+
+	getchar();
 	return 0;
 }
 
