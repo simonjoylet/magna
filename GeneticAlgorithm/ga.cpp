@@ -430,19 +430,95 @@ double BestBalance()
 	return optimal;
 }
 
+double WorstBalance()
+{
+	Entity e;
+	for (uint32_t i = 0; i < n; ++i)
+	{
+		Chrom tmp(l);
+		tmp[0] = i + 1;
+		e.push_back(tmp);
+	}
+	double worst = GetBalance(e);
+	return worst;
+}
+
+double GA(Entity & bestEntity)
+{
+	// 构造初始种群
+	vector<Entity> pop;
+	InitPop(pop);
+
+	// 迭代
+	double bestValue = 0;
+	unsigned int genCount = 0;
+	while (++genCount)
+	{
+		// 选择
+		bestValue = PopSelect(pop, bestEntity);
+		//printf("gen: %d, best: %.4f\n", genCount, bestValue);
+		//PrintEntity(bestEntity);
+		// 判断迭代终止条件
+		if (genCount > n*l*iterMutiple)
+		{
+			break;
+		}
+
+		// 构建下一代种群
+		vector<Entity> nextPop = pop;
+		while (nextPop.size() < popSize)
+		{
+			// 交叉
+			if (RandDouble() < crossRate)
+			{
+				nextPop.push_back(PopCross(pop));
+			}
+			if (nextPop.size() == popSize)
+			{
+				break;
+			}
+
+			// 变异
+			if (RandDouble() < mutateRate)
+			{
+				nextPop.push_back(PopMutate(pop));
+			}
+		}
+
+		pop = nextPop;
+	}
+
+	return bestValue;
+}
+
 int main(int argc, char **argv)
 {
 	InitRand();
 	n = atoi(argv[1]);
 	m = atoi(argv[2]);
 	l = atoi(argv[3]);
-	printf("m: %d, n: %d, l: %d\n", n, m, l);
-	uint32_t simuTimes = 100;
+
+	// 创建结果文件
+	char rstFileName[32] = {};
+	sprintf(rstFileName, "%d_%d_%d.txt", n, m, l);
+	fstream rstFile(rstFileName, ios::out);
+	char paramStr[32] = {};
+	sprintf(paramStr, "n: %d, m: %d, l: %d\n", n, m, l);
+	cout << paramStr;
+	rstFile << paramStr;
+
+	// 开始仿真试验
+	uint32_t simuTimes = 30;
 	double sumRatio = 0;
+	const uint32_t round = 3; // 同一份数据三次试验为一轮
 	for (uint32_t i = 0; i < simuTimes; ++i)
 	{
-		GenereteTestData(n, m, dataFile);
-
+		if (i % round == 0) // 一份数据算三遍。
+		{
+			GenereteTestData(n, m, dataFile);
+		}
+		
+		
 		// 读取实验数据
 		//ReadData(dataFile, data);
 		// 	vector<double> comp1 = { 0.5847, 0 };
@@ -451,64 +527,35 @@ int main(int argc, char **argv)
 		// 	data.push_back(comp1);
 		// 	data.push_back(comp2);
 		// 	data.push_back(comp3);
-		BestBalance();
-		// 构造初始种群
-		vector<Entity> pop;
-		InitPop(pop);
 
-		// 迭代
-		Entity bestEntity;
-		double bestValue = 0;
-		unsigned int genCount = 0;
-		while (++genCount)
+		static double bestValue = 5;
+		//bestValue = WorstBalance();
+		if (i % round == 0) // 每份数据重置一次最优值
 		{
-			// 选择
-			bestValue = PopSelect(pop, bestEntity);
-			//printf("gen: %d, best: %.4f\n", genCount, bestValue);
-			//PrintEntity(bestEntity);
-			// 判断迭代终止条件
-			if (genCount > n*l*iterMutiple)
-			{
-				break;
-			}
-
-			// 构建下一代种群
-			vector<Entity> nextPop = pop;
-			while (nextPop.size() < popSize)
-			{
-				// 交叉
-				if (RandDouble() < crossRate)
-				{
-					nextPop.push_back(PopCross(pop));
-				}
-				if (nextPop.size() == popSize)
-				{
-					break;
-				}
-
-				// 变异
-				if (RandDouble() < mutateRate)
-				{
-					nextPop.push_back(PopMutate(pop));
-				}
-			}
-
-			pop = nextPop;
+			bestValue = 5;
 		}
-
+		Entity bestEntity;
+		double tmpValue = GA(bestEntity);
 		double optimal = BestBalance();
-		double ratio = bestValue / optimal;
-		sumRatio += ratio;
-		printf("experiment:%d, optimal: %.4f, ratio: %.4f\n",i+1, optimal, ratio);
+		double ratio = tmpValue / optimal;
+
+		bestValue = tmpValue < bestValue ? tmpValue : bestValue;
+		if (i % round == (round-1)) // 每份数据重置一次最优值
+		{
+			sumRatio += bestValue / optimal;
+		}
+		char expInfo[128] = {};
+		sprintf(expInfo, "experiment:%d, optimal: %.4f, ratio: %.4f\n", i + 1, optimal, ratio);
+		cout << expInfo;
+		rstFile << expInfo;
 	}
-	double averageRatio = sumRatio / simuTimes;
-	printf("\n\naverage ratio: %.4f\n", averageRatio);
 
 	// 将结果写入文件
-	char rstFileName[32] = {};
-	sprintf(rstFileName, "%d_%d_%d.txt", n, m, l);
-	fstream rstFile(rstFileName, ios::out);
-	rstFile << averageRatio;
+	double averageRatio = sumRatio / (simuTimes/round);
+	char rstStr[64] = {};
+	sprintf(rstStr, "\n\naverage ratio: %.4f\n", averageRatio);
+	cout << rstStr;
+	rstFile << rstStr;
 	rstFile.close();
 
 	getchar();
