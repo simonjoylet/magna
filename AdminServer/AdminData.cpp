@@ -165,6 +165,7 @@ void StartCompGroupPerNode(vector<string> compVec)
 			{
 				if (nodeIndex != 3)
 				{
+					// 算法对比测试 测试最佳性能时注释掉continue
 					continue;
 				}
 				item.ip = rsp.ip();
@@ -180,12 +181,67 @@ void StartCompGroupPerNode(vector<string> compVec)
 	}
 	ad->unlock();
 }
+vector<localdata::RouterItem> g_vdBaseRouter; // vectordot算法中的基础router，保证每个组件都有实例。
+void StartVectorGroup(vector<string> compVec)
+{
+	AdminData * ad = AdminData::GetInstance();
+	uint32_t compIndex = 0;
+	// 每个机器上分别启动一个组件
+	ad->lock();
+	for (auto it = ad->m_nodeList.begin(); it != ad->m_nodeList.end() && compIndex < compVec.size(); ++it, ++compIndex)
+	{
+		string compName = compVec[compIndex];
+		magna::StartComponentResponse rsp = ad->StartComp(it->second.addr, compName);
+		localdata::RouterItem item;
+		item.compName = compName;
+		item.percentage = 1;
+		if (rsp.success())
+		{
+			item.ip = rsp.ip();
+			item.port = rsp.port();
+			item.pid = rsp.pid();
+			ad->m_router.push_back(item);
+		}
+		else
+		{
+			printf("start component failed\n");
+		}
+	}
+	g_vdBaseRouter = ad->m_router;
+
+	// 再启动两个组件组
+	for (uint32_t i = 0; i < 2; ++i)
+	{
+		uint32_t nodeIndex = 0;
+		for (auto it = ad->m_nodeList.begin(); it != ad->m_nodeList.end(); ++it)
+		{
+			++nodeIndex;
+			for (uint32_t compIndex = 0; compIndex < compVec.size(); ++compIndex)
+			{
+				string compName = compVec[compIndex];
+				magna::StartComponentResponse rsp = ad->StartComp(it->second.addr, compName);
+				localdata::RouterItem item;
+				item.compName = compName;
+				item.percentage = 1 / ad->m_nodeList.size();
+				if (!rsp.success())
+				{
+					printf("start component failed\n");
+				}
+			}
+		}
+	}
+	
+
+	ad->unlock();
+}
+
 
 void AdminData::InitServiceTable()
 {
 	vector<string> compVec = {"Comp_1", "Comp_2", "Comp_3"};
-	StartCompGroupPerNode(compVec);
-	//StartOneCompPerNode(compVec);//测试传统模式
+	//StartCompGroupPerNode(compVec);
+	//StartOneCompPerNode(compVec);//算法对比测试
+	StartVectorGroup(compVec);
 }
 
 
@@ -605,6 +661,146 @@ void GetCurrentWorkingNodes(map<string, localdata::NodeInfo> & curWorkingNodes)
 	}
 }
 
+struct  Res
+{
+	double cpu = 0;
+	double disk = 0;
+};
+uint32_t SumNeedNum(map<string, uint32_t> needNumMap)
+{
+	uint32_t rst = 0;
+	for (auto it = needNumMap.begin(); it != needNumMap.end(); ++it)
+	{
+		rst += it->second;
+	}
+	return rst;
+}
+double VectorDot(Res offerRes, Res needRes)
+{
+	return offerRes.cpu * needRes.cpu + offerRes.disk * needRes.disk;
+}
+void VectorDotSchedule(map<string, uint32_t> serviceLamda)
+{
+	
+	AdminData * ad = AdminData::GetInstance();
+	// 计算每个组件需要的实例数量
+	map<string, uint32_t> needNumMap;
+	for (auto it = serviceLamda.begin(); it != serviceLamda.end(); ++it)
+	{
+		double processSpeed = 1000 / ad->m_stressMap[it->first].processTime;
+		double needNum = 1.0 * it->second / processSpeed;
+		needNumMap[it->first] = ceil(needNum) > 0 ? ceil(needNum): 1;
+	}
+
+	// 计算各组件的资源需求向量
+	
+	map<string, Res> needResMap;
+	for (auto it = serviceLamda.begin(); it != serviceLamda.end(); ++it)
+	{
+		double needLamda = 1.0 * it->second / needNumMap[it->first];
+		double needCpu = needLamda * ad->m_stressMap[it->first].cpuPerLamda;
+		double needDisk = needLamda * ad->m_stressMap[it->first].cpuPerLamda;
+		needResMap[it->first].cpu = needCpu;
+		needResMap[it->first].disk = needDisk;
+	}
+
+	// 使用baseRouter构建资源提供向量
+	ad->lock();
+	map<uint32_t/*id*/, localdata::ServiceInfo> tmpServiceMap = ad->m_serviceList;
+	ad->unlock();
+	map<string, Res> offerResMap;	
+	for (auto it = g_vdBaseRouter.begin(); it != g_vdBaseRouter.end(); ++it)
+	{
+		Res initRes;
+		initRes.cpu = 1 - needResMap[it->compName].cpu;
+		initRes.disk = 1 - needResMap[it->compName].disk;
+		offerResMap[it->ip] = initRes;
+		auto compIt = tmpServiceMap.begin();
+		for (; compIt != tmpServiceMap.end(); ++compIt)
+		{
+			if (compIt->second.addr.ip == it->ip && compIt->second.addr.port == it->port)
+			{
+				break;
+			}
+		}
+		tmpServiceMap.erase(compIt);
+	}
+	// 待部署组件中减去baserouter
+	for (auto it = needNumMap.begin(); it != needNumMap.end(); ++it)
+	{
+		it->second -= 1;
+	}
+	
+
+	// 开始部署其他组件，最多部署6个
+	vector<localdata::RouterItem> rstRouter = g_vdBaseRouter;
+	auto needNumit = needNumMap.begin();
+	for (uint32_t i = 0; i < 6 && SumNeedNum(needNumMap) > 0; ++i)
+	{
+		if (needNumit == needNumMap.end())
+		{
+			needNumit = needNumMap.begin();
+		}
+		for (; needNumit != needNumMap.end(); ++needNumit)
+		{
+			if (needNumit->second > 0)
+			{
+				break;// 找到一个非空组件
+			}
+		}
+		// 按照VectorDot算法找到机器
+		auto foundOfferResIt = offerResMap.begin();
+		double maxVd = VectorDot(foundOfferResIt->second, needResMap[needNumit->first]);
+		for (auto it = offerResMap.begin(); it != offerResMap.end(); ++it)
+		{
+			double tmpVd = VectorDot(it->second, needResMap[needNumit->first]);
+			if (tmpVd > maxVd)
+			{
+				foundOfferResIt = it;
+			}
+		}
+
+		// 将该机器上的某个组件加入router中
+		auto compIt = tmpServiceMap.begin();
+		for (; compIt != tmpServiceMap.end(); ++compIt)
+		{
+			if (compIt->second.addr.ip == foundOfferResIt->first && compIt->second.name == needNumit->first)
+			{
+				break;
+			}
+		}
+		localdata::RouterItem item;
+		if (compIt == tmpServiceMap.end())
+		{
+// 			printf("!!!!!!!!!!!!   ip: %s, compName: %s\n", foundOfferResIt->first.c_str(), needNumit->first.c_str());
+// 			for (uint32_t i = 0; i < rstRouter.size(); ++i)
+// 			{
+// 				localdata::RouterItem & tmpItem = rstRouter[i];
+// 				printf("itemIndex: %d, compName: %s, ip: %s\n", i+1, tmpItem.compName.c_str(), tmpItem.ip.c_str());
+// 			}
+			continue;
+		}
+		item.compName = compIt->second.name;
+		item.ip = compIt->second.addr.ip;
+		item.percentage = 1;
+		item.port = compIt->second.addr.port;
+		
+		rstRouter.push_back(item);
+		tmpServiceMap.erase(compIt);
+		
+		// 更新其资源供给向量并迭代部署下一个组件。
+		foundOfferResIt->second.cpu -= needResMap[needNumit->first].cpu;
+		foundOfferResIt->second.disk -= needResMap[needNumit->first].disk;
+		needNumit->second -= 1;
+	}
+	
+	// 更新路由表
+	ad->lock();
+	ad->m_router = rstRouter;
+	ad->unlock();
+
+}
+
 int32_t AdminData::UpdateServiceTable()
 {
 	
@@ -653,7 +849,9 @@ int32_t AdminData::UpdateServiceTable()
 // 	}
 // 	printf("\n");
 
-	//return 0;// 测试传统模式
+	// VectorDot算法
+	VectorDotSchedule(serviceLamda);// 算法对比测试
+	return 0;// 算法对比测试
 	int32_t ret = 0;
 	// 判断是否需要扩容或者缩容
 	if (needMachineAmount > curWorkingNodes.size())

@@ -142,27 +142,53 @@ int ReadStressFile(string fileName)
 	fclose(stressFile);
 }
 
+void testRead(string filePath)
+{
+	FILE * f = fopen(filePath.c_str(), "rb");
+	uint32_t n = 0;
+	fread(&n, sizeof(n), 1, f);
+	vector<AppReq> records;
+	for (int i = 0; i < n; ++i)
+	{
+		AppReq req;
+		fread(&req, sizeof(req), 1, f);
+		records.push_back(req);
+	}
+	fclose(f);
+}
+
 int main()
 {
-	// 测试读取压测数据文件
-	cout << "-----------tradition & fcfs-------------" << endl;
-	ReadStressFile("simu_tradition_fcfs.stress");
+	
+	ReadStressFile("simu_worldcup_vectordot.stress");
 
-	cout << "-----------tradition & cuttail-------------" << endl;
-	ReadStressFile("simu_tradition_cuttail.stress");
+	cout << "\n\n\n";
+	ReadStressFile("simu_worldcup.stress");
 
-// 	cout << "-----------tradition & minloss-------------" << endl;
-// 	ReadStressFile("simu_tradition_minloss.stress");
+	cout << "\n\n\n";
+	ReadStressFile("simu_worldcup_tradition.stress");
 
-	cout << "-----------tradition & pq-------------" << endl;
-	ReadStressFile("simu_tradition_pq.stress");
 
-	cout << "-----------tradition & pqminloss-------------" << endl;
-	ReadStressFile("simu_tradition_pqminloss.stress");
+// 	// 测试读取压测数据文件
+// 	cout << "-----------tradition & fcfs-------------" << endl;
+// 	ReadStressFile("simu_tradition_fcfs.stress");
+// 
+// 	cout << "-----------tradition & cuttail-------------" << endl;
+// 	ReadStressFile("simu_tradition_cuttail.stress");
+// 
+// // 	cout << "-----------tradition & minloss-------------" << endl;
+// // 	ReadStressFile("simu_tradition_minloss.stress");
+// 
+// 	cout << "-----------tradition & pq-------------" << endl;
+// 	ReadStressFile("simu_tradition_pq.stress");
+// 
+// 	cout << "-----------tradition & pqminloss-------------" << endl;
+// 	ReadStressFile("simu_tradition_pqminloss.stress");
+// 
+// 	cout << "-----------magna & pqminloss-------------" << endl;
+// 	ReadStressFile("simu_magna.stress");
 
-	cout << "-----------magna & pqminloss-------------" << endl;
-	ReadStressFile("simu_magna.stress");
-
+	//生成三阶段流量的代码
 // 	vector<string> services = { "Comp_1", "Comp_1", "Comp_1", 
 // 		"Comp_2", 
 // 		"Comp_3", "Comp_3", "Comp_3", "Comp_3", "Comp_3", "Comp_3" };
@@ -197,22 +223,8 @@ int main()
 	
 	
 	// 测试读入的数据和写入的数据是否吻合。
-	// testRead(filePath);
+	//testRead("worldcup.dat");
 	getchar();
 	return 0;
 }
 
-void testRead(string filePath)
-{
-	FILE * f = fopen(filePath.c_str(), "rb");
-	uint32_t n = 0;
-	fread(&n, sizeof(n), 1, f);
-	vector<AppReq> records;
-	for (int i = 0; i < n; ++i)
-	{
-		AppReq req;
-		fread(&req, sizeof(req), 1, f);
-		records.push_back(req);
-	}
-	fclose(f);
-}

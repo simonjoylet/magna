@@ -19,7 +19,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeneticAlgorithm", "Genetic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Magna", "Magna", "{E30FCB5D-696C-4929-B63D-376086352347}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MassSimu", "MassSimu\MassSimu.vcxproj", "{6E463044-61DE-47A3-9072-2CD7681537C7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldCup", "WorldCup\WorldCup.vcxproj", "{5FAABB7A-F61D-4B9C-8B50-C9A70819FEFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +55,10 @@ Global
 		{05B14B84-8D7F-466D-ACF2-700B61A7985D}.Debug|Win32.Build.0 = Debug|Win32
 		{05B14B84-8D7F-466D-ACF2-700B61A7985D}.Release|Win32.ActiveCfg = Release|Win32
 		{05B14B84-8D7F-466D-ACF2-700B61A7985D}.Release|Win32.Build.0 = Release|Win32
-		{6E463044-61DE-47A3-9072-2CD7681537C7}.Debug|Win32.ActiveCfg = Debug|Win32
-		{6E463044-61DE-47A3-9072-2CD7681537C7}.Debug|Win32.Build.0 = Debug|Win32
-		{6E463044-61DE-47A3-9072-2CD7681537C7}.Release|Win32.ActiveCfg = Release|Win32
-		{6E463044-61DE-47A3-9072-2CD7681537C7}.Release|Win32.Build.0 = Release|Win32
+		{5FAABB7A-F61D-4B9C-8B50-C9A70819FEFC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5FAABB7A-F61D-4B9C-8B50-C9A70819FEFC}.Debug|Win32.Build.0 = Debug|Win32
+		{5FAABB7A-F61D-4B9C-8B50-C9A70819FEFC}.Release|Win32.ActiveCfg = Release|Win32
+		{5FAABB7A-F61D-4B9C-8B50-C9A70819FEFC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
